@@ -1,0 +1,206 @@
+// ── Recipes ──────────────────────────────────────────────────────────────────
+
+export const allRecipesQuery = `
+  *[_type == "recipe" && published == true] | order(publishedAt desc) {
+    _id,
+    title,
+    "slug": slug.current,
+    coverImage,
+    category,
+    cuisine,
+    difficulty,
+    prepTime,
+    cookTime,
+    tags,
+    publishedAt
+  }
+`;
+
+export const recipeBySlugQuery = `
+  *[_type == "recipe" && slug.current == $slug][0] {
+    _id,
+    title,
+    "slug": slug.current,
+    description,
+    coverImage,
+    category,
+    cuisine,
+    difficulty,
+    prepTime,
+    cookTime,
+    servings,
+    tags,
+    ingredientGroups[] {
+      groupName,
+      items[] {
+        name,
+        amount,
+        unit,
+        optional
+      }
+    },
+    stepGroups[] {
+      groupName,
+      items[] {
+        instruction,
+        tip
+      }
+    },
+    nutritionInfo {
+      calories,
+      protein,
+      fat,
+      carbs
+    },
+    content,
+    published,
+    publishedAt
+  }
+`;
+
+// ── Blog Posts ────────────────────────────────────────────────────────────────
+
+export const allBlogPostsQuery = `
+  *[_type == "blogPost" && published == true] | order(publishedAt desc) {
+    _id,
+    title,
+    "slug": slug.current,
+    description,
+    coverImage,
+    category,
+    tags,
+    publishedAt,
+    estimatedReadingTime
+  }
+`;
+
+export const blogPostBySlugQuery = `
+  *[_type == "blogPost" && slug.current == $slug][0] {
+    _id,
+    title,
+    "slug": slug.current,
+    description,
+    coverImage,
+    category,
+    tags,
+    content,
+    published,
+    publishedAt,
+    estimatedReadingTime
+  }
+`;
+
+// ── Travel Entries ───────────────────────────────────────────────────────────
+
+export const allTravelEntriesQuery = `
+  *[_type == "travelEntry" && published == true] | order(publishedAt desc) {
+    _id,
+    title,
+    "slug": slug.current,
+    description,
+    coverImage,
+    location,
+    country,
+    tags,
+    publishedAt
+  }
+`;
+
+export const travelEntryBySlugQuery = `
+  *[_type == "travelEntry" && slug.current == $slug][0] {
+    _id,
+    title,
+    "slug": slug.current,
+    description,
+    coverImage,
+    location,
+    country,
+    tags,
+    content,
+    published,
+    publishedAt
+  }
+`;
+
+// ── Products ─────────────────────────────────────────────────────────────────
+
+export const allProductsQuery = `
+  *[_type == "product" && published == true] | order(_createdAt desc) {
+    _id,
+    title,
+    "slug": slug.current,
+    description,
+    coverImage,
+    type,
+    priceInCents,
+    currency,
+    featured,
+    tags
+  }
+`;
+
+export const productBySlugQuery = `
+  *[_type == "product" && slug.current == $slug][0] {
+    _id,
+    title,
+    "slug": slug.current,
+    description,
+    longDescription,
+    coverImage,
+    type,
+    priceInCents,
+    currency,
+    stripePriceId,
+    stripeProductId,
+    digitalFile,
+    featured,
+    published,
+    tags,
+    course-> {
+      _id,
+      title,
+      description
+    }
+  }
+`;
+
+// ── Singleton Pages ──────────────────────────────────────────────────────────
+
+export const homePageQuery = `
+  *[_type == "homePage"][0] {
+    heroTitle,
+    heroSubtitle,
+    heroImage,
+    featuredRecipes[]-> {
+      _id,
+      title,
+      "slug": slug.current,
+      coverImage,
+      category,
+      difficulty,
+      prepTime,
+      cookTime
+    },
+    featuredProducts[]-> {
+      _id,
+      title,
+      "slug": slug.current,
+      coverImage,
+      type,
+      priceInCents,
+      currency
+    }
+  }
+`;
+
+export const aboutPageQuery = `
+  *[_type == "aboutPage"][0] {
+    bio,
+    profileImage,
+    contactEmail,
+    socialLinks[] {
+      platform,
+      url
+    }
+  }
+`;
