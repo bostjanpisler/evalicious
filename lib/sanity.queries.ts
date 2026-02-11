@@ -1,5 +1,21 @@
 // ── Recipes ──────────────────────────────────────────────────────────────────
 
+export const recentRecipesQuery = `
+  *[_type == "recipe" && published == true] | order(publishedAt desc) [0...6] {
+    _id,
+    title,
+    "slug": slug.current,
+    coverImage,
+    category,
+    cuisine,
+    difficulty,
+    prepTime,
+    cookTime,
+    tags,
+    publishedAt
+  }
+`;
+
 export const allRecipesQuery = `
   *[_type == "recipe" && published == true] | order(publishedAt desc) {
     _id,

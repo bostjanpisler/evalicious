@@ -75,6 +75,7 @@ export interface HomePage {
 		priceInCents: number;
 		type: string;
 	}>;
+	recentRecipes?: import("@/types/recipe").RecipeListing[];
 }
 
 export interface AboutPage {

@@ -40,29 +40,48 @@ export default function HomePage() {
 				</div>
 			</section>
 
-			{/* Featured Recipes */}
-			{data.featuredRecipes && data.featuredRecipes.length > 0 && (
+			{/* Recent Recipes */}
+			{data.recentRecipes && data.recentRecipes.length > 0 && (
 				<section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
 					<div className="mb-8 flex items-center justify-between">
-						<h2 className="font-serif text-3xl font-bold">Izpostavljeni recepti</h2>
+						<h2 className="font-serif text-3xl font-bold">Najnovejši recepti</h2>
 						<Button variant="ghost" asChild>
 							<a href="/recipes">Poglej vse</a>
 						</Button>
 					</div>
 					<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-						{data.featuredRecipes.map((recipe) => (
-							<RecipeCard
-								key={recipe._id}
-								recipe={{ ...recipe, slug: recipe.slug }}
-							/>
+						{data.recentRecipes.map((recipe) => (
+							<RecipeCard key={recipe._id} recipe={recipe} />
 						))}
+					</div>
+				</section>
+			)}
+
+			{/* Featured Recipes */}
+			{data.featuredRecipes && data.featuredRecipes.length > 0 && (
+				<section className="bg-muted/50 py-16">
+					<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+						<div className="mb-8 flex items-center justify-between">
+							<h2 className="font-serif text-3xl font-bold">Izpostavljeni recepti</h2>
+							<Button variant="ghost" asChild>
+								<a href="/recipes">Poglej vse</a>
+							</Button>
+						</div>
+						<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+							{data.featuredRecipes.map((recipe) => (
+								<RecipeCard
+									key={recipe._id}
+									recipe={{ ...recipe, slug: recipe.slug }}
+								/>
+							))}
+						</div>
 					</div>
 				</section>
 			)}
 
 			{/* Featured Products */}
 			{data.featuredProducts && data.featuredProducts.length > 0 && (
-				<section className="bg-muted/50 py-16">
+				<section className="py-16">
 					<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 						<div className="mb-8 flex items-center justify-between">
 							<h2 className="font-serif text-3xl font-bold">Iz trgovine</h2>

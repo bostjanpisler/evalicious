@@ -1,10 +1,17 @@
 import { sanityClient } from "@/server/lib/sanity";
-import { homePageQuery } from "@/lib/sanity.queries";
+import { homePageQuery, recentRecipesQuery } from "@/lib/sanity.queries";
 import type { HomePage } from "@/types/sanity";
+import type { RecipeListing } from "@/types/recipe";
 
 export type Data = HomePage;
 
 export async function data(): Promise<Data> {
-	const result = await sanityClient.fetch<HomePage>(homePageQuery);
-	return result ?? { heroTitle: "Eva-Licious", heroSubtitle: "Recipes, lifestyle & more" };
+	const [page, recentRecipes] = await Promise.all([
+		sanityClient.fetch<HomePage>(homePageQuery),
+		sanityClient.fetch<RecipeListing[]>(recentRecipesQuery),
+	]);
+	return {
+		...(page ?? { heroTitle: "Eva-Licious", heroSubtitle: "Recepti, življenjski slog, potovanja in več." }),
+		recentRecipes: recentRecipes ?? [],
+	};
 }
