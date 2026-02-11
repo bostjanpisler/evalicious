@@ -7,12 +7,14 @@ interface StepCompletionProps {
 	lessonId: string;
 	initialCompleted: boolean;
 	onComplete?: () => void;
+	compact?: boolean;
 }
 
 export function StepCompletion({
 	lessonId,
 	initialCompleted,
 	onComplete,
+	compact = false,
 }: StepCompletionProps) {
 	const [completed, setCompleted] = useState(initialCompleted);
 	const [loading, setLoading] = useState(false);
@@ -72,13 +74,25 @@ export function StepCompletion({
 			type="button"
 			onClick={toggle}
 			disabled={loading}
-			className="flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50 disabled:opacity-50"
+			className={
+				compact
+					? `flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all disabled:opacity-50 ${
+							completed
+								? "bg-green-50 text-green-700 border border-green-200"
+								: "bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100"
+						}`
+					: "flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50 disabled:opacity-50"
+			}
 		>
 			<span
-				className={`flex h-5 w-5 items-center justify-center rounded border-2 transition-colors ${
+				className={`flex items-center justify-center rounded transition-colors ${
+					compact ? "h-5 w-5 rounded-full border-2" : "h-5 w-5 rounded border-2"
+				} ${
 					completed
 						? "border-green-500 bg-green-500 text-white"
-						: "border-gray-300"
+						: compact
+							? "border-amber-400 bg-white"
+							: "border-gray-300"
 				}`}
 			>
 				{completed && (
@@ -96,7 +110,9 @@ export function StepCompletion({
 					</svg>
 				)}
 			</span>
-			{completed ? "Opravljeno" : "Označi kot opravljeno"}
+			<span>
+				{completed ? "Opravljeno" : compact ? "Opravljeno?" : "Označi kot opravljeno"}
+			</span>
 		</button>
 	);
 }

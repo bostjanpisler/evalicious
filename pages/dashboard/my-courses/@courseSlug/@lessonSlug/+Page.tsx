@@ -2,73 +2,136 @@ import { useData } from "vike-react/useData";
 import { VideoPlayer } from "@/components/courses/VideoPlayer";
 import { PdfViewer } from "@/components/courses/PdfViewer";
 import { StepCompletion } from "@/components/courses/StepCompletion";
-import { StepSidebar } from "@/components/courses/StepSidebar";
-import { ProgressTracker } from "@/components/courses/ProgressTracker";
+import { CourseStepper } from "@/components/courses/CourseStepper";
 import { PortableTextRenderer } from "@/components/blog/PortableTextRenderer";
+import { IngredientChecklist } from "@/components/recipes/IngredientChecklist";
+import { StepChecklist } from "@/components/recipes/StepChecklist";
+import { NextStepLink } from "@/components/courses/NextStepLink";
+import { formatDuration } from "@/lib/utils";
 import type { Data } from "./+data.server";
 
 export default function LessonViewPage() {
 	const { courseTitle, courseSlug, step, steps, progress, prevStep, nextStep } =
 		useData<Data>();
 
-	const completedCount = Object.values(progress).filter(Boolean).length;
-
 	return (
-		<div className="lg:flex lg:gap-8">
-			{/* Step sidebar */}
-			<aside className="hidden lg:block lg:w-64 lg:flex-shrink-0">
-				<div className="sticky top-24 rounded-lg border border-gray-200 p-4">
-					<h3 className="font-serif text-sm font-semibold mb-3 truncate">
-						{courseTitle}
-					</h3>
-					<div className="mb-3">
-						<ProgressTracker
-							completed={completedCount}
-							total={steps.length}
-						/>
-					</div>
-					<StepSidebar
-						steps={steps}
-						progress={progress}
-						courseSlug={courseSlug}
-						currentStepSlug={step.slug}
-					/>
-				</div>
-			</aside>
+		<div>
+			{/* Step progress stepper */}
+			<div className="mb-6">
+				<CourseStepper
+					steps={steps}
+					progress={progress}
+					courseSlug={courseSlug}
+					currentStepSlug={step.slug}
+					courseTitle={courseTitle}
+				/>
+			</div>
 
 			{/* Main content — key forces remount on step change */}
-			<div key={step._id} className="flex-1 min-w-0">
-				{/* Video */}
-				<VideoPlayer embedUrl={step.embedUrl} title={step.title} />
+			<div key={step._id}>
+				{/* Two-column: video+content left, recipe right (sticky) */}
+				<div className={step.recipe ? "lg:flex lg:gap-8" : ""}>
+					{/* Left column — video, description, text content */}
+					<div className={step.recipe ? "lg:flex-1 lg:min-w-0" : ""}>
+						{/* Video */}
+						<VideoPlayer embedUrl={step.embedUrl} title={step.title} />
 
-				{/* Step header */}
-				<div className="mt-6">
-					<h2 className="font-serif text-2xl font-bold">{step.title}</h2>
-					{step.description && (
-						<p className="mt-2 text-muted-foreground">{step.description}</p>
-					)}
-				</div>
+						{/* Step header */}
+						<div className="mt-6">
+							<h2 className="font-serif text-2xl font-bold">
+								{step.title}
+							</h2>
+							{step.description && (
+								<p className="mt-2 text-muted-foreground">
+									{step.description}
+								</p>
+							)}
+						</div>
 
-				{/* Completion + PDF row */}
-				<div className="mt-6 flex flex-wrap items-center gap-4">
-					<StepCompletion
-						lessonId={step._id}
-						initialCompleted={progress[step._id] ?? false}
-					/>
-					{step.pdfUrl && (
-						<PdfViewer url={step.pdfUrl} title={`${step.title} — PDF`} />
-					)}
-				</div>
+						{/* PDF download */}
+						{step.pdfUrl && (
+							<div className="mt-6">
+								<PdfViewer
+									url={step.pdfUrl}
+									title={`${step.title} — PDF`}
+								/>
+							</div>
+						)}
 
-				{/* Portable text content */}
-				{step.content && step.content.length > 0 && (
-					<div className="mt-8">
-						<PortableTextRenderer value={step.content} />
+						{/* Portable text content */}
+						{step.content && step.content.length > 0 && (
+							<div className="mt-8">
+								<PortableTextRenderer value={step.content} />
+							</div>
+						)}
 					</div>
-				)}
 
-				{/* Navigation */}
-				<div className="mt-10 flex items-center justify-between border-t border-gray-200 pt-6">
+					{/* Right column — recipe (sticky so it stays visible while scrolling) */}
+					{step.recipe && (
+						<div className="mt-8 lg:mt-0 lg:w-96 lg:flex-shrink-0">
+							<div className="lg:sticky lg:top-4 rounded-xl border border-border bg-card p-6">
+								<h3 className="font-serif text-xl font-bold">
+									{step.recipe.title}
+								</h3>
+
+								<div className="mt-3 flex flex-wrap gap-4 text-sm text-muted-foreground">
+									{step.recipe.prepTime != null &&
+										step.recipe.prepTime > 0 && (
+											<span>
+												Priprava:{" "}
+												{formatDuration(step.recipe.prepTime)}
+											</span>
+										)}
+									{step.recipe.cookTime != null &&
+										step.recipe.cookTime > 0 && (
+											<span>
+												Kuhanje:{" "}
+												{formatDuration(step.recipe.cookTime)}
+											</span>
+										)}
+									{step.recipe.servings != null && (
+										<span>
+											{step.recipe.servings}{" "}
+											{step.recipe.servings === 1
+												? "porcija"
+												: "porcij"}
+										</span>
+									)}
+								</div>
+
+								{step.recipe.ingredientGroups &&
+									step.recipe.ingredientGroups.length > 0 && (
+										<>
+											<h4 className="mt-6 mb-3 font-serif text-lg font-semibold">
+												Sestavine
+											</h4>
+											<IngredientChecklist
+												groups={step.recipe.ingredientGroups}
+											/>
+										</>
+									)}
+
+								{step.recipe.stepGroups &&
+									step.recipe.stepGroups.length > 0 && (
+										<>
+											<h4 className="mt-6 mb-3 font-serif text-lg font-semibold">
+												Navodila
+											</h4>
+											<StepChecklist
+												groups={step.recipe.stepGroups}
+											/>
+										</>
+									)}
+							</div>
+						</div>
+					)}
+				</div>
+
+			</div>
+
+			{/* Sticky bottom navigation bar */}
+			<div className="fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white/95 backdrop-blur-sm">
+				<div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
 					{prevStep ? (
 						<a
 							href={`/dashboard/my-courses/${courseSlug}/${prevStep.slug}`}
@@ -88,18 +151,27 @@ export default function LessonViewPage() {
 									d="M15 19l-7-7 7-7"
 								/>
 							</svg>
-							{prevStep.title}
+							<span className="hidden sm:inline">{prevStep.title}</span>
+							<span className="sm:hidden">Nazaj</span>
 						</a>
 					) : (
 						<span />
 					)}
 
+					<StepCompletion
+						lessonId={step._id}
+						initialCompleted={progress[step._id] ?? false}
+						compact
+					/>
+
 					{nextStep ? (
-						<a
+						<NextStepLink
 							href={`/dashboard/my-courses/${courseSlug}/${nextStep.slug}`}
-							className="flex items-center gap-2 text-sm font-medium text-amber-600 hover:text-amber-700 transition-colors"
+							lessonId={step._id}
+							className="inline-flex items-center gap-2 rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-700 transition-colors"
 						>
-							{nextStep.title}
+							<span className="hidden sm:inline">{nextStep.title}</span>
+							<span className="sm:hidden">Naprej</span>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								className="h-4 w-4"
@@ -114,11 +186,12 @@ export default function LessonViewPage() {
 									d="M9 5l7 7-7 7"
 								/>
 							</svg>
-						</a>
+						</NextStepLink>
 					) : (
-						<a
+						<NextStepLink
 							href={`/dashboard/my-courses/${courseSlug}/complete`}
-							className="inline-flex items-center gap-2 rounded-lg bg-amber-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-amber-700 transition-colors"
+							lessonId={step._id}
+							className="inline-flex items-center gap-2 rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-700 transition-colors"
 						>
 							Zaključi
 							<svg
@@ -133,10 +206,13 @@ export default function LessonViewPage() {
 									clipRule="evenodd"
 								/>
 							</svg>
-						</a>
+						</NextStepLink>
 					)}
 				</div>
 			</div>
+
+			{/* Bottom padding so content isn't hidden behind sticky bar */}
+			<div className="h-16" />
 		</div>
 	);
 }

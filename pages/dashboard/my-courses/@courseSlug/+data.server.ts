@@ -15,6 +15,7 @@ export interface CourseFullWithEmbed {
 	title: string;
 	slug: string;
 	description?: string;
+	coverImage?: unknown;
 	steps: StepWithEmbed[];
 }
 

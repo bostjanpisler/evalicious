@@ -34,6 +34,33 @@ progressHandler.get("/:courseId", async (c) => {
 	return c.json(progress);
 });
 
+// Reset all progress for a course
+progressHandler.delete("/:courseId", async (c) => {
+	const user = c.get("user") as { id: string };
+	const courseId = c.req.param("courseId");
+
+	// Verify access
+	const access = await db.courseAccess.findUnique({
+		where: { userId_courseId: { userId: user.id, courseId } },
+	});
+	if (!access) return c.json({ error: "No access" }, 403);
+
+	// Fetch step IDs for this course from Sanity
+	const result = await sanityClient.fetch<{ stepIds: string[] }>(
+		courseStepIdsQuery,
+		{ courseId },
+	);
+	const stepIds = result?.stepIds ?? [];
+
+	if (stepIds.length > 0) {
+		await db.lessonProgress.deleteMany({
+			where: { userId: user.id, lessonId: { in: stepIds } },
+		});
+	}
+
+	return c.json({ ok: true });
+});
+
 // Toggle lesson completion
 progressHandler.post("/lesson/:lessonId", async (c) => {
 	const user = c.get("user") as { id: string };

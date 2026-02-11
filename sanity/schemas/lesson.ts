@@ -52,6 +52,13 @@ export const lesson = defineType({
 			initialValue: false,
 		}),
 		defineField({
+			name: "recipe",
+			title: "Recipe",
+			type: "reference",
+			to: [{ type: "recipe" }],
+			description: "Link a recipe to this step (ingredients + instructions with checklists)",
+		}),
+		defineField({
 			name: "content",
 			title: "Content",
 			type: "array",

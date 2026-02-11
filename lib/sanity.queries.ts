@@ -247,6 +247,7 @@ export const courseFullQuery = `
     title,
     "slug": slug.current,
     description,
+    coverImage,
     steps[]-> {
       _id,
       title,
@@ -257,7 +258,24 @@ export const courseFullQuery = `
       durationMinutes,
       isFree,
       "pdfUrl": pdfFile.asset->url,
-      content
+      content,
+      recipe-> {
+        _id,
+        title,
+        "slug": slug.current,
+        coverImage,
+        prepTime,
+        cookTime,
+        servings,
+        ingredientGroups[] {
+          groupName,
+          items[] { name, amount, unit, optional }
+        },
+        stepGroups[] {
+          groupName,
+          items[] { instruction, tip }
+        }
+      }
     }
   }
 `;
