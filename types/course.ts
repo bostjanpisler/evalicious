@@ -7,6 +7,7 @@ export interface CourseListing {
 	tags?: string[];
 	publishedAt?: string;
 	stepCount: number;
+	totalDuration?: number;
 }
 
 export interface CourseOverview {

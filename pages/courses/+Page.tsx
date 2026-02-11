@@ -30,6 +30,7 @@ export default function CoursesPage() {
 								href={`/courses/${course.slug}`}
 								coverImage={course.coverImage}
 								stepCount={course.stepCount}
+								totalDuration={course.totalDuration}
 							/>
 						))}
 					</div>

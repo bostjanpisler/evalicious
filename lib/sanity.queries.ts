@@ -215,7 +215,8 @@ export const allCoursesQuery = `
     coverImage,
     tags,
     publishedAt,
-    "stepCount": count(steps)
+    "stepCount": count(steps),
+    "totalDuration": math::sum(steps[]->durationMinutes)
   }
 `;
 
