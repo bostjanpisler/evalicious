@@ -7,6 +7,7 @@ import {
 	PortableTextRenderer,
 	extractHeadings,
 } from "@/components/blog/PortableTextRenderer";
+import { ProfileSidebar } from "@/components/shared/ProfileSidebar";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
 import type { Data } from "./+data";
@@ -73,6 +74,7 @@ export default function TravelEntryPage() {
 				{/* Sidebar */}
 				<div className="space-y-6 lg:sticky lg:top-24 lg:self-start">
 					{headings.length > 0 && <TableOfContents headings={headings} />}
+					<ProfileSidebar />
 				</div>
 			</div>
 		</div>

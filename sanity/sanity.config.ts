@@ -10,6 +10,7 @@ import { chapter } from "./schemas/chapter";
 import { lesson } from "./schemas/lesson";
 import { homePage } from "./schemas/homePage";
 import { aboutPage } from "./schemas/aboutPage";
+import { youtube } from "./schemas/youtube";
 
 export default defineConfig({
   name: "eva-licious",
@@ -18,6 +19,6 @@ export default defineConfig({
   dataset: process.env.SANITY_DATASET ?? "production",
   plugins: [structureTool()],
   schema: {
-    types: [recipe, blogPost, travelEntry, product, course, chapter, lesson, homePage, aboutPage],
+    types: [recipe, blogPost, travelEntry, product, course, chapter, lesson, homePage, aboutPage, youtube],
   },
 });

@@ -150,7 +150,13 @@ export const travelEntryBySlugQuery = `
     location,
     country,
     tags,
-    content,
+    content[] {
+      ...,
+      _type == "image" => {
+        ...,
+        "asset": asset->
+      }
+    },
     published,
     publishedAt
   }

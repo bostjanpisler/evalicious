@@ -53,7 +53,17 @@ export const travelEntry = defineType({
       name: "content",
       title: "Content",
       type: "array",
-      of: [defineArrayMember({ type: "block" })],
+      of: [
+        defineArrayMember({ type: "block" }),
+        defineArrayMember({
+          type: "image",
+          options: { hotspot: true },
+          fields: [
+            defineField({ name: "alt", title: "Alt Text", type: "string" }),
+          ],
+        }),
+        defineArrayMember({ type: "youtube" }),
+      ],
     }),
     defineField({
       name: "published",

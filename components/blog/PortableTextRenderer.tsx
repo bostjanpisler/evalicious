@@ -67,6 +67,24 @@ const components: PortableTextComponents = {
 				)}
 			</figure>
 		),
+		youtube: ({ value }) => (
+			<figure className="my-8">
+				<div className="relative overflow-hidden rounded-lg" style={{ paddingTop: "56.25%" }}>
+					<iframe
+						className="absolute inset-0 h-full w-full"
+						src={`https://www.youtube.com/embed/${value.videoId}`}
+						title={value.title ?? "YouTube video"}
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+						allowFullScreen
+					/>
+				</div>
+				{value.title && (
+					<figcaption className="mt-2 text-center text-sm text-muted-foreground">
+						{value.title}
+					</figcaption>
+				)}
+			</figure>
+		),
 	},
 };
 

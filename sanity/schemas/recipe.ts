@@ -223,6 +223,7 @@ export const recipe = defineType({
             }),
           ],
         }),
+        defineArrayMember({ type: "youtube" }),
       ],
     }),
     defineField({

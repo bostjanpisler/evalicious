@@ -8,8 +8,8 @@ export const SITE_URL =
 
 export const NAV_ITEMS = [
 	{ label: "Recepti", href: "/recipes" },
-	{ label: "Blog", href: "/blog" },
 	{ label: "Potovanja", href: "/travel" },
+	{ label: "Tečaji", href: "/courses" },
 	{ label: "Trgovina", href: "/shop" },
 	{ label: "O meni", href: "/about" },
 ] as const;
