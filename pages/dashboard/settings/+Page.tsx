@@ -12,29 +12,29 @@ export default function SettingsPage() {
 
 	return (
 		<div>
-			<h2 className="font-serif text-2xl font-bold mb-6">Settings</h2>
+			<h2 className="font-serif text-2xl font-bold mb-6">Nastavitve</h2>
 
 			<div className="rounded-lg border border-gray-200 p-6 max-w-lg">
 				<h3 className="font-serif text-lg font-semibold mb-4">
-					Account Information
+					Podatki o računu
 				</h3>
 
 				<div className="space-y-4">
 					<div>
 						<label className="block text-sm font-medium text-gray-500 mb-1">
-							Name
+							Ime
 						</label>
 						<p className="text-gray-900">
-							{user?.name ?? "Not set"}
+							{user?.name ?? "Ni nastavljeno"}
 						</p>
 					</div>
 
 					<div>
 						<label className="block text-sm font-medium text-gray-500 mb-1">
-							Email
+							E-pošta
 						</label>
 						<p className="text-gray-900">
-							{user?.email ?? "Not available"}
+							{user?.email ?? "Ni na voljo"}
 						</p>
 					</div>
 				</div>

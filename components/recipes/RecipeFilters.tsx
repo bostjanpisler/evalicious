@@ -11,7 +11,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { RECIPE_CATEGORIES, RECIPE_DIFFICULTIES } from "@/lib/constants";
+import { RECIPE_CATEGORIES, RECIPE_DIFFICULTIES, RECIPE_CATEGORY_LABELS, RECIPE_DIFFICULTY_LABELS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 interface RecipeFiltersProps {
@@ -40,7 +40,7 @@ export function RecipeFilters({
 			<div className="relative">
 				<Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
 				<Input
-					placeholder="Search recipes..."
+					placeholder="Išči recepte..."
 					value={search}
 					onChange={(e) => onSearchChange(e.target.value)}
 					className="pl-9"
@@ -48,15 +48,15 @@ export function RecipeFilters({
 			</div>
 
 			<div className="flex flex-wrap items-center gap-2">
-				<span className="text-sm font-medium text-muted-foreground">Category:</span>
+				<span className="text-sm font-medium text-muted-foreground">Kategorija:</span>
 				{RECIPE_CATEGORIES.map((cat) => (
 					<Badge
 						key={cat}
 						variant={category === cat ? "default" : "outline"}
-						className={cn("cursor-pointer capitalize", category === cat && "bg-primary")}
+						className={cn("cursor-pointer", category === cat && "bg-primary")}
 						onClick={() => onCategoryChange(category === cat ? "" : cat)}
 					>
-						{cat}
+						{RECIPE_CATEGORY_LABELS[cat] ?? cat}
 					</Badge>
 				))}
 			</div>
@@ -64,13 +64,13 @@ export function RecipeFilters({
 			<div className="flex items-center gap-3">
 				<Select value={difficulty} onValueChange={onDifficultyChange}>
 					<SelectTrigger className="w-40">
-						<SelectValue placeholder="Difficulty" />
+						<SelectValue placeholder="Težavnost" />
 					</SelectTrigger>
 					<SelectContent>
-						<SelectItem value="all">All levels</SelectItem>
+						<SelectItem value="all">Vse ravni</SelectItem>
 						{RECIPE_DIFFICULTIES.map((d) => (
-							<SelectItem key={d} value={d} className="capitalize">
-								{d}
+							<SelectItem key={d} value={d}>
+								{RECIPE_DIFFICULTY_LABELS[d] ?? d}
 							</SelectItem>
 						))}
 					</SelectContent>
@@ -79,7 +79,7 @@ export function RecipeFilters({
 				{hasFilters && (
 					<Button variant="ghost" size="sm" onClick={onClear}>
 						<X className="mr-1 h-3 w-3" />
-						Clear filters
+						Počisti filtre
 					</Button>
 				)}
 			</div>

@@ -22,10 +22,10 @@ export function UserMenu() {
 		return (
 			<div className="hidden items-center gap-2 md:flex">
 				<Button variant="ghost" size="sm" asChild>
-					<a href="/login">Login</a>
+					<a href="/login">Prijava</a>
 				</Button>
 				<Button size="sm" asChild>
-					<a href="/register">Sign Up</a>
+					<a href="/register">Registracija</a>
 				</Button>
 			</div>
 		);
@@ -47,25 +47,25 @@ export function UserMenu() {
 				<DropdownMenuItem asChild>
 					<a href="/dashboard/my-recipes">
 						<Heart className="mr-2 h-4 w-4" />
-						My Recipes
+						Moji recepti
 					</a>
 				</DropdownMenuItem>
 				<DropdownMenuItem asChild>
 					<a href="/dashboard/my-courses">
 						<BookOpen className="mr-2 h-4 w-4" />
-						My Courses
+						Moji tečaji
 					</a>
 				</DropdownMenuItem>
 				<DropdownMenuItem asChild>
 					<a href="/dashboard/my-orders">
 						<ShoppingBag className="mr-2 h-4 w-4" />
-						My Orders
+						Moja naročila
 					</a>
 				</DropdownMenuItem>
 				<DropdownMenuItem asChild>
 					<a href="/dashboard/settings">
 						<Settings className="mr-2 h-4 w-4" />
-						Settings
+						Nastavitve
 					</a>
 				</DropdownMenuItem>
 				<DropdownMenuSeparator />
@@ -76,7 +76,7 @@ export function UserMenu() {
 					}}
 				>
 					<LogOut className="mr-2 h-4 w-4" />
-					Logout
+					Odjava
 				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>

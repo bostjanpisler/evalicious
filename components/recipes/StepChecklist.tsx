@@ -41,10 +41,10 @@ export function StepChecklist({ groups }: StepChecklistProps) {
 	return (
 		<div className="space-y-6">
 			<div className="flex items-center justify-between">
-				<h2 className="font-serif text-xl font-semibold">Instructions</h2>
+				<h2 className="font-serif text-xl font-semibold">Navodila</h2>
 				{checked.size > 0 && (
 					<Button variant="ghost" size="sm" onClick={clearAll}>
-						Clear all
+						Počisti
 					</Button>
 				)}
 			</div>
@@ -83,7 +83,7 @@ export function StepChecklist({ groups }: StepChecklistProps) {
 										</label>
 										{item.tip && (
 											<p className="mt-1 text-sm italic text-muted-foreground">
-												Tip: {item.tip}
+												Nasvet: {item.tip}
 											</p>
 										)}
 									</div>

@@ -10,10 +10,10 @@ export default function CourseViewPage() {
 			<aside className="lg:w-64 lg:flex-shrink-0 mb-6 lg:mb-0">
 				<div className="rounded-lg border border-gray-200 p-4">
 					<h3 className="font-serif text-lg font-semibold mb-4">
-						Chapters
+						Poglavja
 					</h3>
 					<p className="text-sm text-gray-500">
-						Chapter sidebar will load here.
+						Stranska vrstica s poglavji se bo naložila tukaj.
 					</p>
 				</div>
 			</aside>
@@ -21,10 +21,10 @@ export default function CourseViewPage() {
 			{/* Main content */}
 			<div className="flex-1 min-w-0">
 				<h2 className="font-serif text-2xl font-bold mb-4">
-					Course: {courseSlug}
+					Tečaj: {courseSlug}
 				</h2>
 				<p className="text-gray-500">
-					Select a lesson from the sidebar to begin.
+					Izberi lekcijo iz stranske vrstice za začetek.
 				</p>
 			</div>
 		</div>

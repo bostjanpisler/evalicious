@@ -5,9 +5,9 @@ import { PriceDisplay } from "@/components/shop/PriceDisplay";
 import type { Product } from "@/types/sanity";
 
 const typeLabels: Record<string, string> = {
-	ebook: "E-Book",
-	ecourse: "E-Course",
-	offline_course: "Offline Course",
+	ebook: "E-knjiga",
+	ecourse: "E-tečaj",
+	offline_course: "Tečaj v živo",
 };
 
 interface ProductCardProps {
@@ -30,7 +30,7 @@ export function ProductCard({ product }: ProductCardProps) {
 					</div>
 				)}
 				<CardContent className="p-4">
-					<Badge variant="secondary" className="mb-2 text-xs capitalize">
+					<Badge variant="secondary" className="mb-2 text-xs">
 						{typeLabels[product.type] ?? product.type}
 					</Badge>
 					<h3 className="font-serif text-lg font-semibold leading-tight group-hover:text-primary">

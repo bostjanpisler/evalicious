@@ -8,11 +8,11 @@ export function Footer() {
 					<div>
 						<span className="font-serif text-xl font-bold text-primary">{SITE_NAME}</span>
 						<p className="mt-2 text-sm text-muted-foreground">
-							Recipes, lifestyle, travel, and more from Eva's kitchen and beyond.
+							Recepti, življenjski slog, potovanja in več iz Evine kuhinje.
 						</p>
 					</div>
 					<div>
-						<h3 className="font-semibold text-foreground">Explore</h3>
+						<h3 className="font-semibold text-foreground">Razišči</h3>
 						<nav className="mt-3 flex flex-col gap-2">
 							{NAV_ITEMS.map((item) => (
 								<a
@@ -26,31 +26,31 @@ export function Footer() {
 						</nav>
 					</div>
 					<div>
-						<h3 className="font-semibold text-foreground">Account</h3>
+						<h3 className="font-semibold text-foreground">Račun</h3>
 						<nav className="mt-3 flex flex-col gap-2">
 							<a
 								href="/login"
 								className="text-sm text-muted-foreground transition-colors hover:text-foreground"
 							>
-								Login
+								Prijava
 							</a>
 							<a
 								href="/register"
 								className="text-sm text-muted-foreground transition-colors hover:text-foreground"
 							>
-								Register
+								Registracija
 							</a>
 							<a
 								href="/dashboard/my-recipes"
 								className="text-sm text-muted-foreground transition-colors hover:text-foreground"
 							>
-								My Recipes
+								Moji recepti
 							</a>
 						</nav>
 					</div>
 				</div>
 				<div className="mt-8 border-t border-border pt-8 text-center text-sm text-muted-foreground">
-					&copy; {new Date().getFullYear()} {SITE_NAME}. All rights reserved.
+					&copy; {new Date().getFullYear()} {SITE_NAME}. Vse pravice pridržane.
 				</div>
 			</div>
 		</footer>

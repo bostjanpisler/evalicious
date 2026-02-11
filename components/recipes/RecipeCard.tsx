@@ -3,6 +3,7 @@ import { OptimizedImage } from "@/components/shared/OptimizedImage";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatDuration } from "@/lib/utils";
+import { RECIPE_CATEGORY_LABELS, RECIPE_DIFFICULTY_LABELS } from "@/lib/constants";
 import type { RecipeListing } from "@/types/recipe";
 
 interface RecipeCardProps {
@@ -29,13 +30,13 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
 				<CardContent className="p-4">
 					<div className="mb-2 flex flex-wrap gap-1.5">
 						{recipe.category && (
-							<Badge variant="secondary" className="text-xs capitalize">
-								{recipe.category}
+							<Badge variant="secondary" className="text-xs">
+								{RECIPE_CATEGORY_LABELS[recipe.category] ?? recipe.category}
 							</Badge>
 						)}
 						{recipe.difficulty && (
-							<Badge variant="outline" className="text-xs capitalize">
-								{recipe.difficulty}
+							<Badge variant="outline" className="text-xs">
+								{RECIPE_DIFFICULTY_LABELS[recipe.difficulty] ?? recipe.difficulty}
 							</Badge>
 						)}
 					</div>

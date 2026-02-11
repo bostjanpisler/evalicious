@@ -52,7 +52,13 @@ export const recipeBySlugQuery = `
       fat,
       carbs
     },
-    content,
+    content[] {
+      ...,
+      _type == "image" => {
+        ...,
+        "asset": asset->
+      }
+    },
     published,
     publishedAt
   }

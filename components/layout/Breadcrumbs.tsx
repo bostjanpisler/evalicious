@@ -20,7 +20,7 @@ interface BreadcrumbsProps {
 }
 
 export function Breadcrumbs({ segments }: BreadcrumbsProps) {
-	const allSegments = [{ label: "Home", href: "/" }, ...segments];
+	const allSegments = [{ label: "Domov", href: "/" }, ...segments];
 
 	return (
 		<>

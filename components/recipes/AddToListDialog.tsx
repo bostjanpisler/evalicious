@@ -89,12 +89,12 @@ export function AddToListDialog({ contentType, contentId }: AddToListDialogProps
 			<DialogTrigger asChild>
 				<Button variant="outline" size="sm">
 					<ListPlus className="mr-1.5 h-4 w-4" />
-					Add to List
+					Dodaj na seznam
 				</Button>
 			</DialogTrigger>
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>Add to List</DialogTitle>
+					<DialogTitle>Dodaj na seznam</DialogTitle>
 				</DialogHeader>
 				<div className="space-y-3">
 					{lists.map((list) => {
@@ -108,14 +108,14 @@ export function AddToListDialog({ contentType, contentId }: AddToListDialogProps
 							>
 								<span className="text-sm font-medium">{list.name}</span>
 								{isInList && (
-									<span className="text-xs text-primary">Added</span>
+									<span className="text-xs text-primary">Dodano</span>
 								)}
 							</button>
 						);
 					})}
 					<div className="flex gap-2">
 						<Input
-							placeholder="New list name"
+							placeholder="Ime novega seznama"
 							value={newListName}
 							onChange={(e) => setNewListName(e.target.value)}
 							onKeyDown={(e) => e.key === "Enter" && createList()}

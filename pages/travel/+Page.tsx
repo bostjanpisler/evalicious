@@ -8,17 +8,17 @@ export default function TravelPage() {
 
 	return (
 		<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-			<Breadcrumbs segments={[{ label: "Travel" }]} />
+			<Breadcrumbs segments={[{ label: "Potovanja" }]} />
 
-			<h1 className="mt-4 font-serif text-4xl font-bold">Travel</h1>
+			<h1 className="mt-4 font-serif text-4xl font-bold">Potovanja</h1>
 			<p className="mt-2 text-muted-foreground">
-				Adventures and discoveries from around the world.
+				Pustolovščine in odkritja z vsega sveta.
 			</p>
 
 			<div className="mt-8">
 				{entries.length === 0 ? (
 					<p className="py-12 text-center text-muted-foreground">
-						No travel entries yet. Check back soon!
+						Še ni potovalnih zapisov. Preveri kmalu!
 					</p>
 				) : (
 					<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">

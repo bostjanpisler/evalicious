@@ -26,13 +26,13 @@ export function LoginForm() {
 
 			if (!res.ok) {
 				const data = await res.json();
-				setError(data.message ?? "Invalid credentials");
+				setError(data.message ?? "Napačni podatki za prijavo");
 				return;
 			}
 
 			window.location.href = "/dashboard/my-recipes";
 		} catch {
-			setError("Something went wrong. Please try again.");
+			setError("Nekaj je šlo narobe. Poskusi znova.");
 		} finally {
 			setLoading(false);
 		}
@@ -41,8 +41,8 @@ export function LoginForm() {
 	return (
 		<Card className="mx-auto w-full max-w-md">
 			<CardHeader className="text-center">
-				<CardTitle className="font-serif text-2xl">Welcome Back</CardTitle>
-				<CardDescription>Sign in to your account</CardDescription>
+				<CardTitle className="font-serif text-2xl">Dobrodošla nazaj</CardTitle>
+				<CardDescription>Prijavi se v svoj račun</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<form onSubmit={handleSubmit} className="space-y-4">
@@ -52,18 +52,18 @@ export function LoginForm() {
 						</div>
 					)}
 					<div className="space-y-2">
-						<Label htmlFor="email">Email</Label>
+						<Label htmlFor="email">E-pošta</Label>
 						<Input
 							id="email"
 							type="email"
-							placeholder="you@example.com"
+							placeholder="tvoj@email.com"
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
 							required
 						/>
 					</div>
 					<div className="space-y-2">
-						<Label htmlFor="password">Password</Label>
+						<Label htmlFor="password">Geslo</Label>
 						<Input
 							id="password"
 							type="password"
@@ -73,13 +73,13 @@ export function LoginForm() {
 						/>
 					</div>
 					<Button type="submit" className="w-full" disabled={loading}>
-						{loading ? "Signing in..." : "Sign In"}
+						{loading ? "Prijavljam..." : "Prijava"}
 					</Button>
 				</form>
 				<div className="mt-6 text-center text-sm text-muted-foreground">
-					Don't have an account?{" "}
+					Še nimaš računa?{" "}
 					<a href="/register" className="text-primary hover:underline">
-						Sign up
+						Registriraj se
 					</a>
 				</div>
 			</CardContent>

@@ -41,10 +41,10 @@ export function IngredientChecklist({ groups }: IngredientChecklistProps) {
 	return (
 		<div className="space-y-6">
 			<div className="flex items-center justify-between">
-				<h2 className="font-serif text-xl font-semibold">Ingredients</h2>
+				<h2 className="font-serif text-xl font-semibold">Sestavine</h2>
 				{checked.size > 0 && (
 					<Button variant="ghost" size="sm" onClick={clearAll}>
-						Clear all
+						Počisti
 					</Button>
 				)}
 			</div>
@@ -82,7 +82,7 @@ export function IngredientChecklist({ groups }: IngredientChecklistProps) {
 										)}
 										{item.name}
 										{item.optional && (
-											<span className="ml-1 text-muted-foreground">(optional)</span>
+											<span className="ml-1 text-muted-foreground">(po želji)</span>
 										)}
 									</label>
 								</li>

@@ -20,7 +20,7 @@ export default function AboutPage() {
 
 	return (
 		<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-			<Breadcrumbs segments={[{ label: "About" }]} />
+			<Breadcrumbs segments={[{ label: "O meni" }]} />
 
 			<div className="mt-8 grid grid-cols-1 gap-10 lg:grid-cols-3">
 				{/* Profile image */}
@@ -28,7 +28,7 @@ export default function AboutPage() {
 					{page.profileImage && (
 						<OptimizedImage
 							image={page.profileImage}
-							alt="About Eva"
+							alt="O Evi"
 							width={400}
 							height={400}
 							className="w-full rounded-xl object-cover"
@@ -69,7 +69,7 @@ export default function AboutPage() {
 
 				{/* Bio */}
 				<div className="lg:col-span-2">
-					<h1 className="font-serif text-4xl font-bold">About</h1>
+					<h1 className="font-serif text-4xl font-bold">O meni</h1>
 					{page.bio && (
 						<div className="mt-6">
 							<PortableTextRenderer value={page.bio} />

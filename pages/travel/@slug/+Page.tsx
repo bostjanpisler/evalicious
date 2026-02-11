@@ -19,7 +19,7 @@ export default function TravelEntryPage() {
 	return (
 		<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 			<Breadcrumbs
-				segments={[{ label: "Travel", href: "/travel" }, { label: entry.title }]}
+				segments={[{ label: "Potovanja", href: "/travel" }, { label: entry.title }]}
 			/>
 
 			<div className="mt-6 grid grid-cols-1 gap-10 lg:grid-cols-3">

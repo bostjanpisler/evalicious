@@ -27,13 +27,13 @@ export function RegisterForm() {
 
 			if (!res.ok) {
 				const data = await res.json();
-				setError(data.message ?? "Registration failed");
+				setError(data.message ?? "Registracija ni uspela");
 				return;
 			}
 
 			window.location.href = "/dashboard/my-recipes";
 		} catch {
-			setError("Something went wrong. Please try again.");
+			setError("Nekaj je šlo narobe. Poskusi znova.");
 		} finally {
 			setLoading(false);
 		}
@@ -42,8 +42,8 @@ export function RegisterForm() {
 	return (
 		<Card className="mx-auto w-full max-w-md">
 			<CardHeader className="text-center">
-				<CardTitle className="font-serif text-2xl">Create Account</CardTitle>
-				<CardDescription>Join Eva-Licious today</CardDescription>
+				<CardTitle className="font-serif text-2xl">Ustvari račun</CardTitle>
+				<CardDescription>Pridruži se Eva-Licious skupnosti</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<form onSubmit={handleSubmit} className="space-y-4">
@@ -53,7 +53,7 @@ export function RegisterForm() {
 						</div>
 					)}
 					<div className="space-y-2">
-						<Label htmlFor="name">Name</Label>
+						<Label htmlFor="name">Ime</Label>
 						<Input
 							id="name"
 							type="text"
@@ -64,22 +64,22 @@ export function RegisterForm() {
 						/>
 					</div>
 					<div className="space-y-2">
-						<Label htmlFor="email">Email</Label>
+						<Label htmlFor="email">E-pošta</Label>
 						<Input
 							id="email"
 							type="email"
-							placeholder="you@example.com"
+							placeholder="tvoj@email.com"
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
 							required
 						/>
 					</div>
 					<div className="space-y-2">
-						<Label htmlFor="password">Password</Label>
+						<Label htmlFor="password">Geslo</Label>
 						<Input
 							id="password"
 							type="password"
-							placeholder="Min 8 characters"
+							placeholder="Najmanj 8 znakov"
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
 							required
@@ -87,13 +87,13 @@ export function RegisterForm() {
 						/>
 					</div>
 					<Button type="submit" className="w-full" disabled={loading}>
-						{loading ? "Creating account..." : "Create Account"}
+						{loading ? "Ustvarjam račun..." : "Ustvari račun"}
 					</Button>
 				</form>
 				<div className="mt-6 text-center text-sm text-muted-foreground">
-					Already have an account?{" "}
+					Že imaš račun?{" "}
 					<a href="/login" className="text-primary hover:underline">
-						Sign in
+						Prijavi se
 					</a>
 				</div>
 			</CardContent>

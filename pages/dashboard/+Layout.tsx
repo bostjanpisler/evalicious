@@ -5,10 +5,10 @@ import { usePageContext } from "vike-react/usePageContext";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-	{ href: "/dashboard/my-recipes", label: "My Recipes", icon: "heart" },
-	{ href: "/dashboard/my-courses", label: "My Courses", icon: "book" },
-	{ href: "/dashboard/my-orders", label: "My Orders", icon: "receipt" },
-	{ href: "/dashboard/settings", label: "Settings", icon: "settings" },
+	{ href: "/dashboard/my-recipes", label: "Moji recepti", icon: "heart" },
+	{ href: "/dashboard/my-courses", label: "Moji tečaji", icon: "book" },
+	{ href: "/dashboard/my-orders", label: "Moja naročila", icon: "receipt" },
+	{ href: "/dashboard/settings", label: "Nastavitve", icon: "settings" },
 ];
 
 function NavIcon({ icon, className }: { icon: string; className?: string }) {
@@ -102,7 +102,7 @@ export default function DashboardLayout({
 
 	return (
 		<div className="max-w-7xl mx-auto px-4 py-8">
-			<h1 className="font-serif text-3xl font-bold mb-8">Dashboard</h1>
+			<h1 className="font-serif text-3xl font-bold mb-8">Nadzorna plošča</h1>
 
 			<div className="lg:flex lg:gap-8">
 				{/* Mobile menu toggle */}
@@ -129,7 +129,7 @@ export default function DashboardLayout({
 								}
 							/>
 						</svg>
-						Menu
+						Meni
 					</button>
 				</div>
 

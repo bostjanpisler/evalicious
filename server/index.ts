@@ -46,15 +46,15 @@ app.all("*", async (c, next) => {
 	}
 
 	const { statusCode, headers } = httpResponse;
+	const responseHeaders = new Headers();
 	for (const [name, value] of headers) {
-		c.header(name, value);
+		responseHeaders.set(name, value);
 	}
-	c.status(statusCode as 200);
 
 	const readable = httpResponse.getReadableWebStream();
 	return new Response(readable, {
 		status: statusCode,
-		headers: Object.fromEntries(headers),
+		headers: responseHeaders,
 	});
 });
 

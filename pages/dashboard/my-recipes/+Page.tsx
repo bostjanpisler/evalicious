@@ -22,12 +22,12 @@ export default function MyRecipesPage() {
 		setListsError(null);
 		try {
 			const res = await fetch("/api/lists");
-			if (!res.ok) throw new Error("Failed to fetch lists");
+			if (!res.ok) throw new Error("Napaka pri nalaganju seznamov");
 			const data = await res.json();
 			setLists(data.lists ?? []);
 		} catch (err) {
 			setListsError(
-				err instanceof Error ? err.message : "Failed to load lists"
+				err instanceof Error ? err.message : "Napaka pri nalaganju seznamov"
 			);
 		} finally {
 			setListsLoading(false);
@@ -42,12 +42,12 @@ export default function MyRecipesPage() {
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ name: newListName.trim() }),
 			});
-			if (!res.ok) throw new Error("Failed to create list");
+			if (!res.ok) throw new Error("Napaka pri ustvarjanju seznama");
 			setNewListName("");
 			await fetchLists();
 		} catch (err) {
 			setListsError(
-				err instanceof Error ? err.message : "Failed to create list"
+				err instanceof Error ? err.message : "Napaka pri ustvarjanju seznama"
 			);
 		}
 	};
@@ -55,38 +55,38 @@ export default function MyRecipesPage() {
 	const deleteList = async (listId: string) => {
 		try {
 			const res = await fetch(`/api/lists/${listId}`, { method: "DELETE" });
-			if (!res.ok) throw new Error("Failed to delete list");
+			if (!res.ok) throw new Error("Napaka pri brisanju seznama");
 			await fetchLists();
 		} catch (err) {
 			setListsError(
-				err instanceof Error ? err.message : "Failed to delete list"
+				err instanceof Error ? err.message : "Napaka pri brisanju seznama"
 			);
 		}
 	};
 
 	return (
 		<div>
-			<h2 className="font-serif text-2xl font-bold mb-6">My Recipes</h2>
+			<h2 className="font-serif text-2xl font-bold mb-6">Moji recepti</h2>
 
 			<Tabs defaultValue="favorites" className="w-full">
 				<TabsList>
-					<TabsTrigger value="favorites">Favorites</TabsTrigger>
+					<TabsTrigger value="favorites">Priljubljeni</TabsTrigger>
 					<TabsTrigger value="lists" onClick={() => fetchLists()}>
-						Lists
+						Seznami
 					</TabsTrigger>
 				</TabsList>
 
 				<TabsContent value="favorites" className="mt-6">
 					{favoritesLoading ? (
-						<p className="text-gray-500">Loading favorites...</p>
+						<p className="text-gray-500">Nalagam priljubljene...</p>
 					) : favorites.length === 0 ? (
 						<div className="text-center py-12">
 							<p className="text-gray-500 mb-2">
-								No favorites yet.
+								Še nimaš priljubljenih receptov.
 							</p>
 							<p className="text-sm text-gray-400">
-								Browse recipes and tap the heart icon to save
-								your favorites.
+								Razišči recepte in tapni ikono srca, da si shranješ
+								priljubljene.
 							</p>
 						</div>
 					) : (
@@ -97,13 +97,13 @@ export default function MyRecipesPage() {
 									className="rounded-lg border border-gray-200 p-4 hover:border-amber-300 transition-colors"
 								>
 									<p className="text-sm text-gray-600">
-										Content ID:{" "}
+										ID vsebine:{" "}
 										<span className="font-mono text-xs">
 											{fav.contentId}
 										</span>
 									</p>
 									<p className="text-xs text-gray-400 mt-1">
-										Type: {fav.contentType}
+										Vrsta: {fav.contentType}
 									</p>
 								</div>
 							))}
@@ -119,7 +119,7 @@ export default function MyRecipesPage() {
 							value={newListName}
 							onChange={(e) => setNewListName(e.target.value)}
 							onKeyDown={(e) => e.key === "Enter" && createList()}
-							placeholder="New list name..."
+							placeholder="Ime novega seznama..."
 							className="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400"
 						/>
 						<button
@@ -127,7 +127,7 @@ export default function MyRecipesPage() {
 							disabled={!newListName.trim()}
 							className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
 						>
-							Create
+							Ustvari
 						</button>
 					</div>
 
@@ -138,14 +138,14 @@ export default function MyRecipesPage() {
 					)}
 
 					{listsLoading ? (
-						<p className="text-gray-500">Loading lists...</p>
+						<p className="text-gray-500">Nalagam sezname...</p>
 					) : lists.length === 0 ? (
 						<div className="text-center py-12">
 							<p className="text-gray-500 mb-2">
-								No lists yet.
+								Še nimaš seznamov.
 							</p>
 							<p className="text-sm text-gray-400">
-								Create a list to organize your favorite recipes.
+								Ustvari seznam za organizacijo priljubljenih receptov.
 							</p>
 						</div>
 					) : (
@@ -162,15 +162,15 @@ export default function MyRecipesPage() {
 										<p className="text-sm text-gray-500">
 											{list.itemCount}{" "}
 											{list.itemCount === 1
-												? "item"
-												: "items"}
+												? "element"
+												: "elementov"}
 										</p>
 									</div>
 									<button
 										onClick={() => deleteList(list.id)}
 										className="text-sm text-red-500 hover:text-red-700 transition-colors"
 									>
-										Delete
+										Izbriši
 									</button>
 								</div>
 							))}

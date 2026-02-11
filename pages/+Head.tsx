@@ -5,7 +5,7 @@ export default function Head() {
 			<meta name="viewport" content="width=device-width, initial-scale=1" />
 			<meta
 				name="description"
-				content="Recipes, lifestyle, travel, and more from Eva's kitchen and beyond."
+				content="Recepti, življenjski slog, potovanja in več iz Evine kuhinje."
 			/>
 			<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 			<link rel="preconnect" href="https://fonts.googleapis.com" />

@@ -26,7 +26,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
 		<Collapsible open={isOpen} onOpenChange={setIsOpen}>
 			<div className="rounded-lg border border-border bg-card p-4">
 				<CollapsibleTrigger className="flex w-full items-center justify-between">
-					<h3 className="font-semibold text-foreground">Table of Contents</h3>
+					<h3 className="font-semibold text-foreground">Kazalo vsebine</h3>
 					<ChevronDown
 						className={cn(
 							"h-4 w-4 text-muted-foreground transition-transform",

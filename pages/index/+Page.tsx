@@ -27,14 +27,14 @@ export default function HomePage() {
 						{data.heroTitle ?? "Eva-Licious"}
 					</h1>
 					<p className="mt-4 text-xl text-muted-foreground">
-						{data.heroSubtitle ?? "Recipes, lifestyle, travel, and more."}
+						{data.heroSubtitle ?? "Recepti, življenjski slog, potovanja in več."}
 					</p>
 					<div className="mt-8 flex justify-center gap-4">
 						<Button size="lg" asChild>
-							<a href="/recipes">Browse Recipes</a>
+							<a href="/recipes">Razišči recepte</a>
 						</Button>
 						<Button size="lg" variant="outline" asChild>
-							<a href="/shop">Visit Shop</a>
+							<a href="/shop">Obišči trgovino</a>
 						</Button>
 					</div>
 				</div>
@@ -44,9 +44,9 @@ export default function HomePage() {
 			{data.featuredRecipes && data.featuredRecipes.length > 0 && (
 				<section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
 					<div className="mb-8 flex items-center justify-between">
-						<h2 className="font-serif text-3xl font-bold">Featured Recipes</h2>
+						<h2 className="font-serif text-3xl font-bold">Izpostavljeni recepti</h2>
 						<Button variant="ghost" asChild>
-							<a href="/recipes">View all</a>
+							<a href="/recipes">Poglej vse</a>
 						</Button>
 					</div>
 					<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -65,9 +65,9 @@ export default function HomePage() {
 				<section className="bg-muted/50 py-16">
 					<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 						<div className="mb-8 flex items-center justify-between">
-							<h2 className="font-serif text-3xl font-bold">From the Shop</h2>
+							<h2 className="font-serif text-3xl font-bold">Iz trgovine</h2>
 							<Button variant="ghost" asChild>
-								<a href="/shop">View all</a>
+								<a href="/shop">Poglej vse</a>
 							</Button>
 						</div>
 						<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -93,7 +93,7 @@ export default function HomePage() {
 											{product.title}
 										</h3>
 										<p className="mt-1 text-sm font-medium text-primary">
-											{new Intl.NumberFormat("en-EU", {
+											{new Intl.NumberFormat("sl-SI", {
 												style: "currency",
 												currency: "EUR",
 											}).format(product.priceInCents / 100)}

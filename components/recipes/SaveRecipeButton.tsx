@@ -37,12 +37,12 @@ export function SaveRecipeButton({ recipeId, initialFavorited = false }: SaveRec
 			size="sm"
 			onClick={toggle}
 			disabled={loading}
-			aria-label={favorited ? "Remove from favorites" : "Save to favorites"}
+			aria-label={favorited ? "Odstrani iz priljubljenih" : "Shrani med priljubljene"}
 		>
 			<Heart
 				className={cn("mr-1.5 h-4 w-4", favorited && "fill-primary text-primary")}
 			/>
-			{favorited ? "Saved" : "Save"}
+			{favorited ? "Shranjeno" : "Shrani"}
 		</Button>
 	);
 }

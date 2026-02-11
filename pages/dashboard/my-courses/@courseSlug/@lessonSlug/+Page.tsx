@@ -7,14 +7,14 @@ export default function LessonViewPage() {
 	return (
 		<div>
 			<h2 className="font-serif text-2xl font-bold mb-4">
-				Lesson: {lessonSlug}
+				Lekcija: {lessonSlug}
 			</h2>
 			<p className="text-sm text-gray-400 mb-6">
-				Course: {courseSlug}
+				Tečaj: {courseSlug}
 			</p>
 			<div className="rounded-lg border border-gray-200 p-8 text-center">
 				<p className="text-gray-500">
-					Lesson content will be rendered here.
+					Vsebina lekcije se bo prikazala tukaj.
 				</p>
 			</div>
 		</div>

@@ -43,7 +43,7 @@ export function BlogCard({ post }: BlogCardProps) {
 						{post.estimatedReadingTime && (
 							<span className="flex items-center gap-1">
 								<Clock className="h-3.5 w-3.5" />
-								{post.estimatedReadingTime} min read
+								{post.estimatedReadingTime} min branja
 							</span>
 						)}
 					</div>

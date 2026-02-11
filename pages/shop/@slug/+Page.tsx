@@ -11,9 +11,9 @@ import { Separator } from "@/components/ui/separator";
 import type { Data } from "./+data";
 
 const typeLabels: Record<string, string> = {
-	ebook: "E-Book",
-	ecourse: "E-Course",
-	offline_course: "Offline Course",
+	ebook: "E-knjiga",
+	ecourse: "E-tečaj",
+	offline_course: "Tečaj v živo",
 };
 
 export default function ProductPage() {
@@ -22,7 +22,7 @@ export default function ProductPage() {
 	return (
 		<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 			<Breadcrumbs
-				segments={[{ label: "Shop", href: "/shop" }, { label: product.title }]}
+				segments={[{ label: "Trgovina", href: "/shop" }, { label: product.title }]}
 			/>
 
 			<div className="mt-6 grid grid-cols-1 gap-10 lg:grid-cols-2">
@@ -42,7 +42,7 @@ export default function ProductPage() {
 
 				{/* Details */}
 				<div>
-					<Badge variant="secondary" className="capitalize">
+					<Badge variant="secondary">
 						{typeLabels[product.type] ?? product.type}
 					</Badge>
 

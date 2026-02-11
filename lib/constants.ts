@@ -1,17 +1,17 @@
 export const SITE_NAME = "Eva-Licious";
 export const SITE_DESCRIPTION =
-	"Recipes, lifestyle, travel, and more from Eva's kitchen and beyond.";
+	"Recepti, življenjski slog, potovanja in več iz Evine kuhinje.";
 export const SITE_URL =
 	typeof window === "undefined"
 		? (process.env.BETTER_AUTH_URL ?? "http://localhost:3100")
 		: window.location.origin;
 
 export const NAV_ITEMS = [
-	{ label: "Recipes", href: "/recipes" },
+	{ label: "Recepti", href: "/recipes" },
 	{ label: "Blog", href: "/blog" },
-	{ label: "Travel", href: "/travel" },
-	{ label: "Shop", href: "/shop" },
-	{ label: "About", href: "/about" },
+	{ label: "Potovanja", href: "/travel" },
+	{ label: "Trgovina", href: "/shop" },
+	{ label: "O meni", href: "/about" },
 ] as const;
 
 export const RECIPE_CATEGORIES = [
@@ -23,4 +23,19 @@ export const RECIPE_CATEGORIES = [
 	"drink",
 ] as const;
 
+export const RECIPE_CATEGORY_LABELS: Record<string, string> = {
+	breakfast: "Zajtrk",
+	lunch: "Kosilo",
+	dinner: "Večerja",
+	dessert: "Sladica",
+	snack: "Prigrizek",
+	drink: "Napitek",
+};
+
 export const RECIPE_DIFFICULTIES = ["easy", "medium", "hard"] as const;
+
+export const RECIPE_DIFFICULTY_LABELS: Record<string, string> = {
+	easy: "Enostavno",
+	medium: "Srednje",
+	hard: "Zahtevno",
+};

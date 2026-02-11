@@ -9,15 +9,15 @@ export default function CheckoutSuccessPage() {
 				<CardContent className="p-8">
 					<CheckCircle className="mx-auto h-16 w-16 text-green-500" />
 					<h1 className="mt-6 font-serif text-3xl font-bold">
-						Thank you for your purchase!
+						Hvala za nakup!
 					</h1>
 					<p className="mt-3 text-muted-foreground">
-						Your order has been confirmed. You can access your purchased content
-						from your dashboard.
+						Tvoje naročilo je potrjeno. Do kupljene vsebine lahko dostopaš
+						preko nadzorne plošče.
 					</p>
 					<div className="mt-8">
 						<a href="/dashboard/my-recipes">
-							<Button>Go to Dashboard</Button>
+							<Button>Pojdi na nadzorno ploščo</Button>
 						</a>
 					</div>
 				</CardContent>

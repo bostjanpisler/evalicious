@@ -12,13 +12,13 @@ export default function BlogPage() {
 
 			<h1 className="mt-4 font-serif text-4xl font-bold">Blog</h1>
 			<p className="mt-2 text-muted-foreground">
-				Thoughts, stories, and tips from my kitchen and beyond.
+				Misli, zgodbe in nasveti iz moje kuhinje in širše.
 			</p>
 
 			<div className="mt-8">
 				{posts.length === 0 ? (
 					<p className="py-12 text-center text-muted-foreground">
-						No blog posts yet. Check back soon!
+						Še ni objav na blogu. Preveri kmalu!
 					</p>
 				) : (
 					<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
