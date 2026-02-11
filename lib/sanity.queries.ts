@@ -165,7 +165,7 @@ export const travelEntryBySlugQuery = `
 // ── Products ─────────────────────────────────────────────────────────────────
 
 export const allProductsQuery = `
-  *[_type == "product" && published == true] | order(_createdAt desc) {
+  *[_type == "product" && published == true] | order(featured desc, _createdAt desc) {
     _id,
     title,
     "slug": slug.current,
@@ -175,7 +175,9 @@ export const allProductsQuery = `
     priceInCents,
     currency,
     featured,
-    tags
+    tags,
+    "courseStepCount": count(course->steps),
+    "courseTotalDuration": math::sum(course->steps[]->durationMinutes)
   }
 `;
 
@@ -199,7 +201,10 @@ export const productBySlugQuery = `
     course-> {
       _id,
       title,
-      description
+      "slug": slug.current,
+      description,
+      "stepCount": count(steps),
+      "totalDuration": math::sum(steps[]->durationMinutes)
     }
   }
 `;

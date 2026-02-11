@@ -1,18 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
 interface BuyButtonProps {
-	productId: string;
+	productSlug: string;
 	className?: string;
 }
 
-export function BuyButton({ productId, className }: BuyButtonProps) {
+export function BuyButton({ productSlug, className }: BuyButtonProps) {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
+	const [session, setSession] = useState<{
+		user: { id: string; email: string };
+	} | null>(null);
+	const [sessionLoading, setSessionLoading] = useState(true);
+
+	useEffect(() => {
+		fetch("/api/auth/get-session", { credentials: "include" })
+			.then((res) => (res.ok ? res.json() : null))
+			.then((data) => setSession(data))
+			.catch(() => setSession(null))
+			.finally(() => setSessionLoading(false));
+	}, []);
 
 	async function handleClick() {
+		if (!session?.user) {
+			window.location.href = `/login?redirect=/shop/${productSlug}`;
+			return;
+		}
+
 		setError("");
 		setLoading(true);
 
@@ -20,12 +37,17 @@ export function BuyButton({ productId, className }: BuyButtonProps) {
 			const res = await fetch("/api/stripe/checkout", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ productId }),
+				credentials: "include",
+				body: JSON.stringify({
+					productSlug,
+					userId: session.user.id,
+					userEmail: session.user.email,
+				}),
 			});
 
 			if (!res.ok) {
 				const data = await res.json();
-				setError(data.message ?? "Nekaj je šlo narobe");
+				setError(data.error ?? "Nekaj je šlo narobe");
 				return;
 			}
 
@@ -40,8 +62,19 @@ export function BuyButton({ productId, className }: BuyButtonProps) {
 
 	return (
 		<div className={className}>
-			<Button onClick={handleClick} disabled={loading} className="w-full">
-				{loading ? "Preusmerjam..." : "Kupi zdaj"}
+			<Button
+				onClick={handleClick}
+				disabled={loading || sessionLoading}
+				size="lg"
+				className="w-full"
+			>
+				{sessionLoading
+					? "Nalagam..."
+					: loading
+						? "Preusmerjam..."
+						: !session?.user
+							? "Prijavi se za nakup"
+							: "Kupi zdaj"}
 			</Button>
 			{error && (
 				<p className="mt-2 text-sm text-destructive">{error}</p>

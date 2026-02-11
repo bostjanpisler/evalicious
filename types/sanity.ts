@@ -51,6 +51,16 @@ export interface Product {
 	longDescription?: any[];
 	featured?: boolean;
 	tags?: string[];
+	courseStepCount?: number;
+	courseTotalDuration?: number;
+	course?: {
+		_id: string;
+		title: string;
+		slug: string;
+		description?: string;
+		stepCount?: number;
+		totalDuration?: number;
+	};
 }
 
 export interface HomePage {
