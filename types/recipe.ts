@@ -51,4 +51,5 @@ export interface RecipeFull extends RecipeListing {
 	nutritionInfo?: NutritionInfo;
 	// biome-ignore lint/suspicious/noExplicitAny: Portable Text content
 	content?: any[];
+	relatedRecipes?: RecipeListing[];
 }

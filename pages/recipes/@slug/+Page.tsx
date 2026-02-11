@@ -4,6 +4,7 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
 import { IngredientChecklist } from "@/components/recipes/IngredientChecklist";
 import { StepChecklist } from "@/components/recipes/StepChecklist";
+import { RecipeCard } from "@/components/recipes/RecipeCard";
 import { SaveRecipeButton } from "@/components/recipes/SaveRecipeButton";
 import { AddToListDialog } from "@/components/recipes/AddToListDialog";
 import { TableOfContents } from "@/components/blog/TableOfContents";
@@ -20,7 +21,28 @@ import type { Data } from "./+data";
 export default function RecipePage() {
 	const recipe = useData<Data>();
 	const totalTime = (recipe.prepTime ?? 0) + (recipe.cookTime ?? 0);
-	const headings = recipe.content ? extractHeadings(recipe.content) : [];
+
+	// Build combined TOC headings
+	const hasContent = recipe.content && recipe.content.length > 0;
+	const introHeadings = hasContent
+		? [{ key: "o-receptu", text: "O receptu", level: 2 }]
+		: [];
+	const contentHeadings = hasContent ? extractHeadings(recipe.content) : [];
+	const sectionHeadings = [
+		{ key: "recept", text: "Recept", level: 2 },
+		{ key: "sestavine", text: "Sestavine", level: 3 },
+		{ key: "navodila", text: "Navodila", level: 3 },
+	];
+	const relatedHeadings =
+		recipe.relatedRecipes && recipe.relatedRecipes.length > 0
+			? [{ key: "podobni-recepti", text: "Podobni recepti", level: 2 }]
+			: [];
+	const allHeadings = [
+		...introHeadings,
+		...contentHeadings,
+		...sectionHeadings,
+		...relatedHeadings,
+	];
 
 	return (
 		<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -43,16 +65,27 @@ export default function RecipePage() {
 					</div>
 
 					{/* Story content */}
-					{recipe.content && (
+					{hasContent && (
 						<>
 							<Separator className="my-8" />
+							<h2
+								id="o-receptu"
+								className="mb-6 scroll-mt-24 font-serif text-2xl font-bold"
+							>
+								O receptu
+							</h2>
 							<PortableTextRenderer value={recipe.content} />
 						</>
 					)}
 
 					{/* Recipe card */}
 					<div className="my-8 rounded-xl border border-border bg-card p-6">
-						<h2 className="font-serif text-2xl font-bold">{recipe.title}</h2>
+						<h2
+							id="recept"
+							className="scroll-mt-24 font-serif text-2xl font-bold"
+						>
+							Recept
+						</h2>
 
 						<div className="mt-4 flex flex-wrap gap-6 text-sm text-muted-foreground">
 							{recipe.prepTime != null && recipe.prepTime > 0 && (
@@ -142,6 +175,12 @@ export default function RecipePage() {
 						<Separator className="my-6" />
 
 						{/* Ingredients with image on the right */}
+						<h3
+							id="sestavine"
+							className="mb-4 scroll-mt-24 font-serif text-xl font-semibold"
+						>
+							Sestavine
+						</h3>
 						<div className="flex flex-col gap-6 md:flex-row">
 							<div className="min-w-0 flex-1">
 								{recipe.ingredientGroups?.length > 0 && (
@@ -166,13 +205,36 @@ export default function RecipePage() {
 						<Separator className="my-6" />
 
 						{/* Steps */}
+						<h3
+							id="navodila"
+							className="mb-4 scroll-mt-24 font-serif text-xl font-semibold"
+						>
+							Navodila
+						</h3>
 						{recipe.stepGroups?.length > 0 && <StepChecklist groups={recipe.stepGroups} />}
 					</div>
+
+					{/* Related recipes */}
+					{recipe.relatedRecipes && recipe.relatedRecipes.length > 0 && (
+						<section className="mt-12">
+							<h2
+								id="podobni-recepti"
+								className="mb-6 scroll-mt-24 font-serif text-2xl font-bold"
+							>
+								Podobni recepti
+							</h2>
+							<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+								{recipe.relatedRecipes.map((related) => (
+									<RecipeCard key={related._id} recipe={related} />
+								))}
+							</div>
+						</section>
+					)}
 				</div>
 
 				{/* Sidebar */}
 				<div className="space-y-6 lg:sticky lg:top-24 lg:self-start">
-					{headings.length > 0 && <TableOfContents headings={headings} />}
+					<TableOfContents headings={allHeadings} />
 				</div>
 			</div>
 		</div>

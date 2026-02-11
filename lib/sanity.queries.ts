@@ -60,7 +60,19 @@ export const recipeBySlugQuery = `
       }
     },
     published,
-    publishedAt
+    publishedAt,
+    "relatedRecipes": *[_type == "recipe" && published == true && slug.current != ^.slug.current && category == ^.category] | order(publishedAt desc) [0...3] {
+      _id,
+      title,
+      "slug": slug.current,
+      coverImage,
+      category,
+      cuisine,
+      difficulty,
+      prepTime,
+      cookTime,
+      tags
+    }
   }
 `;
 
