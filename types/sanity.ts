@@ -81,11 +81,18 @@ export interface HomePage {
 		_id: string;
 		title: string;
 		slug: string;
+		description?: string;
 		coverImage?: SanityImageSource;
 		priceInCents: number;
-		type: string;
+		currency: string;
+		type: "ebook" | "ecourse" | "offline_course";
+		courseStepCount?: number;
+		courseTotalDuration?: number;
 	}>;
 	recentRecipes?: import("@/types/recipe").RecipeListing[];
+	recentBlogPosts?: BlogPost[];
+	recentTravelEntries?: TravelEntry[];
+	courses?: import("@/types/course").CourseListing[];
 }
 
 export interface AboutPage {

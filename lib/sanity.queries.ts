@@ -292,6 +292,50 @@ export const courseStepIdsQuery = `
   }
 `;
 
+// ── Homepage helpers ────────────────────────────────────────────────────────
+
+export const recentBlogPostsQuery = `
+  *[_type == "blogPost" && published == true] | order(publishedAt desc) [0...3] {
+    _id,
+    title,
+    "slug": slug.current,
+    description,
+    coverImage,
+    category,
+    tags,
+    publishedAt,
+    estimatedReadingTime
+  }
+`;
+
+export const recentTravelEntriesQuery = `
+  *[_type == "travelEntry" && published == true] | order(publishedAt desc) [0...3] {
+    _id,
+    title,
+    "slug": slug.current,
+    description,
+    coverImage,
+    location,
+    country,
+    tags,
+    publishedAt
+  }
+`;
+
+export const recentCoursesQuery = `
+  *[_type == "course" && published == true] | order(publishedAt desc) [0...3] {
+    _id,
+    title,
+    "slug": slug.current,
+    description,
+    coverImage,
+    tags,
+    publishedAt,
+    "stepCount": count(steps),
+    "totalDuration": math::sum(steps[]->durationMinutes)
+  }
+`;
+
 // ── Singleton Pages ──────────────────────────────────────────────────────────
 
 export const homePageQuery = `
@@ -313,10 +357,13 @@ export const homePageQuery = `
       _id,
       title,
       "slug": slug.current,
+      description,
       coverImage,
       type,
       priceInCents,
-      currency
+      currency,
+      "courseStepCount": count(course->steps),
+      "courseTotalDuration": math::sum(course->steps[]->durationMinutes)
     }
   }
 `;

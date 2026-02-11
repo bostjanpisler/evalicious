@@ -1,6 +1,11 @@
 import { useData } from "vike-react/useData";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
 import { RecipeCard } from "@/components/recipes/RecipeCard";
+import { ProductCard } from "@/components/shop/ProductCard";
+import { CourseCard } from "@/components/courses/CourseCard";
+import { BlogCard } from "@/components/blog/BlogCard";
+import { TravelCard } from "@/components/travel/TravelCard";
+import { InstagramFeed } from "@/components/shared/InstagramFeed";
 import { Button } from "@/components/ui/button";
 import type { Data } from "./+data";
 
@@ -79,6 +84,38 @@ export default function HomePage() {
 				</section>
 			)}
 
+			{/* Courses Promo */}
+			{data.courses && data.courses.length > 0 && (
+				<section className="bg-amber-50/60 py-16">
+					<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+						<div className="mb-2 text-center">
+							<h2 className="font-serif text-3xl font-bold">Video delavnice</h2>
+							<p className="mt-2 text-muted-foreground">
+								Korak za korakom te popeljem skozi pripravo najljubših jedi.
+							</p>
+						</div>
+						<div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+							{data.courses.map((course) => (
+								<CourseCard
+									key={course._id}
+									title={course.title}
+									description={course.description ?? ""}
+									coverImage={course.coverImage}
+									stepCount={course.stepCount}
+									totalDuration={course.totalDuration}
+									href={`/courses/${course.slug}`}
+								/>
+							))}
+						</div>
+						<div className="mt-8 text-center">
+							<Button size="lg" variant="outline" asChild>
+								<a href="/courses">Razišči delavnice</a>
+							</Button>
+						</div>
+					</div>
+				</section>
+			)}
+
 			{/* Featured Products */}
 			{data.featuredProducts && data.featuredProducts.length > 0 && (
 				<section className="py-16">
@@ -91,39 +128,74 @@ export default function HomePage() {
 						</div>
 						<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
 							{data.featuredProducts.map((product) => (
-								<a
-									key={product._id}
-									href={`/shop/${product.slug}`}
-									className="group overflow-hidden rounded-lg border bg-card transition-shadow hover:shadow-lg"
-								>
-									{product.coverImage && (
-										<div className="aspect-[4/3] overflow-hidden">
-											<OptimizedImage
-												image={product.coverImage}
-												alt={product.title}
-												width={600}
-												height={450}
-												className="h-full w-full object-cover transition-transform group-hover:scale-105"
-											/>
-										</div>
-									)}
-									<div className="p-4">
-										<h3 className="font-serif text-lg font-semibold group-hover:text-primary">
-											{product.title}
-										</h3>
-										<p className="mt-1 text-sm font-medium text-primary">
-											{new Intl.NumberFormat("sl-SI", {
-												style: "currency",
-												currency: "EUR",
-											}).format(product.priceInCents / 100)}
-										</p>
-									</div>
-								</a>
+								<ProductCard key={product._id} product={product} />
 							))}
 						</div>
 					</div>
 				</section>
 			)}
+
+			{/* Blog */}
+			{data.recentBlogPosts && data.recentBlogPosts.length > 0 && (
+				<section className="bg-muted/50 py-16">
+					<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+						<div className="mb-8 flex items-center justify-between">
+							<h2 className="font-serif text-3xl font-bold">Blog</h2>
+							<Button variant="ghost" asChild>
+								<a href="/blog">Preberi blog</a>
+							</Button>
+						</div>
+						<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+							{data.recentBlogPosts.map((post) => (
+								<BlogCard key={post._id} post={post} />
+							))}
+						</div>
+					</div>
+				</section>
+			)}
+
+			{/* Travel */}
+			{data.recentTravelEntries && data.recentTravelEntries.length > 0 && (
+				<section className="py-16">
+					<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+						<div className="mb-8 flex items-center justify-between">
+							<h2 className="font-serif text-3xl font-bold">Potovanja</h2>
+							<Button variant="ghost" asChild>
+								<a href="/travel">Vsa potovanja</a>
+							</Button>
+						</div>
+						<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+							{data.recentTravelEntries.map((entry) => (
+								<TravelCard key={entry._id} entry={entry} />
+							))}
+						</div>
+					</div>
+				</section>
+			)}
+
+			{/* Instagram */}
+			<section className="bg-muted/50 py-16">
+				<div className="mx-auto max-w-md px-4 sm:px-6 lg:px-8">
+					<h2 className="mb-6 text-center font-serif text-3xl font-bold">Instagram</h2>
+					<InstagramFeed />
+				</div>
+			</section>
+
+			{/* About CTA */}
+			<section className="py-16">
+				<div className="mx-auto max-w-2xl px-4 text-center sm:px-6 lg:px-8">
+					<h2 className="font-serif text-3xl font-bold">Spoznaj me</h2>
+					<p className="mt-3 text-lg text-muted-foreground">
+						Za kuharskimi recepti, potovanji in idejami stojim jaz — Eva. Preberi mojo
+						zgodbo in se poveži z mano.
+					</p>
+					<div className="mt-6">
+						<Button size="lg" variant="outline" asChild>
+							<a href="/about">O meni</a>
+						</Button>
+					</div>
+				</div>
+			</section>
 		</>
 	);
 }
