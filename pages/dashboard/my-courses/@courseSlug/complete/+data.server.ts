@@ -2,14 +2,24 @@ import type { PageContextServer } from "vike/types";
 import { render } from "vike/abort";
 import { db } from "@/server/lib/db";
 import { sanityClient } from "@/server/lib/sanity";
-import { courseFullQuery } from "@/lib/sanity.queries";
-import type { CourseFull } from "@/types/course";
+import { courseFullQuery, allCoursesQuery } from "@/lib/sanity.queries";
+import type { CourseFull, CourseListing } from "@/types/course";
+
+export interface RecommendedCourse {
+	_id: string;
+	title: string;
+	slug: string;
+	description?: string;
+	coverImage?: unknown;
+	stepCount: number;
+}
 
 export type Data = {
 	courseTitle: string;
 	courseSlug: string;
 	totalSteps: number;
 	completedSteps: number;
+	recommendations: RecommendedCourse[];
 };
 
 export async function data(pageContext: PageContextServer): Promise<Data> {
@@ -18,7 +28,13 @@ export async function data(pageContext: PageContextServer): Promise<Data> {
 
 	const { courseSlug } = pageContext.routeParams;
 
-	const course = await sanityClient.fetch<CourseFull>(courseFullQuery, { slug: courseSlug });
+	const [course, allCourses] = await Promise.all([
+		sanityClient.fetch<CourseFull & { tags?: string[] }>(
+			courseFullQuery.replace("coverImage,", "coverImage, tags,"),
+			{ slug: courseSlug },
+		),
+		sanityClient.fetch<CourseListing[]>(allCoursesQuery),
+	]);
 	if (!course) throw render(404, "Course not found");
 
 	const access = await db.courseAccess.findUnique({
@@ -31,10 +47,28 @@ export async function data(pageContext: PageContextServer): Promise<Data> {
 		where: { userId: user.id, lessonId: { in: stepIds }, completed: true },
 	});
 
+	// Find courses user doesn't own, sorted by tag overlap
+	const allAccess = await db.courseAccess.findMany({
+		where: { userId: user.id },
+		select: { courseId: true },
+	});
+	const ownedIds = new Set(allAccess.map((a) => a.courseId));
+	const courseTags = new Set(course.tags ?? []);
+
+	const unowned = (allCourses ?? [])
+		.filter((c) => !ownedIds.has(c._id))
+		.map((c) => ({
+			...c,
+			tagOverlap: (c.tags ?? []).filter((t) => courseTags.has(t)).length,
+		}))
+		.sort((a, b) => b.tagOverlap - a.tagOverlap)
+		.slice(0, 3);
+
 	return {
 		courseTitle: course.title,
 		courseSlug: course.slug,
 		totalSteps: stepIds.length,
 		completedSteps: completed,
+		recommendations: unowned.map(({ tagOverlap, tags, publishedAt, ...rest }) => rest),
 	};
 }
