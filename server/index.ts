@@ -28,6 +28,31 @@ app.route("/api/favorites", favoritesHandler);
 app.route("/api/lists", listsHandler);
 app.route("/api/progress", progressHandler);
 
+// Instagram thumbnail proxy (avoids CORS)
+app.get("/api/ig/:shortcode", async (c) => {
+	const { shortcode } = c.req.param();
+	if (!/^[\w-]{6,20}$/.test(shortcode)) {
+		return c.text("Invalid shortcode", 400);
+	}
+	try {
+		const res = await fetch(
+			`https://www.instagram.com/p/${shortcode}/media/?size=m`,
+			{ redirect: "follow" },
+		);
+		if (!res.ok) return c.text("Not found", 404);
+		const contentType = res.headers.get("content-type") ?? "image/jpeg";
+		const body = await res.arrayBuffer();
+		return new Response(body, {
+			headers: {
+				"content-type": contentType,
+				"cache-control": "public, max-age=86400",
+			},
+		});
+	} catch {
+		return c.text("Fetch failed", 502);
+	}
+});
+
 if (isProduction) {
 	const { serveStatic } = await import("@hono/node-server/serve-static");
 	app.use("/*", serveStatic({ root: "./dist/client/" }));

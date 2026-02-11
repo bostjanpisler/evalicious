@@ -2,6 +2,7 @@ import { useData } from "vike-react/useData";
 import { Clock, Users, ChefHat, Flame } from "lucide-react";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
+import { ProfileSidebar } from "@/components/shared/ProfileSidebar";
 import { IngredientChecklist } from "@/components/recipes/IngredientChecklist";
 import { StepChecklist } from "@/components/recipes/StepChecklist";
 import { RecipeCard } from "@/components/recipes/RecipeCard";
@@ -235,6 +236,7 @@ export default function RecipePage() {
 				{/* Sidebar */}
 				<div className="space-y-6 lg:sticky lg:top-24 lg:self-start">
 					<TableOfContents headings={allHeadings} />
+					<ProfileSidebar />
 				</div>
 			</div>
 		</div>

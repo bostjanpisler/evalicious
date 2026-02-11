@@ -5,6 +5,7 @@ import { useData } from "vike-react/useData";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { RecipeCard } from "@/components/recipes/RecipeCard";
 import { RecipeFilters } from "@/components/recipes/RecipeFilters";
+import { ProfileSidebar } from "@/components/shared/ProfileSidebar";
 import type { Data } from "./+data";
 
 export default function RecipesPage() {
@@ -53,18 +54,28 @@ export default function RecipesPage() {
 				/>
 			</div>
 
-			<div className="mt-8">
-				{filtered.length === 0 ? (
-					<p className="py-12 text-center text-muted-foreground">
-						Ni receptov, ki ustrezajo tvojim filtrom.
-					</p>
-				) : (
-					<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-						{filtered.map((recipe) => (
-							<RecipeCard key={recipe._id} recipe={recipe} />
-						))}
+			<div className="mt-8 grid grid-cols-1 gap-10 lg:grid-cols-[1fr,280px]">
+				{/* Recipe grid */}
+				<div>
+					{filtered.length === 0 ? (
+						<p className="py-12 text-center text-muted-foreground">
+							Ni receptov, ki ustrezajo tvojim filtrom.
+						</p>
+					) : (
+						<div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+							{filtered.map((recipe) => (
+								<RecipeCard key={recipe._id} recipe={recipe} />
+							))}
+						</div>
+					)}
+				</div>
+
+				{/* Sidebar */}
+				<aside className="hidden lg:block">
+					<div className="sticky top-24">
+						<ProfileSidebar />
 					</div>
-				)}
+				</aside>
 			</div>
 		</div>
 	);

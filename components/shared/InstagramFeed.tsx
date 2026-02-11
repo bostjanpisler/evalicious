@@ -1,0 +1,93 @@
+"use client";
+
+import { useState } from "react";
+
+const RECENT_POSTS = [
+	"DUik_7iCBn8",
+	"DUgXFBhCORM",
+	"DUaWc49iF2h",
+	"DUXvQ4wCGe0",
+	"DUNWlvnCPsL",
+	"DS650guEy5x",
+	"DSt-wPeAXRF",
+	"DSfocmpAWPY",
+	"DScjJwfgRXa",
+];
+
+export function InstagramFeed() {
+	const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+
+	const handleError = (shortcode: string) => {
+		setFailedImages((prev) => new Set(prev).add(shortcode));
+	};
+
+	const visiblePosts = RECENT_POSTS.filter((sc) => !failedImages.has(sc));
+
+	return (
+		<div className="rounded-lg border border-border bg-card p-4">
+			<a
+				href="https://www.instagram.com/susiiiiin/"
+				target="_blank"
+				rel="noopener noreferrer"
+				className="mb-3 flex items-center gap-2.5"
+			>
+				<img
+					src="https://eva-licious.com/wp-content/uploads/2024/07/Untitled-design-4.png"
+					alt="@susiiiiin"
+					width={36}
+					height={36}
+					className="rounded-full object-cover"
+					loading="lazy"
+				/>
+				<div className="min-w-0">
+					<p className="text-sm font-semibold leading-tight">susiiiiin</p>
+					<p className="truncate text-xs text-muted-foreground">
+						Okusni recepti, ideje za obroke in nora potovanja
+					</p>
+				</div>
+			</a>
+
+			{/* 3x3 post grid */}
+			<div className="grid grid-cols-3 gap-1 overflow-hidden rounded-md">
+				{visiblePosts.slice(0, 9).map((shortcode) => (
+					<a
+						key={shortcode}
+						href={`https://www.instagram.com/reel/${shortcode}/`}
+						target="_blank"
+						rel="noopener noreferrer"
+						className="relative block aspect-square overflow-hidden bg-muted transition-opacity hover:opacity-80"
+					>
+						<img
+							src={`/api/ig/${shortcode}`}
+							alt=""
+							className="h-full w-full object-cover"
+							loading="lazy"
+							onError={() => handleError(shortcode)}
+						/>
+					</a>
+				))}
+			</div>
+
+			{/* Follow link */}
+			<a
+				href="https://www.instagram.com/susiiiiin/"
+				target="_blank"
+				rel="noopener noreferrer"
+				className="mt-3 flex items-center justify-center gap-2 rounded-md border border-border px-3 py-2 text-sm font-medium transition-colors hover:bg-muted"
+			>
+				<svg
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					strokeWidth={2}
+					className="h-4 w-4"
+				>
+					<rect x={2} y={2} width={20} height={20} rx={5} />
+					<circle cx={12} cy={12} r={5} />
+					<circle cx={17.5} cy={6.5} r={1.5} fill="currentColor" stroke="none" />
+				</svg>
+				Sledi @susiiiiin
+			</a>
+		</div>
+	);
+}
