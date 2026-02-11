@@ -204,6 +204,70 @@ export const productBySlugQuery = `
   }
 `;
 
+// ── Courses ─────────────────────────────────────────────────────────────────
+
+export const allCoursesQuery = `
+  *[_type == "course" && published == true] | order(publishedAt desc) {
+    _id,
+    title,
+    "slug": slug.current,
+    description,
+    coverImage,
+    tags,
+    publishedAt,
+    "stepCount": count(steps)
+  }
+`;
+
+export const courseBySlugQuery = `
+  *[_type == "course" && slug.current == $slug][0] {
+    _id,
+    title,
+    "slug": slug.current,
+    description,
+    coverImage,
+    tags,
+    published,
+    publishedAt,
+    steps[]-> {
+      _id,
+      title,
+      "slug": slug.current,
+      description,
+      sortOrder,
+      durationMinutes,
+      isFree
+    }
+  }
+`;
+
+export const courseFullQuery = `
+  *[_type == "course" && slug.current == $slug][0] {
+    _id,
+    title,
+    "slug": slug.current,
+    description,
+    steps[]-> {
+      _id,
+      title,
+      "slug": slug.current,
+      description,
+      sortOrder,
+      bunnyVideoId,
+      durationMinutes,
+      isFree,
+      "pdfUrl": pdfFile.asset->url,
+      content
+    }
+  }
+`;
+
+export const courseStepIdsQuery = `
+  *[_type == "course" && _id == $courseId][0] {
+    "stepIds": steps[]->_id
+  }
+`;
+
 // ── Singleton Pages ──────────────────────────────────────────────────────────
 
 export const homePageQuery = `
