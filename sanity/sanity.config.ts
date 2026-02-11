@@ -17,7 +17,69 @@ export default defineConfig({
   title: "Eva-Licious Studio",
   projectId: "o1l09q7i",
   dataset: process.env.SANITY_DATASET ?? "production",
-  plugins: [structureTool()],
+  plugins: [
+    structureTool({
+      structure: (S) =>
+        S.list()
+          .title("Vsebina")
+          .items([
+            S.listItem()
+              .title("Recepti")
+              .schemaType("recipe")
+              .child(
+                S.documentTypeList("recipe")
+                  .title("Recepti")
+                  .defaultOrdering([{ field: "publishedAt", direction: "desc" }]),
+              ),
+            S.listItem()
+              .title("Potovanja")
+              .schemaType("travelEntry")
+              .child(
+                S.documentTypeList("travelEntry")
+                  .title("Potovanja")
+                  .defaultOrdering([{ field: "publishedAt", direction: "desc" }]),
+              ),
+            S.listItem()
+              .title("Blog")
+              .schemaType("blogPost")
+              .child(
+                S.documentTypeList("blogPost")
+                  .title("Blog")
+                  .defaultOrdering([{ field: "publishedAt", direction: "desc" }]),
+              ),
+            S.divider(),
+            S.listItem()
+              .title("Izdelki")
+              .schemaType("product")
+              .child(
+                S.documentTypeList("product")
+                  .title("Izdelki")
+                  .defaultOrdering([{ field: "_createdAt", direction: "desc" }]),
+              ),
+            S.listItem()
+              .title("Tečaji")
+              .schemaType("course")
+              .child(S.documentTypeList("course").title("Tečaji")),
+            S.listItem()
+              .title("Poglavja")
+              .schemaType("chapter")
+              .child(S.documentTypeList("chapter").title("Poglavja")),
+            S.listItem()
+              .title("Lekcije")
+              .schemaType("lesson")
+              .child(S.documentTypeList("lesson").title("Lekcije")),
+            S.divider(),
+            S.listItem()
+              .title("Domača stran")
+              .schemaType("homePage")
+              .child(S.document().schemaType("homePage").documentId("homePage")),
+            S.listItem()
+              .title("O meni")
+              .schemaType("aboutPage")
+              .child(S.document().schemaType("aboutPage").documentId("aboutPage")),
+          ]),
+    }),
+  ],
   schema: {
     types: [recipe, blogPost, travelEntry, product, course, chapter, lesson, homePage, aboutPage, youtube],
   },
