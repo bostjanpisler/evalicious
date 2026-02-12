@@ -38,11 +38,7 @@ export function BuyButton({ productSlug, className }: BuyButtonProps) {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				credentials: "include",
-				body: JSON.stringify({
-					productSlug,
-					userId: session.user.id,
-					userEmail: session.user.email,
-				}),
+				body: JSON.stringify({ productSlug }),
 			});
 
 			if (!res.ok) {

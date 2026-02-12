@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useData } from "vike-react/useData";
+import { usePageContext } from "vike-react/usePageContext";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { RecipeCard } from "@/components/recipes/RecipeCard";
 import { RecipeFilters } from "@/components/recipes/RecipeFilters";
@@ -9,8 +10,10 @@ import type { Data } from "./+data";
 
 export default function RecipesPage() {
 	const { recipes } = useData<Data>();
+	const pageContext = usePageContext();
+	const params = pageContext.urlParsed?.search ?? {};
 	const [search, setSearch] = useState("");
-	const [category, setCategory] = useState("");
+	const [category, setCategory] = useState(params.category ?? "");
 	const [difficulty, setDifficulty] = useState("");
 
 	const filtered = useMemo(() => {

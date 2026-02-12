@@ -4,17 +4,15 @@ import { db } from "../lib/db.js";
 import { getSignedDownloadUrl } from "../lib/r2.js";
 import { sendPurchaseConfirmation } from "../lib/email.js";
 import { sanityClient } from "../lib/sanity.js";
+import { requireAuth } from "../middleware/guard.js";
 import type Stripe from "stripe";
 
 export const stripeHandler = new Hono();
 
 // Create checkout session
-stripeHandler.post("/checkout", async (c) => {
-	const { productSlug, userId, userEmail } = await c.req.json<{
-		productSlug: string;
-		userId: string;
-		userEmail: string;
-	}>();
+stripeHandler.post("/checkout", requireAuth, async (c) => {
+	const user = c.get("user") as { id: string; email: string };
+	const { productSlug } = await c.req.json<{ productSlug: string }>();
 
 	const product = await db.product.findUnique({ where: { slug: productSlug } });
 	if (!product || !product.stripePriceId) {
@@ -27,9 +25,9 @@ stripeHandler.post("/checkout", async (c) => {
 		line_items: [{ price: product.stripePriceId, quantity: 1 }],
 		success_url: `${process.env.BETTER_AUTH_URL}/shop/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
 		cancel_url: `${process.env.BETTER_AUTH_URL}/shop/${productSlug}`,
-		customer_email: userEmail,
+		customer_email: user.email,
 		metadata: {
-			userId,
+			userId: user.id,
 			productId: product.id,
 			productSlug: product.slug,
 			productType: product.type,
@@ -48,13 +46,14 @@ stripeHandler.post("/webhook", async (c) => {
 		return c.json({ error: "Missing signature" }, 400);
 	}
 
+	const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+	if (!webhookSecret) {
+		return c.json({ error: "Webhook not configured" }, 500);
+	}
+
 	let event: Stripe.Event;
 	try {
-		event = getStripe().webhooks.constructEvent(
-			body,
-			signature,
-			process.env.STRIPE_WEBHOOK_SECRET ?? "",
-		);
+		event = getStripe().webhooks.constructEvent(body, signature, webhookSecret);
 	} catch {
 		return c.json({ error: "Invalid signature" }, 400);
 	}

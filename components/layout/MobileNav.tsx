@@ -1,13 +1,6 @@
 "use client";
 
-import {
-	Menu,
-	Heart,
-	BookOpen,
-	ShoppingBag,
-	Settings,
-	LogOut,
-} from "lucide-react";
+import { Menu, Heart, Settings, LogOut } from "lucide-react";
 import { NAV_ITEMS, SITE_NAME } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import {
@@ -62,20 +55,6 @@ export function MobileNav() {
 							>
 								<Heart className="h-4 w-4" />
 								Moji recepti
-							</a>
-							<a
-								href="/dashboard/my-courses"
-								className="flex items-center gap-3 rounded-md px-1 py-2 text-sm font-medium text-foreground transition-colors hover:text-primary"
-							>
-								<BookOpen className="h-4 w-4" />
-								Moji tečaji
-							</a>
-							<a
-								href="/dashboard/my-orders"
-								className="flex items-center gap-3 rounded-md px-1 py-2 text-sm font-medium text-foreground transition-colors hover:text-primary"
-							>
-								<ShoppingBag className="h-4 w-4" />
-								Moja naročila
 							</a>
 							<a
 								href="/dashboard/settings"

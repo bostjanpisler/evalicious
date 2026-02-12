@@ -1,6 +1,5 @@
 export const SITE_NAME = "Eva-Licious";
-export const SITE_DESCRIPTION =
-	"Recepti, življenjski slog, potovanja in več iz Evine kuhinje.";
+export const SITE_DESCRIPTION = "Okusni recepti iz Evine kuhinje.";
 export const SITE_URL =
 	typeof window === "undefined"
 		? (process.env.BETTER_AUTH_URL ?? "http://localhost:3100")
@@ -8,9 +7,6 @@ export const SITE_URL =
 
 export const NAV_ITEMS = [
 	{ label: "Recepti", href: "/recipes" },
-	{ label: "Potovanja", href: "/travel" },
-	{ label: "Tečaji", href: "/courses" },
-	{ label: "Trgovina", href: "/shop" },
 	{ label: "O meni", href: "/about" },
 ] as const;
 

@@ -42,7 +42,7 @@ export function InstagramFeed() {
 				<div className="min-w-0">
 					<p className="text-sm font-semibold leading-tight">susiiiiin</p>
 					<p className="truncate text-xs text-muted-foreground">
-						Okusni recepti, ideje za obroke in nora potovanja
+						Okusni recepti in ideje za obroke
 					</p>
 				</div>
 			</a>
@@ -59,7 +59,7 @@ export function InstagramFeed() {
 					>
 						<img
 							src={`/api/ig/${shortcode}`}
-							alt=""
+							alt="Instagram post"
 							className="h-full w-full object-cover"
 							loading="lazy"
 							onError={() => handleError(shortcode)}

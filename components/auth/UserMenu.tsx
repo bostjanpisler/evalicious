@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, Settings, Heart, BookOpen, ShoppingBag, User } from "lucide-react";
+import { LogOut, Settings, Heart, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -48,18 +48,6 @@ export function UserMenu() {
 					<a href="/dashboard/my-recipes">
 						<Heart className="mr-2 h-4 w-4" />
 						Moji recepti
-					</a>
-				</DropdownMenuItem>
-				<DropdownMenuItem asChild>
-					<a href="/dashboard/my-courses">
-						<BookOpen className="mr-2 h-4 w-4" />
-						Moji tečaji
-					</a>
-				</DropdownMenuItem>
-				<DropdownMenuItem asChild>
-					<a href="/dashboard/my-orders">
-						<ShoppingBag className="mr-2 h-4 w-4" />
-						Moja naročila
 					</a>
 				</DropdownMenuItem>
 				<DropdownMenuItem asChild>

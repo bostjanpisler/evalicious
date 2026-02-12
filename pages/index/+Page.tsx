@@ -1,16 +1,27 @@
 import { useData } from "vike-react/useData";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
 import { RecipeCard } from "@/components/recipes/RecipeCard";
-import { ProductCard } from "@/components/shop/ProductCard";
-import { CourseCard } from "@/components/courses/CourseCard";
-import { BlogCard } from "@/components/blog/BlogCard";
-import { TravelCard } from "@/components/travel/TravelCard";
 import { InstagramFeed } from "@/components/shared/InstagramFeed";
 import { Button } from "@/components/ui/button";
+import {
+	RECIPE_CATEGORIES,
+	RECIPE_CATEGORY_LABELS,
+} from "@/lib/constants";
 import type { Data } from "./+data";
+
+const CATEGORY_ICONS: Record<string, string> = {
+	breakfast: "🍳",
+	lunch: "🥗",
+	dinner: "🍝",
+	dessert: "🍰",
+	snack: "🥨",
+	drink: "🥤",
+};
 
 export default function HomePage() {
 	const data = useData<Data>();
+
+	const [featuredHero, ...featuredRest] = data.featuredRecipes ?? [];
 
 	return (
 		<>
@@ -32,15 +43,34 @@ export default function HomePage() {
 						{data.heroTitle ?? "Eva-Licious"}
 					</h1>
 					<p className="mt-4 text-xl text-muted-foreground">
-						{data.heroSubtitle ?? "Recepti, življenjski slog, potovanja in več."}
+						{data.heroSubtitle ?? "Okusni recepti iz Evine kuhinje."}
 					</p>
-					<div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center sm:gap-4">
+					<div className="mt-8">
 						<Button size="lg" asChild>
 							<a href="/recipes">Razišči recepte</a>
 						</Button>
-						<Button size="lg" variant="outline" asChild>
-							<a href="/shop">Obišči trgovino</a>
-						</Button>
+					</div>
+				</div>
+			</section>
+
+			{/* Category Browse */}
+			<section className="border-b border-border">
+				<div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+					<div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
+						{RECIPE_CATEGORIES.map((cat) => (
+							<a
+								key={cat}
+								href={`/recipes?category=${cat}`}
+								className="group flex flex-col items-center gap-2 rounded-xl px-3 py-4 transition-colors hover:bg-muted"
+							>
+								<span className="text-2xl sm:text-3xl">
+									{CATEGORY_ICONS[cat]}
+								</span>
+								<span className="text-sm font-medium text-muted-foreground group-hover:text-foreground">
+									{RECIPE_CATEGORY_LABELS[cat]}
+								</span>
+							</a>
+						))}
 					</div>
 				</div>
 			</section>
@@ -59,11 +89,16 @@ export default function HomePage() {
 							<RecipeCard key={recipe._id} recipe={recipe} />
 						))}
 					</div>
+					<div className="mt-10 text-center">
+						<Button size="lg" variant="outline" asChild>
+							<a href="/recipes">Poglej vse recepte</a>
+						</Button>
+					</div>
 				</section>
 			)}
 
-			{/* Featured Recipes */}
-			{data.featuredRecipes && data.featuredRecipes.length > 0 && (
+			{/* Featured Recipes — hero layout */}
+			{featuredHero && (
 				<section className="bg-muted/50 py-16">
 					<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 						<div className="mb-8 flex items-center justify-between">
@@ -72,109 +107,64 @@ export default function HomePage() {
 								<a href="/recipes">Poglej vse</a>
 							</Button>
 						</div>
-						<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-							{data.featuredRecipes.map((recipe) => (
-								<RecipeCard
-									key={recipe._id}
-									recipe={{ ...recipe, slug: recipe.slug }}
-								/>
-							))}
-						</div>
-					</div>
-				</section>
-			)}
-
-			{/* Courses Promo */}
-			{data.courses && data.courses.length > 0 && (
-				<section className="bg-amber-50/60 py-16">
-					<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-						<div className="mb-2 text-center">
-							<h2 className="font-serif text-3xl font-bold">Video delavnice</h2>
-							<p className="mt-2 text-muted-foreground">
-								Korak za korakom te popeljem skozi pripravo najljubših jedi.
-							</p>
-						</div>
-						<div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-							{data.courses.map((course) => (
-								<CourseCard
-									key={course._id}
-									title={course.title}
-									description={course.description ?? ""}
-									coverImage={course.coverImage}
-									stepCount={course.stepCount}
-									totalDuration={course.totalDuration}
-									href={`/courses/${course.slug}`}
-								/>
-							))}
-						</div>
-						<div className="mt-8 text-center">
-							<Button size="lg" variant="outline" asChild>
-								<a href="/courses">Razišči delavnice</a>
-							</Button>
-						</div>
-					</div>
-				</section>
-			)}
-
-			{/* Featured Products */}
-			{data.featuredProducts && data.featuredProducts.length > 0 && (
-				<section className="py-16">
-					<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-						<div className="mb-8 flex items-center justify-between">
-							<h2 className="font-serif text-3xl font-bold">Iz trgovine</h2>
-							<Button variant="ghost" asChild>
-								<a href="/shop">Poglej vse</a>
-							</Button>
-						</div>
-						<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-							{data.featuredProducts.map((product) => (
-								<ProductCard key={product._id} product={product} />
-							))}
-						</div>
-					</div>
-				</section>
-			)}
-
-			{/* Blog */}
-			{data.recentBlogPosts && data.recentBlogPosts.length > 0 && (
-				<section className="bg-muted/50 py-16">
-					<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-						<div className="mb-8 flex items-center justify-between">
-							<h2 className="font-serif text-3xl font-bold">Blog</h2>
-							<Button variant="ghost" asChild>
-								<a href="/blog">Preberi blog</a>
-							</Button>
-						</div>
-						<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-							{data.recentBlogPosts.map((post) => (
-								<BlogCard key={post._id} post={post} />
-							))}
-						</div>
-					</div>
-				</section>
-			)}
-
-			{/* Travel */}
-			{data.recentTravelEntries && data.recentTravelEntries.length > 0 && (
-				<section className="py-16">
-					<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-						<div className="mb-8 flex items-center justify-between">
-							<h2 className="font-serif text-3xl font-bold">Potovanja</h2>
-							<Button variant="ghost" asChild>
-								<a href="/travel">Vsa potovanja</a>
-							</Button>
-						</div>
-						<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-							{data.recentTravelEntries.map((entry) => (
-								<TravelCard key={entry._id} entry={entry} />
-							))}
+						<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+							{/* Hero card */}
+							<a href={`/recipes/${featuredHero.slug}`} className="group">
+								<div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-shadow hover:shadow-lg">
+									{featuredHero.coverImage && (
+										<div className="aspect-[3/2] overflow-hidden">
+											<OptimizedImage
+												image={featuredHero.coverImage}
+												alt={featuredHero.title}
+												width={800}
+												height={533}
+												className="h-full w-full object-cover transition-transform group-hover:scale-105"
+											/>
+										</div>
+									)}
+									<div className="p-5">
+										<h3 className="font-serif text-2xl font-semibold leading-tight group-hover:text-primary">
+											{featuredHero.title}
+										</h3>
+									</div>
+								</div>
+							</a>
+							{/* Side cards */}
+							{featuredRest.length > 0 && (
+								<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-1">
+									{featuredRest.slice(0, 2).map((recipe) => (
+										<a
+											key={recipe._id}
+											href={`/recipes/${recipe.slug}`}
+											className="group flex overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-shadow hover:shadow-lg"
+										>
+											{recipe.coverImage && (
+												<div className="aspect-square w-32 shrink-0 overflow-hidden sm:w-40">
+													<OptimizedImage
+														image={recipe.coverImage}
+														alt={recipe.title}
+														width={320}
+														height={320}
+														className="h-full w-full object-cover transition-transform group-hover:scale-105"
+													/>
+												</div>
+											)}
+											<div className="flex items-center p-4">
+												<h3 className="font-serif text-lg font-semibold leading-tight group-hover:text-primary">
+													{recipe.title}
+												</h3>
+											</div>
+										</a>
+									))}
+								</div>
+							)}
 						</div>
 					</div>
 				</section>
 			)}
 
 			{/* Instagram */}
-			<section className="bg-muted/50 py-16">
+			<section className="py-16">
 				<div className="mx-auto max-w-md px-4 sm:px-6 lg:px-8">
 					<h2 className="mb-6 text-center font-serif text-3xl font-bold">Instagram</h2>
 					<InstagramFeed />
@@ -182,11 +172,11 @@ export default function HomePage() {
 			</section>
 
 			{/* About CTA */}
-			<section className="py-16">
+			<section className="bg-muted/50 py-16">
 				<div className="mx-auto max-w-2xl px-4 text-center sm:px-6 lg:px-8">
 					<h2 className="font-serif text-3xl font-bold">Spoznaj me</h2>
 					<p className="mt-3 text-lg text-muted-foreground">
-						Za kuharskimi recepti, potovanji in idejami stojim jaz — Eva. Preberi mojo
+						Za kuharskimi recepti in idejami stojim jaz — Eva. Preberi mojo
 						zgodbo in se poveži z mano.
 					</p>
 					<div className="mt-6">

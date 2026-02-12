@@ -48,7 +48,7 @@ export function ProfileSidebar() {
 				<p className="mt-2 text-sm leading-relaxed text-muted-foreground">
 					Od kuharskih delavnic do raziskovanja veganskih kotičkov po svetu — hrana
 					je moja največja strast in združuje vse moje interese. Če potrebuješ
-					inspiracijo za naslednji obrok, pobrskaj po blogu. Vsebina lahko naredi
+					inspiracijo za naslednji obrok, pobrskaj po receptih. Vsebina lahko naredi
 					lušte 😉
 				</p>
 
