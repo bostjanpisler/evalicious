@@ -49,8 +49,8 @@ export function CourseStepper({
 				</div>
 			)}
 
-			{/* Stepper: circles connected by lines */}
-			<nav className="flex items-center">
+			{/* Stepper: circles connected by lines — scrollable on mobile */}
+			<nav className="flex items-center overflow-x-auto pb-1 scrollbar-none">
 				{steps.map((step, index) => {
 					const isCompleted = progress[step._id] === true;
 					const isActive = currentStepSlug === step.slug;
@@ -61,15 +61,15 @@ export function CourseStepper({
 							key={step._id}
 							className={cn(
 								"flex items-center",
-								!isLast && "flex-1",
+								!isLast && "flex-1 min-w-0",
 							)}
 						>
-							{/* Circle */}
+							{/* Circle — smaller on mobile */}
 							<a
 								href={`/dashboard/my-courses/${courseSlug}/${step.slug}`}
 								title={step.title}
 								className={cn(
-									"relative flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-xs font-medium transition-all",
+									"relative flex h-6 w-6 sm:h-8 sm:w-8 flex-shrink-0 items-center justify-center rounded-full text-[10px] sm:text-xs font-medium transition-all",
 									isActive &&
 										"bg-amber-500 text-white ring-2 ring-amber-200 ring-offset-2",
 									isCompleted &&
@@ -83,7 +83,7 @@ export function CourseStepper({
 								{isCompleted && !isActive ? (
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
-										className="h-4 w-4"
+										className="h-3 w-3 sm:h-4 sm:w-4"
 										viewBox="0 0 20 20"
 										fill="currentColor"
 									>
@@ -100,7 +100,7 @@ export function CourseStepper({
 
 							{/* Connecting line */}
 							{!isLast && (
-								<div className="mx-1 h-0.5 flex-1 rounded-full">
+								<div className="mx-0.5 sm:mx-1 h-0.5 flex-1 min-w-2 rounded-full">
 									<div
 										className={cn(
 											"h-full rounded-full",

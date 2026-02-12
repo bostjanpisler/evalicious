@@ -1,6 +1,13 @@
 "use client";
 
-import { Menu } from "lucide-react";
+import {
+	Menu,
+	Heart,
+	BookOpen,
+	ShoppingBag,
+	Settings,
+	LogOut,
+} from "lucide-react";
 import { NAV_ITEMS, SITE_NAME } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,8 +17,15 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from "@/components/ui/sheet";
+import { usePageContext } from "vike-react/usePageContext";
 
 export function MobileNav() {
+	const pageContext = usePageContext();
+	const user = (pageContext as Record<string, unknown>).user as {
+		name: string;
+		email: string;
+	} | null;
+
 	return (
 		<Sheet>
 			<SheetTrigger asChild>
@@ -34,6 +48,65 @@ export function MobileNav() {
 						</a>
 					))}
 				</nav>
+
+				<div className="mt-8 border-t border-border pt-6">
+					{user ? (
+						<div className="flex flex-col gap-1">
+							<div className="mb-3 px-1">
+								<p className="text-sm font-medium">{user.name}</p>
+								<p className="text-xs text-muted-foreground">{user.email}</p>
+							</div>
+							<a
+								href="/dashboard/my-recipes"
+								className="flex items-center gap-3 rounded-md px-1 py-2 text-sm font-medium text-foreground transition-colors hover:text-primary"
+							>
+								<Heart className="h-4 w-4" />
+								Moji recepti
+							</a>
+							<a
+								href="/dashboard/my-courses"
+								className="flex items-center gap-3 rounded-md px-1 py-2 text-sm font-medium text-foreground transition-colors hover:text-primary"
+							>
+								<BookOpen className="h-4 w-4" />
+								Moji tečaji
+							</a>
+							<a
+								href="/dashboard/my-orders"
+								className="flex items-center gap-3 rounded-md px-1 py-2 text-sm font-medium text-foreground transition-colors hover:text-primary"
+							>
+								<ShoppingBag className="h-4 w-4" />
+								Moja naročila
+							</a>
+							<a
+								href="/dashboard/settings"
+								className="flex items-center gap-3 rounded-md px-1 py-2 text-sm font-medium text-foreground transition-colors hover:text-primary"
+							>
+								<Settings className="h-4 w-4" />
+								Nastavitve
+							</a>
+							<button
+								type="button"
+								className="mt-2 flex items-center gap-3 rounded-md px-1 py-2 text-sm font-medium text-destructive transition-colors hover:text-destructive/80"
+								onClick={async () => {
+									await fetch("/api/auth/sign-out", { method: "POST" });
+									window.location.href = "/";
+								}}
+							>
+								<LogOut className="h-4 w-4" />
+								Odjava
+							</button>
+						</div>
+					) : (
+						<div className="flex flex-col gap-3">
+							<Button asChild>
+								<a href="/login">Prijava</a>
+							</Button>
+							<Button variant="outline" asChild>
+								<a href="/register">Registracija</a>
+							</Button>
+						</div>
+					)}
+				</div>
 			</SheetContent>
 		</Sheet>
 	);

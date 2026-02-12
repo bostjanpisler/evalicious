@@ -34,7 +34,7 @@ export default function HomePage() {
 					<p className="mt-4 text-xl text-muted-foreground">
 						{data.heroSubtitle ?? "Recepti, življenjski slog, potovanja in več."}
 					</p>
-					<div className="mt-8 flex justify-center gap-4">
+					<div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center sm:gap-4">
 						<Button size="lg" asChild>
 							<a href="/recipes">Razišči recepte</a>
 						</Button>

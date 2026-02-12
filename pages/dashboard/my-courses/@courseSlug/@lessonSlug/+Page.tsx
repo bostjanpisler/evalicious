@@ -10,6 +10,47 @@ import { NextStepLink } from "@/components/courses/NextStepLink";
 import { formatDuration } from "@/lib/utils";
 import type { Data } from "./+data.server";
 
+type StepRecipe = NonNullable<Data["step"]["recipe"]>;
+
+function RecipeContent({ recipe }: { recipe: StepRecipe }) {
+	return (
+		<>
+			<div className="mt-3 flex flex-wrap gap-4 text-sm text-muted-foreground">
+				{recipe.prepTime != null && recipe.prepTime > 0 && (
+					<span>Priprava: {formatDuration(recipe.prepTime)}</span>
+				)}
+				{recipe.cookTime != null && recipe.cookTime > 0 && (
+					<span>Kuhanje: {formatDuration(recipe.cookTime)}</span>
+				)}
+				{recipe.servings != null && (
+					<span>
+						{recipe.servings}{" "}
+						{recipe.servings === 1 ? "porcija" : "porcij"}
+					</span>
+				)}
+			</div>
+
+			{recipe.ingredientGroups && recipe.ingredientGroups.length > 0 && (
+				<>
+					<h4 className="mt-6 mb-3 font-serif text-lg font-semibold">
+						Sestavine
+					</h4>
+					<IngredientChecklist groups={recipe.ingredientGroups} />
+				</>
+			)}
+
+			{recipe.stepGroups && recipe.stepGroups.length > 0 && (
+				<>
+					<h4 className="mt-6 mb-3 font-serif text-lg font-semibold">
+						Navodila
+					</h4>
+					<StepChecklist groups={recipe.stepGroups} />
+				</>
+			)}
+		</>
+	);
+}
+
 export default function LessonViewPage() {
 	const { courseTitle, courseSlug, step, steps, progress, prevStep, nextStep } =
 		useData<Data>();
@@ -66,62 +107,28 @@ export default function LessonViewPage() {
 						)}
 					</div>
 
-					{/* Right column — recipe (sticky so it stays visible while scrolling) */}
+					{/* Right column — recipe (collapsible on mobile, sticky on desktop) */}
 					{step.recipe && (
 						<div className="mt-8 lg:mt-0 lg:w-96 lg:flex-shrink-0">
-							<div className="lg:sticky lg:top-4 rounded-xl border border-border bg-card p-6">
+							{/* Mobile: collapsible */}
+							<details className="rounded-xl border border-border bg-card lg:hidden">
+								<summary className="cursor-pointer p-6 font-serif text-xl font-bold">
+									{step.recipe.title}
+									<span className="ml-2 text-sm font-normal text-muted-foreground">
+										(recept)
+									</span>
+								</summary>
+								<div className="px-6 pb-6">
+									<RecipeContent recipe={step.recipe} />
+								</div>
+							</details>
+
+							{/* Desktop: always visible + sticky */}
+							<div className="hidden lg:block lg:sticky lg:top-4 rounded-xl border border-border bg-card p-6">
 								<h3 className="font-serif text-xl font-bold">
 									{step.recipe.title}
 								</h3>
-
-								<div className="mt-3 flex flex-wrap gap-4 text-sm text-muted-foreground">
-									{step.recipe.prepTime != null &&
-										step.recipe.prepTime > 0 && (
-											<span>
-												Priprava:{" "}
-												{formatDuration(step.recipe.prepTime)}
-											</span>
-										)}
-									{step.recipe.cookTime != null &&
-										step.recipe.cookTime > 0 && (
-											<span>
-												Kuhanje:{" "}
-												{formatDuration(step.recipe.cookTime)}
-											</span>
-										)}
-									{step.recipe.servings != null && (
-										<span>
-											{step.recipe.servings}{" "}
-											{step.recipe.servings === 1
-												? "porcija"
-												: "porcij"}
-										</span>
-									)}
-								</div>
-
-								{step.recipe.ingredientGroups &&
-									step.recipe.ingredientGroups.length > 0 && (
-										<>
-											<h4 className="mt-6 mb-3 font-serif text-lg font-semibold">
-												Sestavine
-											</h4>
-											<IngredientChecklist
-												groups={step.recipe.ingredientGroups}
-											/>
-										</>
-									)}
-
-								{step.recipe.stepGroups &&
-									step.recipe.stepGroups.length > 0 && (
-										<>
-											<h4 className="mt-6 mb-3 font-serif text-lg font-semibold">
-												Navodila
-											</h4>
-											<StepChecklist
-												groups={step.recipe.stepGroups}
-											/>
-										</>
-									)}
+								<RecipeContent recipe={step.recipe} />
 							</div>
 						</div>
 					)}
@@ -130,7 +137,7 @@ export default function LessonViewPage() {
 			</div>
 
 			{/* Sticky bottom navigation bar */}
-			<div className="fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white/95 backdrop-blur-sm">
+			<div className="fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white/95 backdrop-blur-sm pb-[env(safe-area-inset-bottom)]">
 				<div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
 					{prevStep ? (
 						<a
@@ -212,7 +219,7 @@ export default function LessonViewPage() {
 			</div>
 
 			{/* Bottom padding so content isn't hidden behind sticky bar */}
-			<div className="h-16" />
+			<div className="h-20" />
 		</div>
 	);
 }

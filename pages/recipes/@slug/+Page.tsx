@@ -144,7 +144,7 @@ export default function RecipePage() {
 						{recipe.nutritionInfo && (
 							<>
 								<Separator className="my-6" />
-								<div className="grid grid-cols-4 gap-4 rounded-lg bg-muted p-4 text-center">
+								<div className="grid grid-cols-2 gap-4 rounded-lg bg-muted p-4 text-center sm:grid-cols-4">
 									{recipe.nutritionInfo.calories != null && (
 										<div>
 											<p className="text-2xl font-bold">{recipe.nutritionInfo.calories}</p>

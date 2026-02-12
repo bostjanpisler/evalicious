@@ -15,6 +15,7 @@ export default function CourseDetailPage() {
 	const stepCount = course.steps?.length ?? 0;
 
 	return (
+		<>
 		<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 			<Breadcrumbs
 				segments={[
@@ -267,5 +268,16 @@ export default function CourseDetailPage() {
 				</div>
 			</div>
 		</div>
+
+			{/* Mobile fixed buy bar */}
+			<div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:hidden">
+				<button
+					type="button"
+					className="w-full rounded-xl bg-amber-600 px-6 py-3 text-base font-semibold text-white hover:bg-amber-700 transition-colors"
+				>
+					Kupi tečaj
+				</button>
+			</div>
+		</>
 	);
 }

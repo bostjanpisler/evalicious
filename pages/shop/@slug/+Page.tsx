@@ -23,6 +23,7 @@ export default function ProductPage() {
 	const product = useData<Data>();
 
 	return (
+		<>
 		<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 			<Breadcrumbs
 				segments={[{ label: "Trgovina", href: "/shop" }, { label: product.title }]}
@@ -155,5 +156,20 @@ export default function ProductPage() {
 				</div>
 			</div>
 		</div>
+
+			{/* Mobile fixed buy bar */}
+			{!product.owned && (
+				<div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:hidden">
+					<div className="mx-auto flex max-w-7xl items-center gap-3">
+						<PriceDisplay
+							priceInCents={product.priceInCents}
+							currency={product.currency}
+							className="text-xl font-bold text-primary"
+						/>
+						<BuyButton productSlug={product.slug} className="flex-1" />
+					</div>
+				</div>
+			)}
+		</>
 	);
 }
