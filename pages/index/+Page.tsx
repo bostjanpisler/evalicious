@@ -171,8 +171,58 @@ export default function HomePage() {
 				</div>
 			</section>
 
-			{/* About CTA */}
+			{/* Services */}
 			<section className="bg-muted/50 py-16">
+				<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+					<h2 className="mb-3 text-center font-serif text-3xl font-bold">
+						Storitve
+					</h2>
+					<p className="mx-auto mb-10 max-w-xl text-center text-muted-foreground">
+						Sodelujem z blagovnimi znamkami, ki delijo mojo strast do zdrave in
+						okusne hrane.
+					</p>
+					<div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+						<div className="rounded-xl border border-border bg-card p-6 text-center shadow-sm">
+							<span className="text-3xl">📸</span>
+							<h3 className="mt-3 font-serif text-lg font-semibold">
+								Sponzorirane vsebine
+							</h3>
+							<p className="mt-2 text-sm text-muted-foreground">
+								Recepti z vašim izdelkom na blogu, Instagram objavah in TikTok
+								videih.
+							</p>
+						</div>
+						<div className="rounded-xl border border-border bg-card p-6 text-center shadow-sm">
+							<span className="text-3xl">🎬</span>
+							<h3 className="mt-3 font-serif text-lg font-semibold">
+								UGC vsebine
+							</h3>
+							<p className="mt-2 text-sm text-muted-foreground">
+								Originalne vsebine za vaše kanale — unboxing, pričevanja,
+								izobraževalni videi.
+							</p>
+						</div>
+						<div className="rounded-xl border border-border bg-card p-6 text-center shadow-sm">
+							<span className="text-3xl">🍽️</span>
+							<h3 className="mt-3 font-serif text-lg font-semibold">
+								Razvoj receptov & fotografija
+							</h3>
+							<p className="mt-2 text-sm text-muted-foreground">
+								Razvoj novih receptov in profesionalna food fotografija za
+								splet, tisk ali embalaže.
+							</p>
+						</div>
+					</div>
+					<div className="mt-10 text-center">
+						<Button size="lg" asChild>
+							<a href="mailto:evasusin97@gmail.com">Pošlji povpraševanje</a>
+						</Button>
+					</div>
+				</div>
+			</section>
+
+			{/* About CTA */}
+			<section className="py-16">
 				<div className="mx-auto max-w-2xl px-4 text-center sm:px-6 lg:px-8">
 					<h2 className="font-serif text-3xl font-bold">Spoznaj me</h2>
 					<p className="mt-3 text-lg text-muted-foreground">
