@@ -3,7 +3,7 @@ builder = "dockerfile"
 dockerfilePath = "Dockerfile"
 
 [deploy]
-startCommand = "bun server/index.ts"
+startCommand = "bun server/prod.ts"
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10
 
