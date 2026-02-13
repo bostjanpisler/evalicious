@@ -1,36 +1,73 @@
 "use client";
 
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun, Sunset } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 
-function getInitialTheme(): "light" | "dark" {
-	if (typeof document === "undefined") return "light";
-	return document.documentElement.classList.contains("dark") ? "dark" : "light";
+type Theme = "light" | "dark" | "system";
+
+function getSystemTheme(): "light" | "dark" {
+	if (typeof window === "undefined") return "light";
+	return window.matchMedia("(prefers-color-scheme: dark)").matches
+		? "dark"
+		: "light";
 }
 
+function getInitialTheme(): Theme {
+	if (typeof document === "undefined") return "system";
+	const cookie = document.cookie
+		.split("; ")
+		.find((c) => c.startsWith("theme="));
+	if (cookie) {
+		const value = cookie.split("=")[1];
+		if (value === "light" || value === "dark" || value === "system")
+			return value;
+	}
+	return "system";
+}
+
+function applyTheme(theme: Theme) {
+	const resolved = theme === "system" ? getSystemTheme() : theme;
+	const root = document.documentElement;
+	if (resolved === "dark") {
+		root.classList.add("dark");
+	} else {
+		root.classList.remove("dark");
+	}
+}
+
+const NEXT_THEME: Record<Theme, Theme> = {
+	system: "light",
+	light: "dark",
+	dark: "system",
+};
+
 export function ThemeToggle() {
-	const [theme, setTheme] = useState<"light" | "dark">(getInitialTheme);
+	const [theme, setTheme] = useState<Theme>(getInitialTheme);
 
 	useEffect(() => {
-		const root = document.documentElement;
-		if (theme === "dark") {
-			root.classList.add("dark");
-		} else {
-			root.classList.remove("dark");
-		}
+		applyTheme(theme);
 		document.cookie = `theme=${theme};path=/;max-age=31536000`;
+	}, [theme]);
+
+	useEffect(() => {
+		if (theme !== "system") return;
+		const mq = window.matchMedia("(prefers-color-scheme: dark)");
+		const handler = () => applyTheme("system");
+		mq.addEventListener("change", handler);
+		return () => mq.removeEventListener("change", handler);
 	}, [theme]);
 
 	return (
 		<Button
 			variant="ghost"
 			size="icon"
-			onClick={() => setTheme((t) => (t === "light" ? "dark" : "light"))}
+			onClick={() => setTheme((t) => NEXT_THEME[t])}
 			aria-label="Preklopi temo"
 		>
-			<Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-			<Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+			{theme === "light" && <Sun className="h-5 w-5" />}
+			{theme === "dark" && <Moon className="h-5 w-5" />}
+			{theme === "system" && <Sunset className="h-5 w-5" />}
 		</Button>
 	);
 }
