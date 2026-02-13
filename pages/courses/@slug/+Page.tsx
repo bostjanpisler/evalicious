@@ -1,4 +1,5 @@
 import { useData } from "vike-react/useData";
+import { useConfig } from "vike-react/useConfig";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
 import { formatDuration } from "@/lib/utils";
@@ -7,6 +8,11 @@ import type { Data } from "./+data";
 
 export default function CourseDetailPage() {
 	const course = useData<Data>();
+	const config = useConfig();
+	config({
+		title: `${course.title} | Eva-Licious`,
+		description: course.description,
+	});
 
 	const totalDuration = course.steps?.reduce(
 		(sum, step) => sum + (step.durationMinutes ?? 0),

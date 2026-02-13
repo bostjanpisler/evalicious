@@ -1,4 +1,5 @@
 import { useData } from "vike-react/useData";
+import { useConfig } from "vike-react/useConfig";
 import { Clock, Users, ChefHat, Flame } from "lucide-react";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
@@ -16,11 +17,20 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { formatDuration } from "@/lib/utils";
+import { urlFor } from "@/lib/sanity.image";
 import { RECIPE_CATEGORY_LABELS, RECIPE_DIFFICULTY_LABELS } from "@/lib/constants";
 import type { Data } from "./+data";
 
 export default function RecipePage() {
 	const recipe = useData<Data>();
+	const config = useConfig();
+	config({
+		title: `${recipe.title} | Eva-Licious`,
+		description: recipe.description ?? `Recept: ${recipe.title}`,
+		image: recipe.coverImage
+			? urlFor(recipe.coverImage).width(1200).height(630).auto("format").url()
+			: undefined,
+	});
 	const totalTime = (recipe.prepTime ?? 0) + (recipe.cookTime ?? 0);
 
 	// Build combined TOC headings

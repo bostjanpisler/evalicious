@@ -1,4 +1,5 @@
 import { useData } from "vike-react/useData";
+import { useConfig } from "vike-react/useConfig";
 import { MapPin, Calendar } from "lucide-react";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
@@ -10,10 +11,19 @@ import {
 import { ProfileSidebar } from "@/components/shared/ProfileSidebar";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
+import { urlFor } from "@/lib/sanity.image";
 import type { Data } from "./+data";
 
 export default function TravelEntryPage() {
 	const entry = useData<Data>();
+	const config = useConfig();
+	config({
+		title: `${entry.title} | Eva-Licious`,
+		description: entry.description,
+		image: entry.coverImage
+			? urlFor(entry.coverImage).width(1200).height(630).auto("format").url()
+			: undefined,
+	});
 	const headings = entry.content ? extractHeadings(entry.content) : [];
 	const locationLabel = [entry.location, entry.country].filter(Boolean).join(", ");
 

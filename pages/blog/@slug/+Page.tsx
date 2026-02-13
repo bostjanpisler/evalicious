@@ -1,4 +1,5 @@
 import { useData } from "vike-react/useData";
+import { useConfig } from "vike-react/useConfig";
 import { Clock, Tag } from "lucide-react";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
@@ -9,10 +10,19 @@ import {
 } from "@/components/blog/PortableTextRenderer";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
+import { urlFor } from "@/lib/sanity.image";
 import type { Data } from "./+data";
 
 export default function BlogPostPage() {
 	const post = useData<Data>();
+	const config = useConfig();
+	config({
+		title: `${post.title} | Eva-Licious`,
+		description: post.description,
+		image: post.coverImage
+			? urlFor(post.coverImage).width(1200).height(630).auto("format").url()
+			: undefined,
+	});
 	const headings = post.content ? extractHeadings(post.content) : [];
 
 	return (

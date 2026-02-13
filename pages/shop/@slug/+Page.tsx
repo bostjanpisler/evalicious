@@ -1,4 +1,5 @@
 import { useData } from "vike-react/useData";
+import { useConfig } from "vike-react/useConfig";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
 import { PriceDisplay } from "@/components/shop/PriceDisplay";
@@ -10,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { formatDuration } from "@/lib/utils";
+import { urlFor } from "@/lib/sanity.image";
 import type { Data } from "./+data.server";
 import { BookOpen, CheckCircle, Download, Play, Clock, ListChecks } from "lucide-react";
 
@@ -21,6 +23,14 @@ const typeLabels: Record<string, string> = {
 
 export default function ProductPage() {
 	const product = useData<Data>();
+	const config = useConfig();
+	config({
+		title: `${product.title} | Eva-Licious`,
+		description: product.description,
+		image: product.coverImage
+			? urlFor(product.coverImage).width(1200).height(630).auto("format").url()
+			: undefined,
+	});
 
 	return (
 		<>
