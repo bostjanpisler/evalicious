@@ -22,5 +22,5 @@ COPY --from=build /app/package.json ./
 COPY --from=build /app/tsconfig.json ./
 COPY --from=build /app/node_modules/.prisma ./node_modules/.prisma
 ENV NODE_ENV=production
-EXPOSE 3000
+EXPOSE 8080
 CMD ["bun", "server/prod.ts"]
