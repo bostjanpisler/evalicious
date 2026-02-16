@@ -1,6 +1,6 @@
 import { useData } from "vike-react/useData";
 import { useConfig } from "vike-react/useConfig";
-import { Clock, Users, ChefHat, Flame } from "lucide-react";
+import { Clock, Users, ChefHat, Flame, WheatOff, CandyOff, Droplets, Bean, NutOff } from "lucide-react";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
 import { ProfileSidebar } from "@/components/shared/ProfileSidebar";
@@ -25,7 +25,7 @@ export default function RecipePage() {
 	const recipe = useData<Data>();
 	const config = useConfig();
 	config({
-		title: `${recipe.title} | Eva-Licious`,
+		title: `${recipe.title} | Eva-licious`,
 		description: recipe.description ?? `Recept: ${recipe.title}`,
 		image: recipe.coverImage
 			? urlFor(recipe.coverImage).width(1200).height(630).auto("format").url()
@@ -73,6 +73,16 @@ export default function RecipePage() {
 					<div className="mt-4 flex items-center gap-2">
 						<SaveRecipeButton recipeId={recipe._id} />
 						<AddToListDialog contentType="recipe" contentId={recipe._id} />
+						<a
+							href="#recept"
+							className="inline-flex items-center gap-1.5 rounded-md border border-input bg-background px-3 py-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground"
+							onClick={(e) => {
+								e.preventDefault();
+								document.getElementById("recept")?.scrollIntoView({ behavior: "smooth" });
+							}}
+						>
+							Skoči na recept
+						</a>
 					</div>
 
 					{/* Story content */}
@@ -95,7 +105,7 @@ export default function RecipePage() {
 							id="recept"
 							className="scroll-mt-24 font-serif text-2xl font-bold"
 						>
-							Recept
+							{recipe.title}
 						</h2>
 
 						<div className="mt-4 flex flex-wrap gap-6 text-sm text-muted-foreground">
@@ -130,6 +140,42 @@ export default function RecipePage() {
 								</span>
 							)}
 						</div>
+
+						{/* Allergen icons */}
+						{(recipe.glutenFree || recipe.sugarFree || recipe.oilFree || recipe.soyFree || recipe.nutFree) && (
+							<div className="mt-4 flex flex-wrap gap-2">
+								{recipe.glutenFree && (
+									<span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700 dark:bg-green-950 dark:text-green-300">
+										<WheatOff className="h-3.5 w-3.5" />
+										Brez glutena
+									</span>
+								)}
+								{recipe.sugarFree && (
+									<span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700 dark:bg-green-950 dark:text-green-300">
+										<CandyOff className="h-3.5 w-3.5" />
+										Brez rafiniranega sladkorja
+									</span>
+								)}
+								{recipe.oilFree && (
+									<span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700 dark:bg-green-950 dark:text-green-300">
+										<Droplets className="h-3.5 w-3.5" />
+										Brez rafiniranega olja
+									</span>
+								)}
+								{recipe.soyFree && (
+									<span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700 dark:bg-green-950 dark:text-green-300">
+										<Bean className="h-3.5 w-3.5" />
+										Brez soje
+									</span>
+								)}
+								{recipe.nutFree && (
+									<span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700 dark:bg-green-950 dark:text-green-300">
+										<NutOff className="h-3.5 w-3.5" />
+										Brez oreškov
+									</span>
+								)}
+							</div>
+						)}
 
 						{/* Tags */}
 						<div className="mt-4 flex flex-wrap items-start gap-2">

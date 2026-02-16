@@ -40,6 +40,11 @@ export interface RecipeListing {
 	prepTime?: number;
 	cookTime?: number;
 	tags?: string[];
+	glutenFree?: boolean;
+	sugarFree?: boolean;
+	oilFree?: boolean;
+	soyFree?: boolean;
+	nutFree?: boolean;
 	publishedAt?: string;
 }
 

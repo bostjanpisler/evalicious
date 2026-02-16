@@ -1,4 +1,4 @@
-import { Clock, ChefHat } from "lucide-react";
+import { Clock, ChefHat, WheatOff, CandyOff, Droplets, Bean, NutOff } from "lucide-react";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -6,12 +6,23 @@ import { formatDuration } from "@/lib/utils";
 import { RECIPE_CATEGORY_LABELS, RECIPE_DIFFICULTY_LABELS } from "@/lib/constants";
 import type { RecipeListing } from "@/types/recipe";
 
+const ALLERGEN_ICONS = [
+	{ key: "glutenFree", label: "Brez glutena", Icon: WheatOff },
+	{ key: "sugarFree", label: "Brez rafiniranega sladkorja", Icon: CandyOff },
+	{ key: "oilFree", label: "Brez rafiniranega olja", Icon: Droplets },
+	{ key: "soyFree", label: "Brez soje", Icon: Bean },
+	{ key: "nutFree", label: "Brez oreškov", Icon: NutOff },
+] as const;
+
 interface RecipeCardProps {
 	recipe: RecipeListing;
 }
 
 export function RecipeCard({ recipe }: RecipeCardProps) {
 	const totalTime = (recipe.prepTime ?? 0) + (recipe.cookTime ?? 0);
+	const activeAllergens = ALLERGEN_ICONS.filter(
+		(a) => recipe[a.key as keyof RecipeListing],
+	);
 
 	return (
 		<a href={`/recipes/${recipe.slug}`}>
@@ -28,6 +39,20 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
 					</div>
 				)}
 				<CardContent className="p-4">
+					{activeAllergens.length > 0 && (
+						<div className="mb-2 flex flex-wrap gap-1.5">
+							{activeAllergens.map(({ key, label, Icon }) => (
+								<span
+									key={key}
+									title={label}
+									className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-950 dark:text-green-300"
+								>
+									<Icon className="h-3 w-3" />
+									{label}
+								</span>
+							))}
+						</div>
+					)}
 					<div className="mb-2 flex flex-wrap gap-1.5">
 						{recipe.category && (
 							<Badge variant="secondary" className="text-xs">

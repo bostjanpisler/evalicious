@@ -12,6 +12,11 @@ export const recentRecipesQuery = `
     prepTime,
     cookTime,
     tags,
+    glutenFree,
+    sugarFree,
+    oilFree,
+    soyFree,
+    nutFree,
     publishedAt
   }
 `;
@@ -28,6 +33,11 @@ export const allRecipesQuery = `
     prepTime,
     cookTime,
     tags,
+    glutenFree,
+    sugarFree,
+    oilFree,
+    soyFree,
+    nutFree,
     publishedAt
   }
 `;
@@ -46,6 +56,11 @@ export const recipeBySlugQuery = `
     cookTime,
     servings,
     tags,
+    glutenFree,
+    sugarFree,
+    oilFree,
+    soyFree,
+    nutFree,
     ingredientGroups[] {
       groupName,
       items[] {
@@ -87,7 +102,12 @@ export const recipeBySlugQuery = `
       difficulty,
       prepTime,
       cookTime,
-      tags
+      tags,
+      glutenFree,
+      sugarFree,
+      oilFree,
+      soyFree,
+      nutFree
     }
   }
 `;
