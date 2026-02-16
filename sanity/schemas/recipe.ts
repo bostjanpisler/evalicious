@@ -59,9 +59,9 @@ export const recipe = defineType({
       type: "string",
       options: {
         list: [
-          { title: "Easy", value: "easy" },
-          { title: "Medium", value: "medium" },
-          { title: "Hard", value: "hard" },
+          { title: "🟢 Čist simple", value: "easy" },
+          { title: "🟡 Klasika", value: "medium" },
+          { title: "🔴 Boss level", value: "hard" },
         ],
       },
     }),

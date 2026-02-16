@@ -34,7 +34,7 @@ export const RECIPE_CATEGORY_LABELS: Record<string, string> = {
 export const RECIPE_DIFFICULTIES = ["easy", "medium", "hard"] as const;
 
 export const RECIPE_DIFFICULTY_LABELS: Record<string, string> = {
-	easy: "Enostavno",
-	medium: "Srednje",
-	hard: "Zahtevno",
+	easy: "🟢 Čist simple",
+	medium: "🟡 Klasika",
+	hard: "🔴 Boss level",
 };
