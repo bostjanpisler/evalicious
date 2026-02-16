@@ -25,7 +25,7 @@ export default function ProductPage() {
 	const product = useData<Data>();
 	const config = useConfig();
 	config({
-		title: `${product.title} | Eva-Licious`,
+		title: `${product.title} | Eva-licious`,
 		description: product.description,
 		image: product.coverImage
 			? urlFor(product.coverImage).width(1200).height(630).auto("format").url()

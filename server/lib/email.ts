@@ -32,10 +32,10 @@ export async function sendWelcomeEmail(to: string, name: string) {
 	await getResend().emails.send({
 		from: EMAIL_FROM,
 		to,
-		subject: "Welcome to Eva-Licious!",
+		subject: "Welcome to Eva-licious!",
 		html: `
       <h1>Welcome, ${name}!</h1>
-      <p>Thanks for joining Eva-Licious. Explore recipes, save your favorites, and more!</p>
+      <p>Thanks for joining Eva-licious. Explore recipes, save your favorites, and more!</p>
     `,
 	});
 }

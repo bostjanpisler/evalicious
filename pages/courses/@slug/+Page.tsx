@@ -10,7 +10,7 @@ export default function CourseDetailPage() {
 	const course = useData<Data>();
 	const config = useConfig();
 	config({
-		title: `${course.title} | Eva-Licious`,
+		title: `${course.title} | Eva-licious`,
 		description: course.description,
 	});
 

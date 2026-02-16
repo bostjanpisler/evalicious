@@ -17,7 +17,7 @@ export default function BlogPostPage() {
 	const post = useData<Data>();
 	const config = useConfig();
 	config({
-		title: `${post.title} | Eva-Licious`,
+		title: `${post.title} | Eva-licious`,
 		description: post.description,
 		image: post.coverImage
 			? urlFor(post.coverImage).width(1200).height(630).auto("format").url()

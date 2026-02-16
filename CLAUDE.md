@@ -1,4 +1,4 @@
-# Eva-Licious.com
+# Eva-licious.com
 
 Recipe/lifestyle website built with Hono + Vike + React 19 on Bun.
 

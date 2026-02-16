@@ -52,7 +52,7 @@ async function generateTestPdf(): Promise<Uint8Array> {
 		font: boldFont,
 		color: rgb(0.8, 0.5, 0.1),
 	});
-	titlePage.drawText("Eva-Licious.com", {
+	titlePage.drawText("Eva-licious.com", {
 		x: 100,
 		y: 460,
 		size: 16,

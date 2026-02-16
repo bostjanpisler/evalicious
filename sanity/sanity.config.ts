@@ -13,7 +13,7 @@ import { youtube } from "./schemas/youtube";
 
 export default defineConfig({
 	name: "eva-licious",
-	title: "Eva-Licious Studio",
+	title: "Eva-licious Studio",
 	projectId: "o1l09q7i",
 	dataset: process.env.SANITY_DATASET ?? "production",
 	plugins: [

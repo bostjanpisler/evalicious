@@ -5,7 +5,8 @@ export default {
 	extends: vikeReact,
 	passToClient: ["user", "routeParams"],
 	lang: "sl",
-	title: "Eva-Licious",
-	description: "Okusni recepti iz Evine kuhinje.",
+	title: "Eva-licious",
+	description:
+		"Okusne jedi na rastlinski osnovi, knjižice z recepti, kuharski tečaji in delavnice ter raziskovanje sveta z Evo.",
 	favicon: "/favicon.svg",
 } satisfies Config;

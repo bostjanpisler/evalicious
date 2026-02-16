@@ -1,3 +1,3 @@
 export default {
-	title: "Moji recepti | Eva-Licious",
+	title: "Moji recepti | Eva-licious",
 };

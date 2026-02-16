@@ -10,11 +10,11 @@ import {
 import type { Data } from "./+data";
 
 const CATEGORY_ICONS: Record<string, string> = {
-	breakfast: "🍳",
-	lunch: "🥗",
-	dinner: "🍝",
-	dessert: "🍰",
+	breakfast: "🥣",
+	main: "🍽️",
+	sides: "🥗",
 	snack: "🥨",
+	dessert: "🍰",
 	drink: "🥤",
 };
 
@@ -40,10 +40,10 @@ export default function HomePage() {
 				)}
 				<div className="relative z-10 mx-auto max-w-3xl px-4 text-center">
 					<h1 className="font-serif text-5xl font-bold tracking-tight sm:text-6xl">
-						{data.heroTitle ?? "Eva-Licious"}
+						{data.heroTitle ?? "Eva-licious"}
 					</h1>
 					<p className="mt-4 text-xl text-muted-foreground">
-						{data.heroSubtitle ?? "Okusni recepti iz Evine kuhinje."}
+						{data.heroSubtitle ?? "Okusne jedi na rastlinski osnovi, knjižice z recepti, kuharski tečaji in delavnice ter raziskovanje sveta z Evo."}
 					</p>
 					<div className="mt-8">
 						<Button size="lg" asChild>

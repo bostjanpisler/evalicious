@@ -12,8 +12,8 @@ export async function data(): Promise<Data> {
 	]);
 	return {
 		...(page ?? {
-			heroTitle: "Eva-Licious",
-			heroSubtitle: "Okusni recepti iz Evine kuhinje.",
+			heroTitle: "Eva-licious",
+			heroSubtitle: "Okusne jedi na rastlinski osnovi, knjižice z recepti, kuharski tečaji in delavnice ter raziskovanje sveta z Evo.",
 		}),
 		recentRecipes: recentRecipes ?? [],
 	};

@@ -8,7 +8,8 @@ export function Footer() {
 					<div>
 						<span className="font-serif text-xl font-bold text-primary">{SITE_NAME}</span>
 						<p className="mt-2 text-sm text-muted-foreground">
-							Okusni recepti iz Evine kuhinje.
+							Okusne jedi na rastlinski osnovi, knjižice z recepti,
+						kuharski tečaji in delavnice ter raziskovanje sveta z Evo.
 						</p>
 					</div>
 					<div>

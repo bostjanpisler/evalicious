@@ -1,5 +1,6 @@
-export const SITE_NAME = "Eva-Licious";
-export const SITE_DESCRIPTION = "Okusni recepti iz Evine kuhinje.";
+export const SITE_NAME = "Eva-licious";
+export const SITE_DESCRIPTION =
+	"Okusne jedi na rastlinski osnovi, knjižice z recepti, kuharski tečaji in delavnice ter raziskovanje sveta z Evo.";
 export const SITE_URL =
 	typeof window === "undefined"
 		? (process.env.BETTER_AUTH_URL ?? "http://localhost:3100")
@@ -14,20 +15,20 @@ export const NAV_ITEMS = [
 
 export const RECIPE_CATEGORIES = [
 	"breakfast",
-	"lunch",
-	"dinner",
-	"dessert",
+	"main",
+	"sides",
 	"snack",
+	"dessert",
 	"drink",
 ] as const;
 
 export const RECIPE_CATEGORY_LABELS: Record<string, string> = {
-	breakfast: "Zajtrk",
-	lunch: "Kosilo",
-	dinner: "Večerja",
-	dessert: "Sladica",
-	snack: "Prigrizek",
-	drink: "Napitek",
+	breakfast: "Zajtrki",
+	main: "Glavne jedi",
+	sides: "Priloge in solate",
+	snack: "Prigrizki",
+	dessert: "Sladice",
+	drink: "Napitki",
 };
 
 export const RECIPE_DIFFICULTIES = ["easy", "medium", "hard"] as const;

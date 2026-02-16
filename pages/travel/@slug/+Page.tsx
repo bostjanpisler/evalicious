@@ -18,7 +18,7 @@ export default function TravelEntryPage() {
 	const entry = useData<Data>();
 	const config = useConfig();
 	config({
-		title: `${entry.title} | Eva-Licious`,
+		title: `${entry.title} | Eva-licious`,
 		description: entry.description,
 		image: entry.coverImage
 			? urlFor(entry.coverImage).width(1200).height(630).auto("format").url()

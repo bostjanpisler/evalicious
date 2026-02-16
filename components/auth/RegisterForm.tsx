@@ -43,7 +43,7 @@ export function RegisterForm() {
 		<Card className="mx-auto w-full max-w-md">
 			<CardHeader className="text-center">
 				<CardTitle className="font-serif text-2xl">Ustvari račun</CardTitle>
-				<CardDescription>Pridruži se Eva-Licious skupnosti</CardDescription>
+				<CardDescription>Pridruži se Eva-licious skupnosti</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<form onSubmit={handleSubmit} className="space-y-4">
