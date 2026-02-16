@@ -40,15 +40,14 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
 				)}
 				<CardContent className="p-4">
 					{activeAllergens.length > 0 && (
-						<div className="mb-2 flex flex-wrap gap-1.5">
+						<div className="mb-2 flex flex-wrap gap-1">
 							{activeAllergens.map(({ key, label, Icon }) => (
 								<span
 									key={key}
 									title={label}
-									className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-950 dark:text-green-300"
+									className="inline-flex items-center rounded-full bg-green-50 p-1 text-green-700 dark:bg-green-950 dark:text-green-300"
 								>
-									<Icon className="h-3 w-3" />
-									{label}
+									<Icon className="h-3.5 w-3.5" />
 								</span>
 							))}
 						</div>

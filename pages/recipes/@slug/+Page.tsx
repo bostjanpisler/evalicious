@@ -108,7 +108,34 @@ export default function RecipePage() {
 							{recipe.title}
 						</h2>
 
-						<div className="mt-4 flex flex-wrap gap-6 text-sm text-muted-foreground">
+						{/* Cuisine + yield row */}
+						<div className="mt-4 flex flex-wrap items-center gap-3">
+							{recipe.cuisine && (
+								<span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
+									<ChefHat className="h-4 w-4" />
+									{recipe.cuisine}
+								</span>
+							)}
+							{recipe.category && (
+								<Badge variant="secondary">
+									{RECIPE_CATEGORY_LABELS[recipe.category] ?? recipe.category}
+								</Badge>
+							)}
+							{recipe.difficulty && (
+								<Badge variant="outline">
+									{RECIPE_DIFFICULTY_LABELS[recipe.difficulty] ?? recipe.difficulty}
+								</Badge>
+							)}
+							{recipe.servings != null && (
+								<span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+									<Users className="h-4 w-4" />
+									{recipe.servings} {recipe.servings === 1 ? "porcija" : "porcij"}
+								</span>
+							)}
+						</div>
+
+						{/* Timing row */}
+						<div className="mt-3 flex flex-wrap gap-5 text-sm text-muted-foreground">
 							{recipe.prepTime != null && recipe.prepTime > 0 && (
 								<span className="flex items-center gap-1.5">
 									<Clock className="h-4 w-4" />
@@ -127,23 +154,11 @@ export default function RecipePage() {
 									Skupaj: {formatDuration(totalTime)}
 								</span>
 							)}
-							{recipe.servings != null && (
-								<span className="flex items-center gap-1.5">
-									<Users className="h-4 w-4" />
-									{recipe.servings} {recipe.servings === 1 ? "porcija" : "porcij"}
-								</span>
-							)}
-							{recipe.cuisine && (
-								<span className="flex items-center gap-1.5">
-									<ChefHat className="h-4 w-4" />
-									{recipe.cuisine}
-								</span>
-							)}
 						</div>
 
 						{/* Allergen icons */}
 						{(recipe.glutenFree || recipe.sugarFree || recipe.oilFree || recipe.soyFree || recipe.nutFree) && (
-							<div className="mt-4 flex flex-wrap gap-2">
+							<div className="mt-3 flex flex-wrap gap-2">
 								{recipe.glutenFree && (
 									<span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700 dark:bg-green-950 dark:text-green-300">
 										<WheatOff className="h-3.5 w-3.5" />
@@ -176,25 +191,6 @@ export default function RecipePage() {
 								)}
 							</div>
 						)}
-
-						{/* Tags */}
-						<div className="mt-4 flex flex-wrap items-start gap-2">
-							{recipe.category && (
-								<Badge variant="secondary">
-									{RECIPE_CATEGORY_LABELS[recipe.category] ?? recipe.category}
-								</Badge>
-							)}
-							{recipe.difficulty && (
-								<Badge variant="outline">
-									{RECIPE_DIFFICULTY_LABELS[recipe.difficulty] ?? recipe.difficulty}
-								</Badge>
-							)}
-							{recipe.tags?.map((tag) => (
-								<Badge key={tag} variant="outline">
-									{tag}
-								</Badge>
-							))}
-						</div>
 
 						{/* Nutrition */}
 						{recipe.nutritionInfo && (
@@ -269,6 +265,22 @@ export default function RecipePage() {
 							Navodila
 						</h3>
 						{recipe.stepGroups?.length > 0 && <StepChecklist groups={recipe.stepGroups} />}
+
+						{/* Tags — at the bottom, clickable */}
+						{recipe.tags && recipe.tags.length > 0 && (
+							<>
+								<Separator className="my-6" />
+								<div className="flex flex-wrap items-center gap-2">
+									{recipe.tags.map((tag) => (
+										<a key={tag} href={`/recipes?tag=${encodeURIComponent(tag)}`}>
+											<Badge variant="outline" className="cursor-pointer hover:bg-accent">
+												{tag}
+											</Badge>
+										</a>
+									))}
+								</div>
+							</>
+						)}
 					</div>
 
 					{/* Related recipes */}

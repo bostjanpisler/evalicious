@@ -12,7 +12,7 @@ export default function RecipesPage() {
 	const { recipes } = useData<Data>();
 	const pageContext = usePageContext();
 	const params = pageContext.urlParsed?.search ?? {};
-	const [search, setSearch] = useState("");
+	const [search, setSearch] = useState(params.tag ?? "");
 	const [category, setCategory] = useState(params.category ?? "");
 	const [difficulty, setDifficulty] = useState("");
 
