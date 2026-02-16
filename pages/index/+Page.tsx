@@ -1,6 +1,9 @@
 import { useData } from "vike-react/useData";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
 import { RecipeCard } from "@/components/recipes/RecipeCard";
+import { BlogCard } from "@/components/blog/BlogCard";
+import { TravelCard } from "@/components/travel/TravelCard";
+import { ProductCard } from "@/components/shop/ProductCard";
 import { InstagramFeed } from "@/components/shared/InstagramFeed";
 import { Button } from "@/components/ui/button";
 import {
@@ -159,6 +162,61 @@ export default function HomePage() {
 								</div>
 							)}
 						</div>
+					</div>
+				</section>
+			)}
+
+			{/* Recent Blog Posts */}
+			{data.recentBlogPosts && data.recentBlogPosts.length > 0 && (
+				<section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+					<div className="mb-8 flex items-center justify-between">
+						<h2 className="font-serif text-3xl font-bold">Zadnje z bloga</h2>
+						<Button variant="ghost" asChild>
+							<a href="/blog">Poglej vse</a>
+						</Button>
+					</div>
+					<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+						{data.recentBlogPosts.map((post) => (
+							<BlogCard key={post._id} post={post} />
+						))}
+					</div>
+				</section>
+			)}
+
+			{/* Recent Travel Entries */}
+			{data.recentTravelEntries && data.recentTravelEntries.length > 0 && (
+				<section className="bg-muted/50 py-16">
+					<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+						<div className="mb-8 flex items-center justify-between">
+							<h2 className="font-serif text-3xl font-bold">
+								Potovanja
+							</h2>
+							<Button variant="ghost" asChild>
+								<a href="/travel">Poglej vse</a>
+							</Button>
+						</div>
+						<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+							{data.recentTravelEntries.map((entry) => (
+								<TravelCard key={entry._id} entry={entry} />
+							))}
+						</div>
+					</div>
+				</section>
+			)}
+
+			{/* Featured Products */}
+			{data.featuredProducts && data.featuredProducts.length > 0 && (
+				<section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+					<div className="mb-8 flex items-center justify-between">
+						<h2 className="font-serif text-3xl font-bold">Trgovina</h2>
+						<Button variant="ghost" asChild>
+							<a href="/shop">Poglej vse</a>
+						</Button>
+					</div>
+					<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+						{data.featuredProducts.map((product) => (
+							<ProductCard key={product._id} product={product} />
+						))}
 					</div>
 				</section>
 			)}

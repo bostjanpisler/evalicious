@@ -1,20 +1,31 @@
 import { sanityClient } from "@/server/lib/sanity";
-import { homePageQuery, recentRecipesQuery } from "@/lib/sanity.queries";
-import type { HomePage } from "@/types/sanity";
+import {
+	homePageQuery,
+	recentRecipesQuery,
+	recentBlogPostsQuery,
+	recentTravelEntriesQuery,
+} from "@/lib/sanity.queries";
+import type { HomePage, BlogPost, TravelEntry } from "@/types/sanity";
 import type { RecipeListing } from "@/types/recipe";
 
 export type Data = HomePage;
 
 export async function data(): Promise<Data> {
-	const [page, recentRecipes] = await Promise.all([
-		sanityClient.fetch<HomePage>(homePageQuery),
-		sanityClient.fetch<RecipeListing[]>(recentRecipesQuery),
-	]);
+	const [page, recentRecipes, recentBlogPosts, recentTravelEntries] =
+		await Promise.all([
+			sanityClient.fetch<HomePage>(homePageQuery),
+			sanityClient.fetch<RecipeListing[]>(recentRecipesQuery),
+			sanityClient.fetch<BlogPost[]>(recentBlogPostsQuery),
+			sanityClient.fetch<TravelEntry[]>(recentTravelEntriesQuery),
+		]);
 	return {
 		...(page ?? {
 			heroTitle: "Eva-licious",
-			heroSubtitle: "Okusne jedi na rastlinski osnovi, knjižice z recepti, kuharski tečaji in delavnice ter raziskovanje sveta z Evo.",
+			heroSubtitle:
+				"Okusne jedi na rastlinski osnovi, knjižice z recepti, kuharski tečaji in delavnice ter raziskovanje sveta z Evo.",
 		}),
 		recentRecipes: recentRecipes ?? [],
+		recentBlogPosts: recentBlogPosts ?? [],
+		recentTravelEntries: recentTravelEntries ?? [],
 	};
 }
