@@ -45,9 +45,12 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
 								<span
 									key={key}
 									title={label}
-									className="inline-flex items-center rounded-full bg-green-50 p-1 text-green-700 dark:bg-green-950 dark:text-green-300"
+									className="relative inline-flex items-center rounded-full bg-green-50 p-1 text-green-700 dark:bg-green-950 dark:text-green-300"
 								>
 									<Icon className="h-3.5 w-3.5" />
+									<span className="absolute inset-0 flex items-center justify-center">
+										<span className="h-[130%] w-px rotate-45 bg-current opacity-70" />
+									</span>
 								</span>
 							))}
 						</div>

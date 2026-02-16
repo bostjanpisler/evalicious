@@ -285,9 +285,9 @@ export default function HomePage() {
 
 			{/* About CTA */}
 			<section className="py-16">
-				<div className="mx-auto max-w-2xl px-4 text-center sm:px-6 lg:px-8">
+				<div className="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
 					<h2 className="font-serif text-3xl font-bold">Spoznaj me</h2>
-					<p className="mt-3 text-lg text-muted-foreground">
+					<p className="mt-3 text-base text-muted-foreground">
 						Hej, sem Eva ✌️ Ustvarjalka, ki verjame, da lahko vsakdanje
 						življenje postane lepše in okusnejše, če vanj dodamo kanček
 						ustvarjalnosti, zdravih navad in pozitivne energije. Ta blog sem

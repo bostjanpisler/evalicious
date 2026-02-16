@@ -161,31 +161,56 @@ export default function RecipePage() {
 							<div className="mt-3 flex flex-wrap gap-2">
 								{recipe.glutenFree && (
 									<span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700 dark:bg-green-950 dark:text-green-300">
-										<Wheat className="h-3.5 w-3.5" />
+										<span className="relative">
+											<Wheat className="h-3.5 w-3.5" />
+											<span className="absolute inset-0 flex items-center justify-center">
+												<span className="h-[130%] w-px rotate-45 bg-current opacity-70" />
+											</span>
+										</span>
 										Brez glutena
 									</span>
 								)}
 								{recipe.sugarFree && (
 									<span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700 dark:bg-green-950 dark:text-green-300">
-										<Candy className="h-3.5 w-3.5" />
+										<span className="relative">
+											<Candy className="h-3.5 w-3.5" />
+											<span className="absolute inset-0 flex items-center justify-center">
+												<span className="h-[130%] w-px rotate-45 bg-current opacity-70" />
+											</span>
+										</span>
 										Brez rafiniranega sladkorja
 									</span>
 								)}
 								{recipe.oilFree && (
 									<span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700 dark:bg-green-950 dark:text-green-300">
-										<Droplet className="h-3.5 w-3.5" />
+										<span className="relative">
+											<Droplet className="h-3.5 w-3.5" />
+											<span className="absolute inset-0 flex items-center justify-center">
+												<span className="h-[130%] w-px rotate-45 bg-current opacity-70" />
+											</span>
+										</span>
 										Brez rafiniranega olja
 									</span>
 								)}
 								{recipe.soyFree && (
 									<span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700 dark:bg-green-950 dark:text-green-300">
-										<Bean className="h-3.5 w-3.5" />
+										<span className="relative">
+											<Bean className="h-3.5 w-3.5" />
+											<span className="absolute inset-0 flex items-center justify-center">
+												<span className="h-[130%] w-px rotate-45 bg-current opacity-70" />
+											</span>
+										</span>
 										Brez soje
 									</span>
 								)}
 								{recipe.nutFree && (
 									<span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700 dark:bg-green-950 dark:text-green-300">
-										<Nut className="h-3.5 w-3.5" />
+										<span className="relative">
+											<Nut className="h-3.5 w-3.5" />
+											<span className="absolute inset-0 flex items-center justify-center">
+												<span className="h-[130%] w-px rotate-45 bg-current opacity-70" />
+											</span>
+										</span>
 										Brez oreškov
 									</span>
 								)}
