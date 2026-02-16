@@ -1,6 +1,6 @@
 import { useData } from "vike-react/useData";
 import { useConfig } from "vike-react/useConfig";
-import { Clock, Users, ChefHat, Flame, WheatOff, CandyOff, Droplets, Bean, NutOff } from "lucide-react";
+import { Clock, Users, ChefHat, Flame, Wheat, Candy, Droplet, Bean, Nut } from "lucide-react";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
 import { ProfileSidebar } from "@/components/shared/ProfileSidebar";
@@ -161,19 +161,19 @@ export default function RecipePage() {
 							<div className="mt-3 flex flex-wrap gap-2">
 								{recipe.glutenFree && (
 									<span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700 dark:bg-green-950 dark:text-green-300">
-										<WheatOff className="h-3.5 w-3.5" />
+										<Wheat className="h-3.5 w-3.5" />
 										Brez glutena
 									</span>
 								)}
 								{recipe.sugarFree && (
 									<span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700 dark:bg-green-950 dark:text-green-300">
-										<CandyOff className="h-3.5 w-3.5" />
+										<Candy className="h-3.5 w-3.5" />
 										Brez rafiniranega sladkorja
 									</span>
 								)}
 								{recipe.oilFree && (
 									<span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700 dark:bg-green-950 dark:text-green-300">
-										<Droplets className="h-3.5 w-3.5" />
+										<Droplet className="h-3.5 w-3.5" />
 										Brez rafiniranega olja
 									</span>
 								)}
@@ -185,7 +185,7 @@ export default function RecipePage() {
 								)}
 								{recipe.nutFree && (
 									<span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700 dark:bg-green-950 dark:text-green-300">
-										<NutOff className="h-3.5 w-3.5" />
+										<Nut className="h-3.5 w-3.5" />
 										Brez oreškov
 									</span>
 								)}

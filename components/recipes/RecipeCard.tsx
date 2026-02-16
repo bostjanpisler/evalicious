@@ -1,4 +1,4 @@
-import { Clock, ChefHat, WheatOff, CandyOff, Droplets, Bean, NutOff } from "lucide-react";
+import { Clock, ChefHat, Wheat, Candy, Droplet, Bean, Nut } from "lucide-react";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,11 +7,11 @@ import { RECIPE_CATEGORY_LABELS, RECIPE_DIFFICULTY_LABELS } from "@/lib/constant
 import type { RecipeListing } from "@/types/recipe";
 
 const ALLERGEN_ICONS = [
-	{ key: "glutenFree", label: "Brez glutena", Icon: WheatOff },
-	{ key: "sugarFree", label: "Brez rafiniranega sladkorja", Icon: CandyOff },
-	{ key: "oilFree", label: "Brez rafiniranega olja", Icon: Droplets },
+	{ key: "glutenFree", label: "Brez glutena", Icon: Wheat },
+	{ key: "sugarFree", label: "Brez rafiniranega sladkorja", Icon: Candy },
+	{ key: "oilFree", label: "Brez rafiniranega olja", Icon: Droplet },
 	{ key: "soyFree", label: "Brez soje", Icon: Bean },
-	{ key: "nutFree", label: "Brez oreškov", Icon: NutOff },
+	{ key: "nutFree", label: "Brez oreškov", Icon: Nut },
 ] as const;
 
 interface RecipeCardProps {
