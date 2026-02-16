@@ -41,7 +41,7 @@ export function LoginForm() {
 	return (
 		<Card className="mx-auto w-full max-w-md">
 			<CardHeader className="text-center">
-				<CardTitle className="font-serif text-2xl">Dobrodošla nazaj</CardTitle>
+				<CardTitle className="font-serif text-2xl">Dobrodošli nazaj</CardTitle>
 				<CardDescription>Prijavi se v svoj račun</CardDescription>
 			</CardHeader>
 			<CardContent>

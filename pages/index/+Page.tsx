@@ -236,18 +236,20 @@ export default function HomePage() {
 						Storitve
 					</h2>
 					<p className="mx-auto mb-10 max-w-xl text-center text-muted-foreground">
-						Sodelujem z blagovnimi znamkami, ki delijo mojo strast do zdrave in
-						okusne hrane.
+						Vesela sem vsake priložnosti, kjer lahko odkrivam nove okuse,
+						spoznavam izdelke in ustvarjam avtentično vsebino. Če imate idejo
+						za sodelovanje, iščete sveže ideje, fotografije ali UGC vsebine,
+						ste na pravem mestu.
 					</p>
 					<div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
 						<div className="rounded-xl border border-border bg-card p-6 text-center shadow-sm">
 							<span className="text-3xl">📸</span>
 							<h3 className="mt-3 font-serif text-lg font-semibold">
-								Sponzorirane vsebine
+								Sponzorirane objave
 							</h3>
 							<p className="mt-2 text-sm text-muted-foreground">
-								Recepti z vašim izdelkom na blogu, Instagram objavah in TikTok
-								videih.
+								Promocija vaših izdelkov in storitev na mojem Instagram profilu, s
+								skupnostjo preko 10k sledilci.
 							</p>
 						</div>
 						<div className="rounded-xl border border-border bg-card p-6 text-center shadow-sm">
@@ -256,8 +258,8 @@ export default function HomePage() {
 								UGC vsebine
 							</h3>
 							<p className="mt-2 text-sm text-muted-foreground">
-								Originalne vsebine za vaše kanale — unboxing, pričevanja,
-								izobraževalni videi.
+								Avtentične vsebine za vaše organske profile, spletne strani ali
+								oglase (možnosti tudi sponsorship ads in dark post).
 							</p>
 						</div>
 						<div className="rounded-xl border border-border bg-card p-6 text-center shadow-sm">
@@ -266,8 +268,10 @@ export default function HomePage() {
 								Razvoj receptov & fotografija
 							</h3>
 							<p className="mt-2 text-sm text-muted-foreground">
-								Razvoj novih receptov in profesionalna food fotografija za
-								splet, tisk ali embalaže.
+								Uživam v kreiranju novih receptov in še bolj v tem, da jih
+								prikažem v najlepši obliki - video ali foto. Za vas lahko
+								ustvarim recepte za vaše spletne strani, socialna omrežja ali
+								tiskovine.
 							</p>
 						</div>
 					</div>
@@ -284,8 +288,14 @@ export default function HomePage() {
 				<div className="mx-auto max-w-2xl px-4 text-center sm:px-6 lg:px-8">
 					<h2 className="font-serif text-3xl font-bold">Spoznaj me</h2>
 					<p className="mt-3 text-lg text-muted-foreground">
-						Za kuharskimi recepti in idejami stojim jaz — Eva. Preberi mojo
-						zgodbo in se poveži z mano.
+						Hej, sem Eva ✌️ Ustvarjalka, ki verjame, da lahko vsakdanje
+						življenje postane lepše in okusnejše, če vanj dodamo kanček
+						ustvarjalnosti, zdravih navad in pozitivne energije. Ta blog sem
+						ustvarila za vse, ki radi kuhajo, potujejo, raziskujejo nove ideje
+						in iščejo navdih za bolj uravnotežen življenjski slog. Vsak
+						projekt, ki ga sprejemem, poskušam obogatiti z osebno noto in
+						avtentičnostjo, ki odraža moj pristop do kuhanja, življenja in
+						pripovedovanja zgodb. Hvala, da si del moje skupnosti ☀️
 					</p>
 					<div className="mt-6">
 						<Button size="lg" variant="outline" asChild>

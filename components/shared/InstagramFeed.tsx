@@ -42,7 +42,7 @@ export function InstagramFeed() {
 				<div className="min-w-0">
 					<p className="text-sm font-semibold leading-tight">susiiiiin</p>
 					<p className="truncate text-xs text-muted-foreground">
-						Okusni recepti in ideje za obroke
+						Sledi mi na instagramu za še več receptov 🌱, potovanj ✈️ in vpogled v moje življenje✨
 					</p>
 				</div>
 			</a>
