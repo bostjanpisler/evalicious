@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { db } from "./db.js";
+import { allowedOrigins } from "./origins.js";
 
 export const auth = betterAuth({
 	database: prismaAdapter(db, {
@@ -9,11 +10,7 @@ export const auth = betterAuth({
 	baseURL: process.env.BETTER_AUTH_URL ?? "http://localhost:3000",
 	basePath: "/api/auth",
 	secret: process.env.BETTER_AUTH_SECRET,
-	trustedOrigins: [
-		process.env.BETTER_AUTH_URL ?? "http://localhost:3000",
-		"http://localhost:3000",
-		"http://localhost:3100",
-	],
+	trustedOrigins: allowedOrigins,
 	emailAndPassword: {
 		enabled: true,
 	},
