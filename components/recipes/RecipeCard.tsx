@@ -56,11 +56,11 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
 						</div>
 					)}
 					<div className="mb-2 flex flex-wrap gap-1.5">
-						{recipe.category && (
-							<Badge variant="secondary" className="text-xs">
-								{RECIPE_CATEGORY_LABELS[recipe.category] ?? recipe.category}
+						{recipe.categories?.map((cat) => (
+							<Badge key={cat} variant="secondary" className="text-xs">
+								{RECIPE_CATEGORY_LABELS[cat] ?? cat}
 							</Badge>
-						)}
+						))}
 						{recipe.difficulty && (
 							<Badge variant="outline" className="text-xs">
 								{RECIPE_DIFFICULTY_LABELS[recipe.difficulty] ?? recipe.difficulty}

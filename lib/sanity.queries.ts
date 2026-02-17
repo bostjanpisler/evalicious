@@ -6,7 +6,7 @@ export const recentRecipesQuery = `
     title,
     "slug": slug.current,
     coverImage,
-    category,
+    "categories": select(defined(categories) => categories, defined(category) => [category], []),
     cuisine,
     difficulty,
     prepTime,
@@ -27,7 +27,7 @@ export const allRecipesQuery = `
     title,
     "slug": slug.current,
     coverImage,
-    category,
+    "categories": select(defined(categories) => categories, defined(category) => [category], []),
     cuisine,
     difficulty,
     prepTime,
@@ -49,7 +49,7 @@ export const recipeBySlugQuery = `
     "slug": slug.current,
     description,
     coverImage,
-    category,
+    "categories": select(defined(categories) => categories, defined(category) => [category], []),
     cuisine,
     difficulty,
     prepTime,
@@ -92,12 +92,12 @@ export const recipeBySlugQuery = `
     },
     published,
     publishedAt,
-    "relatedRecipes": *[_type == "recipe" && published == true && slug.current != ^.slug.current && category == ^.category] | order(publishedAt desc) [0...3] {
+    "relatedRecipes": *[_type == "recipe" && published == true && slug.current != ^.slug.current && count((select(defined(categories) => categories, defined(category) => [category], []))[@ in ^.categories]) > 0] | order(publishedAt desc) [0...3] {
       _id,
       title,
       "slug": slug.current,
       coverImage,
-      category,
+      "categories": select(defined(categories) => categories, defined(category) => [category], []),
       cuisine,
       difficulty,
       prepTime,
@@ -368,7 +368,7 @@ export const homePageQuery = `
       title,
       "slug": slug.current,
       coverImage,
-      category,
+      "categories": select(defined(categories) => categories, defined(category) => [category], []),
       difficulty,
       prepTime,
       cookTime
@@ -390,6 +390,12 @@ export const homePageQuery = `
 
 export const aboutPageQuery = `
   *[_type == "aboutPage"][0] {
+    title,
+    sections[] {
+      heading,
+      text,
+      image
+    },
     bio,
     profileImage,
     contactEmail,

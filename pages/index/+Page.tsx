@@ -7,7 +7,7 @@ import { ProductCard } from "@/components/shop/ProductCard";
 import { InstagramFeed } from "@/components/shared/InstagramFeed";
 import { Button } from "@/components/ui/button";
 import {
-	RECIPE_CATEGORIES,
+	HOMEPAGE_CATEGORIES,
 	RECIPE_CATEGORY_LABELS,
 } from "@/lib/constants";
 import type { Data } from "./+data";
@@ -60,7 +60,7 @@ export default function HomePage() {
 			<section className="border-b border-border">
 				<div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
 					<div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
-						{RECIPE_CATEGORIES.map((cat) => (
+						{HOMEPAGE_CATEGORIES.map((cat) => (
 							<a
 								key={cat}
 								href={`/recipes?category=${cat}`}
@@ -285,9 +285,9 @@ export default function HomePage() {
 
 			{/* About CTA */}
 			<section className="py-16">
-				<div className="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
+				<div className="mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8">
 					<h2 className="font-serif text-3xl font-bold">Spoznaj me</h2>
-					<p className="mt-3 text-base text-muted-foreground">
+					<p className="mt-3 text-sm text-muted-foreground">
 						Hej, sem Eva ✌️ Ustvarjalka, ki verjame, da lahko vsakdanje
 						življenje postane lepše in okusnejše, če vanj dodamo kanček
 						ustvarjalnosti, zdravih navad in pozitivne energije. Ta blog sem

@@ -72,7 +72,7 @@ export interface HomePage {
 		title: string;
 		slug: string;
 		coverImage?: SanityImageSource;
-		category?: string;
+		categories?: string[];
 		difficulty?: string;
 		prepTime?: number;
 		cookTime?: number;
@@ -95,7 +95,16 @@ export interface HomePage {
 	courses?: import("@/types/course").CourseListing[];
 }
 
+export interface AboutSection {
+	heading?: string;
+	// biome-ignore lint/suspicious/noExplicitAny: Portable Text content
+	text?: any[];
+	image?: SanityImageSource;
+}
+
 export interface AboutPage {
+	title?: string;
+	sections?: AboutSection[];
 	// biome-ignore lint/suspicious/noExplicitAny: Portable Text content
 	bio?: any[];
 	profileImage?: SanityImageSource;

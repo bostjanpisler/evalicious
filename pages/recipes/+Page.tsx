@@ -25,7 +25,7 @@ export default function RecipesPage() {
 				const matchesCuisine = recipe.cuisine?.toLowerCase().includes(q);
 				if (!matchesTitle && !matchesTags && !matchesCuisine) return false;
 			}
-			if (category && recipe.category !== category) return false;
+			if (category && !recipe.categories?.includes(category)) return false;
 			if (difficulty && difficulty !== "all" && recipe.difficulty !== difficulty) return false;
 			return true;
 		});

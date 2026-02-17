@@ -34,19 +34,25 @@ export const recipe = defineType({
       },
     }),
     defineField({
-      name: "category",
-      title: "Category",
-      type: "string",
-      options: {
-        list: [
-          { title: "Zajtrki", value: "breakfast" },
-          { title: "Glavne jedi", value: "main" },
-          { title: "Priloge in solate", value: "sides" },
-          { title: "Prigrizki", value: "snack" },
-          { title: "Sladice", value: "dessert" },
-          { title: "Napitki", value: "drink" },
-        ],
-      },
+      name: "categories",
+      title: "Categories",
+      type: "array",
+      of: [
+        defineArrayMember({
+          type: "string",
+          options: {
+            list: [
+              { title: "Zajtrki", value: "breakfast" },
+              { title: "Glavne jedi", value: "main" },
+              { title: "Priloge in solate", value: "sides" },
+              { title: "Prigrizki", value: "snack" },
+              { title: "Sladice", value: "dessert" },
+              { title: "Napitki", value: "drink" },
+              { title: "Osnovni recepti", value: "basics" },
+            ],
+          },
+        }),
+      ],
     }),
     defineField({
       name: "cuisine",

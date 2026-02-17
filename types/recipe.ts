@@ -34,7 +34,7 @@ export interface RecipeListing {
 	title: string;
 	slug: string;
 	coverImage?: SanityImageSource;
-	category?: string;
+	categories?: string[];
 	cuisine?: string;
 	difficulty?: string;
 	prepTime?: number;

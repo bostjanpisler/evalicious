@@ -20,6 +20,16 @@ export const RECIPE_CATEGORIES = [
 	"snack",
 	"dessert",
 	"drink",
+	"basics",
+] as const;
+
+export const HOMEPAGE_CATEGORIES = [
+	"breakfast",
+	"main",
+	"sides",
+	"snack",
+	"dessert",
+	"drink",
 ] as const;
 
 export const RECIPE_CATEGORY_LABELS: Record<string, string> = {
@@ -29,6 +39,7 @@ export const RECIPE_CATEGORY_LABELS: Record<string, string> = {
 	snack: "Prigrizki",
 	dessert: "Sladice",
 	drink: "Napitki",
+	basics: "Osnovni recepti",
 };
 
 export const RECIPE_DIFFICULTIES = ["easy", "medium", "hard"] as const;

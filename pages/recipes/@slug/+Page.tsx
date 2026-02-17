@@ -116,11 +116,11 @@ export default function RecipePage() {
 									{recipe.cuisine}
 								</span>
 							)}
-							{recipe.category && (
-								<Badge variant="secondary">
-									{RECIPE_CATEGORY_LABELS[recipe.category] ?? recipe.category}
+							{recipe.categories?.map((cat) => (
+								<Badge key={cat} variant="secondary">
+									{RECIPE_CATEGORY_LABELS[cat] ?? cat}
 								</Badge>
-							)}
+							))}
 							{recipe.difficulty && (
 								<Badge variant="outline">
 									{RECIPE_DIFFICULTY_LABELS[recipe.difficulty] ?? recipe.difficulty}
