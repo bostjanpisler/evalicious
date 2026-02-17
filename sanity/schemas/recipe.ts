@@ -260,6 +260,7 @@ export const recipe = defineType({
           ],
         }),
         defineArrayMember({ type: "youtube" }),
+        defineArrayMember({ type: "htmlEmbed" }),
       ],
     }),
     defineField({

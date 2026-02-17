@@ -63,6 +63,7 @@ export const travelEntry = defineType({
           ],
         }),
         defineArrayMember({ type: "youtube" }),
+        defineArrayMember({ type: "htmlEmbed" }),
       ],
     }),
     defineField({

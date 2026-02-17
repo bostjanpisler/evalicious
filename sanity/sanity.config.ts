@@ -10,6 +10,7 @@ import { lesson } from "./schemas/lesson";
 import { homePage } from "./schemas/homePage";
 import { aboutPage } from "./schemas/aboutPage";
 import { youtube } from "./schemas/youtube";
+import { htmlEmbed } from "./schemas/htmlEmbed";
 
 export default defineConfig({
 	name: "eva-licious",
@@ -76,6 +77,6 @@ export default defineConfig({
 		}),
 	],
 	schema: {
-		types: [recipe, blogPost, travelEntry, product, course, lesson, homePage, aboutPage, youtube],
+		types: [recipe, blogPost, travelEntry, product, course, lesson, homePage, aboutPage, youtube, htmlEmbed],
 	},
 });

@@ -1,0 +1,12 @@
+{
+	"name": "eva-licious-studio",
+	"private": true,
+	"version": "1.0.0",
+	"type": "module",
+	"dependencies": {
+		"react": "^19",
+		"react-dom": "^19",
+		"sanity": "^5.9.0",
+		"styled-components": "^6.1.15"
+	}
+}

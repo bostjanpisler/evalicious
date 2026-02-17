@@ -85,6 +85,12 @@ const components: PortableTextComponents = {
 				)}
 			</figure>
 		),
+		htmlEmbed: ({ value }) => (
+			<div className="my-8">
+				{/* biome-ignore lint/security/noDangerouslySetInnerHtml: trusted CMS content */}
+				<div dangerouslySetInnerHTML={{ __html: value.code }} />
+			</div>
+		),
 	},
 };
 
