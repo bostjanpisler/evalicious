@@ -1,50 +1,49 @@
 /**
- * Startup migration script.
- * Uses the existing Prisma client (which already has DATABASE_URL configured)
- * to check if tables exist and run the initial migration SQL if needed.
- * Retries until the database is ready.
+ * Startup migration script using pg directly.
+ * Logs to stderr so output is visible in Railway logs ([err] stream).
  */
-import { db } from "../lib/db";
+import pkg from "pg";
 import { readFileSync } from "fs";
 
-const MIGRATION_SQL = "prisma/migrations/20260219000000_init/migration.sql";
-const MAX_RETRIES = 30;
-const RETRY_DELAY_MS = 3000;
+const { Pool } = pkg as typeof import("pg");
+const log = (msg: string) => process.stderr.write(`[setup-db] ${msg}\n`);
 
-for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+log(`Connecting to database...`);
+
+for (let attempt = 1; attempt <= 30; attempt++) {
+	let client: import("pg").PoolClient | null = null;
 	try {
-		const result = await db.$queryRaw<[{ exists: boolean }]>`
-			SELECT EXISTS (
-				SELECT FROM pg_tables
-				WHERE schemaname = 'public' AND tablename = 'User'
-			)
-		`;
+		client = await pool.connect();
+		log("Connected.");
 
-		if (!result[0].exists) {
-			console.log("Tables not found, running initial migration...");
-			const sql = readFileSync(MIGRATION_SQL, "utf8");
-			// Run each statement individually to avoid multi-statement issues
-			const statements = sql
-				.split(/;\s*\n/)
-				.map((s) => s.trim())
-				.filter((s) => s.length > 0 && !s.startsWith("--") && !s.startsWith("/*"));
-			for (const stmt of statements) {
-				if (stmt) await db.$executeRawUnsafe(stmt);
-			}
-			console.log("Migration complete.");
+		const { rows } = await client.query(
+			"SELECT EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'User') AS exists",
+		);
+		const exists = rows[0]?.exists === true || rows[0]?.exists === "t" || rows[0]?.exists === "true";
+		log(`Table exists: ${exists}`);
+
+		if (!exists) {
+			log("Tables not found. Running migration...");
+			const sql = readFileSync("prisma/migrations/20260219000000_init/migration.sql", "utf8");
+			await client.query(sql);
+			log("Migration complete.");
 		} else {
-			console.log("Database already initialized.");
+			log("Tables already exist. Skipping migration.");
 		}
 
-		await db.$disconnect();
+		client.release();
+		await pool.end();
+		log("Done.");
 		process.exit(0);
 	} catch (err: unknown) {
+		if (client) client.release();
 		const msg = err instanceof Error ? err.message : String(err);
-		console.log(`DB setup attempt ${attempt}/${MAX_RETRIES} failed: ${msg}`);
-		if (attempt >= MAX_RETRIES) {
-			console.error("Could not initialize database. Aborting.");
+		log(`Attempt ${attempt}/30 failed: ${msg}`);
+		if (attempt >= 30) {
+			log("Giving up. Exiting.");
 			process.exit(1);
 		}
-		await Bun.sleep(RETRY_DELAY_MS);
+		await Bun.sleep(3000);
 	}
 }
