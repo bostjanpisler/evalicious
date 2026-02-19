@@ -9,6 +9,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import posthog from "posthog-js";
 import { usePageContext } from "vike-react/usePageContext";
 
 export function UserMenu() {
@@ -59,6 +60,7 @@ export function UserMenu() {
 				<DropdownMenuSeparator />
 				<DropdownMenuItem
 					onClick={async () => {
+						posthog.capture("sign_out");
 						await fetch("/api/auth/sign-out", { method: "POST" });
 						window.location.href = "/";
 					}}

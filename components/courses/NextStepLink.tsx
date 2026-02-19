@@ -1,5 +1,7 @@
 "use client";
 
+import posthog from "posthog-js";
+
 interface NextStepLinkProps {
 	href: string;
 	lessonId: string;
@@ -20,6 +22,7 @@ export function NextStepLink({
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ completed: true }),
 		}).catch(() => {});
+		posthog.capture("lesson_completed", { lesson_id: lessonId, method: "next_step" });
 	}
 
 	return (

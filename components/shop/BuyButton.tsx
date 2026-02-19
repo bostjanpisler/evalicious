@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import posthog from "posthog-js";
 import { Button } from "@/components/ui/button";
 
 interface BuyButtonProps {
@@ -26,6 +27,7 @@ export function BuyButton({ productSlug, className }: BuyButtonProps) {
 
 	async function handleClick() {
 		if (!session?.user) {
+			posthog.capture("checkout_login_required", { product_slug: productSlug });
 			window.location.href = `/login?redirect=/shop/${productSlug}`;
 			return;
 		}
@@ -34,7 +36,9 @@ export function BuyButton({ productSlug, className }: BuyButtonProps) {
 		setLoading(true);
 
 		try {
-			const res = await fetch("/api/stripe/checkout", {
+			posthog.capture("checkout_started", { product_slug: productSlug });
+
+		const res = await fetch("/api/stripe/checkout", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				credentials: "include",

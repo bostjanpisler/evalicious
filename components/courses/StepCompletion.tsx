@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import confetti from "canvas-confetti";
+import posthog from "posthog-js";
 
 interface StepCompletionProps {
 	lessonId: string;
@@ -59,8 +60,9 @@ export function StepCompletion({
 			});
 			if (!res.ok) {
 				setCompleted(!next);
-			} else if (next) {
-				onComplete?.();
+			} else {
+				posthog.capture(next ? "lesson_completed" : "lesson_uncompleted", { lesson_id: lessonId, method: "manual" });
+				if (next) onComplete?.();
 			}
 		} catch {
 			setCompleted(!next);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import posthog from "posthog-js";
 
 interface ResetProgressProps {
 	courseId: string;
@@ -18,7 +19,8 @@ export function ResetProgress({ courseId, dark = false }: ResetProgressProps) {
 				method: "DELETE",
 			});
 			if (res.ok) {
-				window.location.reload();
+				posthog.capture("course_progress_reset", { course_id: courseId });
+			window.location.reload();
 			}
 		} catch {
 			// ignore

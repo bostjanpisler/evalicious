@@ -2,6 +2,7 @@
 
 import { Heart } from "lucide-react";
 import { useState } from "react";
+import posthog from "posthog-js";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +26,7 @@ export function SaveRecipeButton({ recipeId, initialFavorited = false }: SaveRec
 			if (res.ok) {
 				const data = await res.json();
 				setFavorited(data.favorited);
+				posthog.capture(data.favorited ? "recipe_favorited" : "recipe_unfavorited", { recipe_id: recipeId });
 			}
 		} finally {
 			setLoading(false);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import posthog from "posthog-js";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,9 +29,11 @@ export function RegisterForm() {
 			if (!res.ok) {
 				const data = await res.json();
 				setError(data.message ?? "Registracija ni uspela");
+				posthog.capture("sign_up_error", { error: data.message });
 				return;
 			}
 
+			posthog.capture("sign_up_success");
 			window.location.href = "/dashboard/my-recipes";
 		} catch {
 			setError("Nekaj je šlo narobe. Poskusi znova.");

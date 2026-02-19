@@ -1,11 +1,23 @@
+"use client";
+
+import { useEffect } from "react";
 import { useData } from "vike-react/useData";
 import { CheckCircle, Download, Play, ShoppingBag } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import posthog from "posthog-js";
 import type { Data } from "./+data.server";
 
 export default function CheckoutSuccessPage() {
 	const { productName, productType, courseSlug, orderId } = useData<Data>();
+
+	useEffect(() => {
+		posthog.capture("purchase_completed", {
+			product_name: productName,
+			product_type: productType,
+			order_id: orderId,
+		});
+	}, [orderId, productName, productType]);
 
 	return (
 		<div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
