@@ -23,4 +23,4 @@ COPY --from=build /app/tsconfig.json ./
 COPY --from=build /app/node_modules/.prisma ./node_modules/.prisma
 ENV NODE_ENV=production
 EXPOSE 8080
-CMD ["sh", "-c", "bunx prisma migrate resolve --rolled-back 20260219000000_init 2>/dev/null || true && bunx prisma migrate deploy && bun server/prod.ts"]
+CMD ["sh", "-c", "bunx prisma migrate resolve --rolled-back 20260219000000_init 2>/dev/null || true && until bunx prisma migrate deploy; do echo 'DB not ready, retrying in 3s...'; sleep 3; done && bun server/prod.ts"]
