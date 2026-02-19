@@ -200,7 +200,7 @@ export default function CourseViewPage() {
 											? "border-amber-300 bg-amber-50/50 shadow-sm"
 											: isCompleted
 												? "border-green-200 bg-green-50/30"
-												: "border-gray-200 hover:border-gray-300 hover:shadow-sm",
+												: "border-border hover:border-border hover:shadow-sm",
 									)}
 								>
 									{/* Step indicator */}
@@ -246,7 +246,7 @@ export default function CourseViewPage() {
 														? "text-green-800"
 														: isNext
 															? "text-amber-900"
-															: "text-gray-900",
+															: "text-foreground",
 												)}
 											>
 												{step.title}
@@ -263,7 +263,7 @@ export default function CourseViewPage() {
 											)}
 										</div>
 										{step.description && (
-											<p className="mt-1 text-sm text-gray-500 line-clamp-2">
+											<p className="mt-1 text-sm text-muted-foreground line-clamp-2">
 												{step.description}
 											</p>
 										)}
@@ -273,7 +273,7 @@ export default function CourseViewPage() {
 									<div className="flex items-center gap-3 flex-shrink-0 pt-0.5">
 										{step.durationMinutes != null &&
 											step.durationMinutes > 0 && (
-												<span className="flex items-center gap-1 text-xs text-gray-400">
+												<span className="flex items-center gap-1 text-xs text-muted-foreground">
 													<svg
 														xmlns="http://www.w3.org/2000/svg"
 														className="h-3.5 w-3.5"
@@ -293,7 +293,7 @@ export default function CourseViewPage() {
 											)}
 										<svg
 											xmlns="http://www.w3.org/2000/svg"
-											className="h-4 w-4 text-gray-300 group-hover:text-gray-400 transition-colors"
+											className="h-4 w-4 text-muted-foreground/40 group-hover:text-muted-foreground transition-colors"
 											fill="none"
 											viewBox="0 0 24 24"
 											stroke="currentColor"
@@ -312,7 +312,7 @@ export default function CourseViewPage() {
 					</div>
 				</div>
 			) : (
-				<p className="text-gray-500 py-12 text-center">
+				<p className="text-muted-foreground py-12 text-center">
 					Ta tečaj nima korakov.
 				</p>
 			)}

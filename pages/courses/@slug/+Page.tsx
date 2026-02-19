@@ -127,7 +127,7 @@ export default function CourseDetailPage() {
 							<h2 className="font-serif text-2xl font-bold mb-4">
 								O delavnici
 							</h2>
-							<p className="text-gray-600 leading-relaxed text-lg">
+							<p className="text-muted-foreground leading-relaxed text-lg">
 								{course.description}
 							</p>
 						</div>
@@ -164,21 +164,21 @@ export default function CourseDetailPage() {
 								{course.steps.map((step, index) => (
 									<div
 										key={step._id}
-										className="flex items-start gap-4 rounded-xl border border-gray-200 p-4 transition-colors hover:bg-gray-50"
+										className="flex items-start gap-4 rounded-xl border border-border p-4 transition-colors hover:bg-accent"
 									>
 										<span
 											className={cn(
 												"flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-sm font-semibold",
 												index === 0
 													? "bg-amber-500 text-white"
-													: "bg-gray-100 text-gray-600",
+													: "bg-muted text-muted-foreground",
 											)}
 										>
 											{index + 1}
 										</span>
 										<div className="flex-1 min-w-0">
 											<div className="flex items-center gap-2">
-												<h3 className="font-medium text-gray-900">
+												<h3 className="font-medium text-foreground">
 													{step.title}
 												</h3>
 												{step.isFree && (
@@ -188,14 +188,14 @@ export default function CourseDetailPage() {
 												)}
 											</div>
 											{step.description && (
-												<p className="mt-1 text-sm text-gray-500 line-clamp-2">
+												<p className="mt-1 text-sm text-muted-foreground line-clamp-2">
 													{step.description}
 												</p>
 											)}
 										</div>
 										{step.durationMinutes != null &&
 											step.durationMinutes > 0 && (
-												<span className="flex items-center gap-1 text-xs text-gray-400 flex-shrink-0 pt-1">
+												<span className="flex items-center gap-1 text-xs text-muted-foreground flex-shrink-0 pt-1">
 													<svg
 														xmlns="http://www.w3.org/2000/svg"
 														className="h-3.5 w-3.5"
@@ -222,25 +222,25 @@ export default function CourseDetailPage() {
 
 				{/* Right — sticky CTA card */}
 				<div className="mt-10 lg:mt-0 lg:w-80 lg:flex-shrink-0">
-					<div className="lg:sticky lg:top-4 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+					<div className="lg:sticky lg:top-4 rounded-2xl border border-border bg-card p-6 shadow-sm">
 						<div className="text-center">
-							<p className="text-sm text-gray-500 mb-1">Delavnica</p>
-							<p className="font-serif text-3xl font-bold text-gray-900">
+							<p className="text-sm text-muted-foreground mb-1">Delavnica</p>
+							<p className="font-serif text-3xl font-bold text-foreground">
 								{course.title}
 							</p>
 						</div>
 
-						<div className="mt-6 space-y-3 text-sm text-gray-600">
+						<div className="mt-6 space-y-3 text-sm text-muted-foreground">
 							<div className="flex items-center justify-between">
 								<span>Koraki</span>
-								<span className="font-medium text-gray-900">
+								<span className="font-medium text-foreground">
 									{stepCount}
 								</span>
 							</div>
 							{totalDuration > 0 && (
 								<div className="flex items-center justify-between">
 									<span>Trajanje</span>
-									<span className="font-medium text-gray-900">
+									<span className="font-medium text-foreground">
 										{formatDuration(totalDuration)}
 									</span>
 								</div>
@@ -259,14 +259,14 @@ export default function CourseDetailPage() {
 							</div>
 						</div>
 
-						<div className="mt-6 border-t border-gray-100 pt-6">
+						<div className="mt-6 border-t border-border pt-6">
 							<button
 								type="button"
 								className="w-full rounded-xl bg-amber-600 px-6 py-3.5 text-base font-semibold text-white hover:bg-amber-700 transition-colors"
 							>
 								Kupi tečaj
 							</button>
-							<p className="mt-3 text-center text-xs text-gray-400">
+							<p className="mt-3 text-center text-xs text-muted-foreground">
 								Dostop za vedno. Brez naročnine.
 							</p>
 						</div>

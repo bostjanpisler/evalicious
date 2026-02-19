@@ -105,7 +105,7 @@ export default function DashboardLayout({
 			</div>
 
 			{/* Horizontal nav */}
-			<nav className="mb-8 border-b border-gray-200">
+			<nav className="mb-8 border-b border-border">
 				<div className="flex gap-1 overflow-x-auto -mb-px">
 					{navItems.map((item) => {
 						const isActive = currentPath.startsWith(item.href);
@@ -117,7 +117,7 @@ export default function DashboardLayout({
 									"flex items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors",
 									isActive
 										? "border-amber-500 text-amber-900"
-										: "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300",
+										: "border-transparent text-muted-foreground hover:text-foreground hover:border-border",
 								)}
 							>
 								<NavIcon icon={item.icon} />

@@ -40,7 +40,7 @@ export default function CourseCompletePage() {
 							</svg>
 						</div>
 						<h1 className="font-serif text-3xl font-bold">Čestitke!</h1>
-						<p className="mt-3 text-lg text-gray-600">
+						<p className="mt-3 text-lg text-muted-foreground">
 							Uspešno si zaključil/a tečaj{" "}
 							<strong>{courseTitle}</strong>!
 						</p>
@@ -51,7 +51,7 @@ export default function CourseCompletePage() {
 				) : (
 					<>
 						<h1 className="font-serif text-3xl font-bold">Skoraj!</h1>
-						<p className="mt-3 text-lg text-gray-600">
+						<p className="mt-3 text-lg text-muted-foreground">
 							Zaključi vse korake tečaja <strong>{courseTitle}</strong>, da dobiš
 							čestitke.
 						</p>
@@ -73,10 +73,10 @@ export default function CourseCompletePage() {
 				<div className="mt-14">
 					<div className="relative">
 						<div className="absolute inset-0 flex items-center">
-							<div className="w-full border-t border-gray-200" />
+							<div className="w-full border-t border-border" />
 						</div>
 						<div className="relative flex justify-center">
-							<span className="bg-white px-4 text-sm font-medium text-gray-500">
+							<span className="bg-background px-4 text-sm font-medium text-muted-foreground">
 								Mogoče te zanima tudi
 							</span>
 						</div>
@@ -87,7 +87,7 @@ export default function CourseCompletePage() {
 							<a
 								key={rec._id}
 								href={`/courses/${rec.slug}`}
-								className="group rounded-xl border border-gray-200 overflow-hidden hover:border-amber-300 hover:shadow-md transition-all"
+								className="group rounded-xl border border-border overflow-hidden hover:border-amber-300 hover:shadow-md transition-all"
 							>
 								{rec.coverImage ? (
 									<OptimizedImage
@@ -101,16 +101,16 @@ export default function CourseCompletePage() {
 									<div className="h-36 bg-gradient-to-br from-amber-100 to-amber-200" />
 								)}
 								<div className="p-4">
-									<h3 className="font-serif font-semibold text-gray-900 group-hover:text-amber-700 transition-colors">
+									<h3 className="font-serif font-semibold text-foreground group-hover:text-amber-700 transition-colors">
 										{rec.title}
 									</h3>
 									{rec.description && (
-										<p className="mt-1 text-sm text-gray-500 line-clamp-2">
+										<p className="mt-1 text-sm text-muted-foreground line-clamp-2">
 											{rec.description}
 										</p>
 									)}
 									<div className="mt-3 flex items-center justify-between">
-										<span className="text-xs text-gray-400">
+										<span className="text-xs text-muted-foreground">
 											{rec.stepCount}{" "}
 											{rec.stepCount === 1
 												? "korak"
@@ -149,7 +149,7 @@ export default function CourseCompletePage() {
 			<div className="mt-10 flex items-center justify-center gap-4">
 				<a
 					href="/dashboard/my-courses"
-					className="text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors"
+					className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
 				>
 					Moji tečaji
 				</a>

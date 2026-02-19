@@ -9,12 +9,12 @@ export function ProgressTracker({ completed, total }: ProgressTrackerProps) {
 	return (
 		<div>
 			<div className="flex items-center justify-between text-sm mb-2">
-				<span className="text-gray-600">
+				<span className="text-muted-foreground">
 					{completed} of {total} lessons completed
 				</span>
-				<span className="font-medium text-gray-900">{percentage}%</span>
+				<span className="font-medium text-foreground">{percentage}%</span>
 			</div>
-			<div className="h-3 rounded-full bg-gray-100 overflow-hidden">
+			<div className="h-3 rounded-full bg-muted overflow-hidden">
 				<div
 					className="h-full rounded-full bg-amber-500 transition-all duration-300"
 					style={{ width: `${percentage}%` }}

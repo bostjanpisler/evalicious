@@ -137,12 +137,12 @@ export default function LessonViewPage() {
 			</div>
 
 			{/* Sticky bottom navigation bar */}
-			<div className="fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white/95 backdrop-blur-sm pb-[env(safe-area-inset-bottom)]">
+			<div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background/95 backdrop-blur-sm pb-[env(safe-area-inset-bottom)]">
 				<div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
 					{prevStep ? (
 						<a
 							href={`/dashboard/my-courses/${courseSlug}/${prevStep.slug}`}
-							className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+							className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"

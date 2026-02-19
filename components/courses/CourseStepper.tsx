@@ -32,7 +32,7 @@ export function CourseStepper({
 				<div className="flex items-center justify-between mb-3">
 					<a
 						href={`/dashboard/my-courses/${courseSlug}`}
-						className="text-sm text-gray-500 hover:text-gray-700 transition-colors truncate"
+						className="text-sm text-muted-foreground hover:text-foreground transition-colors truncate"
 					>
 						{courseTitle}
 					</a>
@@ -118,7 +118,7 @@ export function CourseStepper({
 
 			{/* Current step title — only in lesson view */}
 			{!hideTitle && (
-				<p className="mt-2 text-sm font-medium text-gray-700 truncate">
+				<p className="mt-2 text-sm font-medium text-foreground truncate">
 					{steps.find((s) => s.slug === currentStepSlug)?.title}
 				</p>
 			)}

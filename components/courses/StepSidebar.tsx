@@ -36,7 +36,7 @@ export function StepSidebar({
 								"flex items-center gap-2 whitespace-nowrap rounded-full px-3 py-1.5 text-sm transition-colors",
 								isActive
 									? "bg-amber-100 text-amber-900 font-medium"
-									: "text-gray-500 hover:bg-gray-100 hover:text-gray-900",
+									: "text-muted-foreground hover:bg-accent hover:text-foreground",
 							)}
 						>
 							{isCompleted ? (
@@ -79,7 +79,7 @@ export function StepSidebar({
 							"flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
 							isActive
 								? "bg-amber-50 text-amber-900 font-medium"
-								: "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
+								: "text-muted-foreground hover:bg-accent hover:text-foreground",
 						)}
 					>
 						{isCompleted ? (
