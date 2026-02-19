@@ -1,6 +1,5 @@
 import { useData } from "vike-react/useData";
 import { CourseCard } from "@/components/courses/CourseCard";
-import { OptimizedImage } from "@/components/shared/OptimizedImage";
 import type { Data } from "./+data.server";
 
 export default function MyCoursesPage() {
