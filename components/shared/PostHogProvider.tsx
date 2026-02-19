@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import posthog from "posthog-js";
 import { useCookieConsent } from "./CookieConsent";
 
@@ -9,9 +9,10 @@ const POSTHOG_HOST = "https://eu.i.posthog.com";
 
 export function PostHogProvider() {
 	const consent = useCookieConsent();
+	const initialized = useRef(false);
 
 	useEffect(() => {
-		if (consent !== true) return;
+		if (consent !== true || initialized.current) return;
 
 		posthog.init(POSTHOG_KEY, {
 			api_host: POSTHOG_HOST,
@@ -20,9 +21,7 @@ export function PostHogProvider() {
 			persistence: "localStorage+cookie",
 		});
 
-		return () => {
-			posthog.reset();
-		};
+		initialized.current = true;
 	}, [consent]);
 
 	return null;
