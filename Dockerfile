@@ -24,4 +24,4 @@ COPY --from=build /app/tsconfig.json ./
 COPY --from=build /app/node_modules/.prisma ./node_modules/.prisma
 ENV NODE_ENV=production
 EXPOSE 8080
-CMD ["sh", "-c", "until bunx prisma db push --skip-generate; do echo 'DB not ready, retrying...'; sleep 3; done && bun server/prod.ts"]
+CMD ["sh", "-c", "bun server/scripts/setup-db.ts && bun server/prod.ts"]
