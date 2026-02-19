@@ -32,6 +32,12 @@ export default function MyOrdersPage() {
 					<p className="mt-2 text-sm text-muted-foreground">
 						Ko kupiš izdelek, se bo tukaj prikazal.
 					</p>
+					<a
+						href="/shop"
+						className="mt-4 inline-block text-sm font-medium text-amber-600 hover:text-amber-700 transition-colors"
+					>
+						Pojdi v trgovino →
+					</a>
 				</div>
 			</div>
 		);
