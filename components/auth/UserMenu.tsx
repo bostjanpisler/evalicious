@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import posthog from "posthog-js";
 import { usePageContext } from "vike-react/usePageContext";
+import { authClient } from "@/lib/auth-client";
 
 export function UserMenu() {
 	const pageContext = usePageContext();
@@ -61,11 +62,8 @@ export function UserMenu() {
 				<DropdownMenuItem
 					onClick={async () => {
 						posthog.capture("sign_out");
-						await fetch("/api/auth/sign-out", {
-						method: "POST",
-						credentials: "include",
-					});
-						window.location.href = "/?_=" + Date.now();
+						await authClient.signOut();
+						window.location.href = "/";
 					}}
 				>
 					<LogOut className="mr-2 h-4 w-4" />
