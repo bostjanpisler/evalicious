@@ -62,7 +62,7 @@ export function UserMenu() {
 					onClick={async () => {
 						posthog.capture("sign_out");
 						await fetch("/api/auth/sign-out", { method: "POST" });
-						window.location.href = "/";
+						window.location.href = "/?_=" + Date.now();
 					}}
 				>
 					<LogOut className="mr-2 h-4 w-4" />
