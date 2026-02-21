@@ -67,7 +67,10 @@ export function MobileNav() {
 								type="button"
 								className="mt-2 flex items-center gap-3 rounded-md px-1 py-2 text-sm font-medium text-destructive transition-colors hover:text-destructive/80"
 								onClick={async () => {
-									await fetch("/api/auth/sign-out", { method: "POST" });
+									await fetch("/api/auth/sign-out", {
+									method: "POST",
+									credentials: "include",
+								});
 									window.location.href = "/?_=" + Date.now();
 								}}
 							>

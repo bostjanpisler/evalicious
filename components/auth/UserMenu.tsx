@@ -61,7 +61,10 @@ export function UserMenu() {
 				<DropdownMenuItem
 					onClick={async () => {
 						posthog.capture("sign_out");
-						await fetch("/api/auth/sign-out", { method: "POST" });
+						await fetch("/api/auth/sign-out", {
+						method: "POST",
+						credentials: "include",
+					});
 						window.location.href = "/?_=" + Date.now();
 					}}
 				>
