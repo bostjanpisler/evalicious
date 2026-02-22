@@ -1,7 +1,40 @@
 "use client";
 
 import { PortableText, type PortableTextComponents } from "@portabletext/react";
+import { useEffect, useRef } from "react";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
+
+function HtmlEmbed({ code }: { code: string }) {
+	const containerRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		const el = containerRef.current;
+		if (!el || !code) return;
+
+		el.innerHTML = code;
+
+		// Execute any script tags that were inserted
+		const scripts = el.querySelectorAll("script");
+		for (const oldScript of scripts) {
+			const newScript = document.createElement("script");
+			for (const attr of oldScript.attributes) {
+				newScript.setAttribute(attr.name, attr.value);
+			}
+			newScript.textContent = oldScript.textContent;
+			oldScript.parentNode?.replaceChild(newScript, oldScript);
+		}
+	}, [code]);
+
+	return <div ref={containerRef} />;
+}
+
+function extractYouTubeId(input: string): string {
+	if (!input) return "";
+	const match = input.match(
+		/(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+	);
+	return match ? match[1] : input;
+}
 
 const components: PortableTextComponents = {
 	block: {
@@ -20,9 +53,7 @@ const components: PortableTextComponents = {
 				{children}
 			</h4>
 		),
-		normal: ({ children }) => (
-			<p className="mb-4 leading-relaxed text-foreground/90">{children}</p>
-		),
+		normal: ({ children }) => <p className="mb-4 leading-relaxed text-foreground/90">{children}</p>,
 		blockquote: ({ children }) => (
 			<blockquote className="my-6 border-l-4 border-primary pl-4 italic text-muted-foreground">
 				{children}
@@ -67,28 +98,31 @@ const components: PortableTextComponents = {
 				)}
 			</figure>
 		),
-		youtube: ({ value }) => (
-			<figure className="my-8">
-				<div className="relative overflow-hidden rounded-lg" style={{ paddingTop: "56.25%" }}>
-					<iframe
-						className="absolute inset-0 h-full w-full"
-						src={`https://www.youtube.com/embed/${value.videoId}`}
-						title={value.title ?? "YouTube video"}
-						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-						allowFullScreen
-					/>
-				</div>
-				{value.title && (
-					<figcaption className="mt-2 text-center text-sm text-muted-foreground">
-						{value.title}
-					</figcaption>
-				)}
-			</figure>
-		),
+		youtube: ({ value }) => {
+			const videoId = extractYouTubeId(value.videoId ?? "");
+			if (!videoId) return null;
+			return (
+				<figure className="my-8">
+					<div className="relative overflow-hidden rounded-lg" style={{ paddingTop: "56.25%" }}>
+						<iframe
+							className="absolute inset-0 h-full w-full"
+							src={`https://www.youtube.com/embed/${videoId}`}
+							title={value.title ?? "YouTube video"}
+							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+							allowFullScreen
+						/>
+					</div>
+					{value.title && (
+						<figcaption className="mt-2 text-center text-sm text-muted-foreground">
+							{value.title}
+						</figcaption>
+					)}
+				</figure>
+			);
+		},
 		htmlEmbed: ({ value }) => (
 			<div className="my-8">
-				{/* biome-ignore lint/security/noDangerouslySetInnerHtml: trusted CMS content */}
-				<div dangerouslySetInnerHTML={{ __html: value.code }} />
+				<HtmlEmbed code={value.code} />
 			</div>
 		),
 	},
@@ -109,10 +143,7 @@ export function PortableTextRenderer({ value }: { value: any }) {
 export function extractHeadings(blocks: any[]): { key: string; text: string; level: number }[] {
 	if (!blocks) return [];
 	return blocks
-		.filter(
-			(block) =>
-				block._type === "block" && ["h2", "h3", "h4"].includes(block.style),
-		)
+		.filter((block) => block._type === "block" && ["h2", "h3", "h4"].includes(block.style))
 		.map((block) => ({
 			key: block._key,
 			text: block.children?.map((c: { text: string }) => c.text).join("") ?? "",

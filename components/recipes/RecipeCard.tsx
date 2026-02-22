@@ -1,14 +1,14 @@
-import { Clock, ChefHat, Wheat, Candy, Droplet, Bean, Nut } from "lucide-react";
+import { Bean, ChefHat, Clock, CupSoda, Droplet, Nut, Wheat } from "lucide-react";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { formatDuration } from "@/lib/utils";
 import { RECIPE_CATEGORY_LABELS, RECIPE_DIFFICULTY_LABELS } from "@/lib/constants";
+import { formatDuration } from "@/lib/utils";
 import type { RecipeListing } from "@/types/recipe";
 
 const ALLERGEN_ICONS = [
 	{ key: "glutenFree", label: "Brez glutena", Icon: Wheat },
-	{ key: "sugarFree", label: "Brez rafiniranega sladkorja", Icon: Candy },
+	{ key: "sugarFree", label: "Brez rafiniranega sladkorja", Icon: CupSoda },
 	{ key: "oilFree", label: "Brez rafiniranega olja", Icon: Droplet },
 	{ key: "soyFree", label: "Brez soje", Icon: Bean },
 	{ key: "nutFree", label: "Brez oreškov", Icon: Nut },
@@ -20,9 +20,7 @@ interface RecipeCardProps {
 
 export function RecipeCard({ recipe }: RecipeCardProps) {
 	const totalTime = (recipe.prepTime ?? 0) + (recipe.cookTime ?? 0);
-	const activeAllergens = ALLERGEN_ICONS.filter(
-		(a) => recipe[a.key as keyof RecipeListing],
-	);
+	const activeAllergens = ALLERGEN_ICONS.filter((a) => recipe[a.key as keyof RecipeListing]);
 
 	return (
 		<a href={`/recipes/${recipe.slug}`}>

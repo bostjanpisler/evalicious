@@ -1,24 +1,21 @@
-import { useData } from "vike-react/useData";
+import { Bean, ChefHat, Clock, CupSoda, Droplet, Flame, Nut, Users, Wheat } from "lucide-react";
 import { useConfig } from "vike-react/useConfig";
-import { Clock, Users, ChefHat, Flame, Wheat, Candy, Droplet, Bean, Nut } from "lucide-react";
+import { useData } from "vike-react/useData";
+import { extractHeadings, PortableTextRenderer } from "@/components/blog/PortableTextRenderer";
+import { TableOfContents } from "@/components/blog/TableOfContents";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
-import { OptimizedImage } from "@/components/shared/OptimizedImage";
-import { ProfileSidebar } from "@/components/shared/ProfileSidebar";
+import { AddToListDialog } from "@/components/recipes/AddToListDialog";
 import { IngredientChecklist } from "@/components/recipes/IngredientChecklist";
-import { StepChecklist } from "@/components/recipes/StepChecklist";
 import { RecipeCard } from "@/components/recipes/RecipeCard";
 import { SaveRecipeButton } from "@/components/recipes/SaveRecipeButton";
-import { AddToListDialog } from "@/components/recipes/AddToListDialog";
-import { TableOfContents } from "@/components/blog/TableOfContents";
-import {
-	PortableTextRenderer,
-	extractHeadings,
-} from "@/components/blog/PortableTextRenderer";
+import { StepChecklist } from "@/components/recipes/StepChecklist";
+import { OptimizedImage } from "@/components/shared/OptimizedImage";
+import { ProfileSidebar } from "@/components/shared/ProfileSidebar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { formatDuration } from "@/lib/utils";
-import { urlFor } from "@/lib/sanity.image";
 import { RECIPE_CATEGORY_LABELS, RECIPE_DIFFICULTY_LABELS } from "@/lib/constants";
+import { urlFor } from "@/lib/sanity.image";
+import { formatDuration } from "@/lib/utils";
 import type { Data } from "./+data";
 
 export default function RecipePage() {
@@ -35,9 +32,7 @@ export default function RecipePage() {
 
 	// Build combined TOC headings
 	const hasContent = recipe.content && recipe.content.length > 0;
-	const introHeadings = hasContent
-		? [{ key: "o-receptu", text: "O receptu", level: 2 }]
-		: [];
+	const introHeadings = hasContent ? [{ key: "o-receptu", text: "O receptu", level: 2 }] : [];
 	const contentHeadings = hasContent ? extractHeadings(recipe.content) : [];
 	const sectionHeadings = [
 		{ key: "recept", text: "Recept", level: 2 },
@@ -57,9 +52,7 @@ export default function RecipePage() {
 
 	return (
 		<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-			<Breadcrumbs
-				segments={[{ label: "Recepti", href: "/recipes" }, { label: recipe.title }]}
-			/>
+			<Breadcrumbs segments={[{ label: "Recepti", href: "/recipes" }, { label: recipe.title }]} />
 
 			<div className="mt-6 grid grid-cols-1 gap-10 lg:grid-cols-3">
 				{/* Main content */}
@@ -89,10 +82,7 @@ export default function RecipePage() {
 					{hasContent && (
 						<>
 							<Separator className="my-8" />
-							<h2
-								id="o-receptu"
-								className="mb-6 scroll-mt-24 font-serif text-2xl font-bold"
-							>
+							<h2 id="o-receptu" className="mb-6 scroll-mt-24 font-serif text-2xl font-bold">
 								O receptu
 							</h2>
 							<PortableTextRenderer value={recipe.content} />
@@ -101,10 +91,7 @@ export default function RecipePage() {
 
 					{/* Recipe card */}
 					<div className="my-8 rounded-xl border border-border bg-card p-6">
-						<h2
-							id="recept"
-							className="scroll-mt-24 font-serif text-2xl font-bold"
-						>
+						<h2 id="recept" className="scroll-mt-24 font-serif text-2xl font-bold">
 							{recipe.title}
 						</h2>
 
@@ -157,7 +144,11 @@ export default function RecipePage() {
 						</div>
 
 						{/* Allergen icons */}
-						{(recipe.glutenFree || recipe.sugarFree || recipe.oilFree || recipe.soyFree || recipe.nutFree) && (
+						{(recipe.glutenFree ||
+							recipe.sugarFree ||
+							recipe.oilFree ||
+							recipe.soyFree ||
+							recipe.nutFree) && (
 							<div className="mt-3 flex flex-wrap gap-2">
 								{recipe.glutenFree && (
 									<span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700 dark:bg-green-950 dark:text-green-300">
@@ -173,7 +164,7 @@ export default function RecipePage() {
 								{recipe.sugarFree && (
 									<span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700 dark:bg-green-950 dark:text-green-300">
 										<span className="relative">
-											<Candy className="h-3.5 w-3.5" />
+											<CupSoda className="h-3.5 w-3.5" />
 											<span className="absolute inset-0 flex items-center justify-center">
 												<span className="h-[130%] w-px rotate-45 bg-current opacity-70" />
 											</span>
@@ -253,10 +244,7 @@ export default function RecipePage() {
 						<Separator className="my-6" />
 
 						{/* Ingredients with image on the right */}
-						<h3
-							id="sestavine"
-							className="mb-4 scroll-mt-24 font-serif text-xl font-semibold"
-						>
+						<h3 id="sestavine" className="mb-4 scroll-mt-24 font-serif text-xl font-semibold">
 							Sestavine
 						</h3>
 						<div className="flex flex-col gap-6 md:flex-row">
@@ -283,10 +271,7 @@ export default function RecipePage() {
 						<Separator className="my-6" />
 
 						{/* Steps */}
-						<h3
-							id="navodila"
-							className="mb-4 scroll-mt-24 font-serif text-xl font-semibold"
-						>
+						<h3 id="navodila" className="mb-4 scroll-mt-24 font-serif text-xl font-semibold">
 							Navodila
 						</h3>
 						{recipe.stepGroups?.length > 0 && <StepChecklist groups={recipe.stepGroups} />}
@@ -311,10 +296,7 @@ export default function RecipePage() {
 					{/* Related recipes */}
 					{recipe.relatedRecipes && recipe.relatedRecipes.length > 0 && (
 						<section className="mt-12">
-							<h2
-								id="podobni-recepti"
-								className="mb-6 scroll-mt-24 font-serif text-2xl font-bold"
-							>
+							<h2 id="podobni-recepti" className="mb-6 scroll-mt-24 font-serif text-2xl font-bold">
 								Podobni recepti
 							</h2>
 							<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">

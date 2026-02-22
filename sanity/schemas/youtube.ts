@@ -1,4 +1,4 @@
-import { defineType, defineField } from "sanity";
+import { defineField, defineType } from "sanity";
 
 export const youtube = defineType({
 	name: "youtube",
@@ -7,8 +7,10 @@ export const youtube = defineType({
 	fields: [
 		defineField({
 			name: "videoId",
-			title: "Video ID",
+			title: "Video ID or URL",
 			type: "string",
+			description:
+				"Paste the YouTube video ID (e.g. dQw4w9WgXcQ) or the full URL (e.g. https://www.youtube.com/watch?v=dQw4w9WgXcQ)",
 			validation: (Rule) => Rule.required(),
 		}),
 		defineField({

@@ -137,7 +137,13 @@ export const blogPostBySlugQuery = `
     coverImage,
     category,
     tags,
-    content,
+    content[] {
+      ...,
+      _type == "image" => {
+        ...,
+        "asset": asset->
+      }
+    },
     published,
     publishedAt,
     estimatedReadingTime

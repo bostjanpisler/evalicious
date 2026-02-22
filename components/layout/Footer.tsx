@@ -1,18 +1,18 @@
-import { SITE_NAME, NAV_ITEMS } from "@/lib/constants";
+import { NAV_ITEMS, SITE_NAME } from "@/lib/constants";
 
 export function Footer() {
 	return (
 		<footer className="border-t border-border bg-muted/50">
 			<div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-				<div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-					<div>
-						<span className="font-serif text-xl font-bold text-primary">{SITE_NAME}</span>
-						<p className="mt-2 text-sm text-muted-foreground">
-							Okusne jedi na rastlinski osnovi, knjižice z recepti,
-						kuharski tečaji in delavnice ter raziskovanje sveta z Evo.
-						</p>
-					</div>
-					<div>
+				<div className="mb-8 text-center md:mb-0 md:text-left">
+					<span className="font-serif text-xl font-bold text-primary">{SITE_NAME}</span>
+					<p className="mt-2 text-sm text-muted-foreground">
+						Božanski recepti in nasveti za potepanje po svetu
+					</p>
+				</div>
+				<div className="mt-6 grid grid-cols-2 gap-8 md:mt-8 md:grid-cols-3">
+					<div className="col-span-2 hidden md:block" />
+					<div className="col-span-1">
 						<h3 className="font-semibold text-foreground">Razišči</h3>
 						<nav className="mt-3 flex flex-col gap-2">
 							{NAV_ITEMS.map((item) => (
@@ -26,7 +26,7 @@ export function Footer() {
 							))}
 						</nav>
 					</div>
-					<div>
+					<div className="col-span-1">
 						<h3 className="font-semibold text-foreground">Račun</h3>
 						<nav className="mt-3 flex flex-col gap-2">
 							<a

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <circle cx="100" cy="100" r="100" fill="#f0e6d3"/>
+  <circle cx="100" cy="80" r="35" fill="#c4a882"/>
+  <ellipse cx="100" cy="170" rx="55" ry="45" fill="#c4a882"/>
+  <text x="100" y="105" text-anchor="middle" font-family="serif" font-size="20" fill="#8b7355">E</text>
+</svg>

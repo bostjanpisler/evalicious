@@ -1,15 +1,12 @@
 import { useData } from "vike-react/useData";
-import { OptimizedImage } from "@/components/shared/OptimizedImage";
-import { RecipeCard } from "@/components/recipes/RecipeCard";
 import { BlogCard } from "@/components/blog/BlogCard";
-import { TravelCard } from "@/components/travel/TravelCard";
-import { ProductCard } from "@/components/shop/ProductCard";
+import { RecipeCard } from "@/components/recipes/RecipeCard";
 import { InstagramFeed } from "@/components/shared/InstagramFeed";
+import { OptimizedImage } from "@/components/shared/OptimizedImage";
+import { ProductCard } from "@/components/shop/ProductCard";
+import { TravelCard } from "@/components/travel/TravelCard";
 import { Button } from "@/components/ui/button";
-import {
-	HOMEPAGE_CATEGORIES,
-	RECIPE_CATEGORY_LABELS,
-} from "@/lib/constants";
+import { HOMEPAGE_CATEGORIES, RECIPE_CATEGORY_LABELS } from "@/lib/constants";
 import type { Data } from "./+data";
 
 const CATEGORY_ICONS: Record<string, string> = {
@@ -46,7 +43,7 @@ export default function HomePage() {
 						{data.heroTitle ?? "Eva-licious"}
 					</h1>
 					<p className="mt-4 text-xl text-muted-foreground">
-						{data.heroSubtitle ?? "Okusne jedi na rastlinski osnovi, knjižice z recepti, kuharski tečaji in delavnice ter raziskovanje sveta z Evo."}
+						{data.heroSubtitle ?? "Božanski recepti in nasveti za potepanje po svetu"}
 					</p>
 					<div className="mt-8">
 						<Button size="lg" asChild>
@@ -66,10 +63,8 @@ export default function HomePage() {
 								href={`/recipes?category=${cat}`}
 								className="group flex flex-col items-center gap-2 rounded-xl px-3 py-4 transition-colors hover:bg-muted"
 							>
-								<span className="text-2xl sm:text-3xl">
-									{CATEGORY_ICONS[cat]}
-								</span>
-								<span className="text-sm font-medium text-muted-foreground group-hover:text-foreground">
+								<span className="text-2xl sm:text-3xl">{CATEGORY_ICONS[cat]}</span>
+								<span className="text-center text-sm font-medium text-muted-foreground group-hover:text-foreground">
 									{RECIPE_CATEGORY_LABELS[cat]}
 								</span>
 							</a>
@@ -188,9 +183,7 @@ export default function HomePage() {
 				<section className="bg-muted/50 py-16">
 					<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 						<div className="mb-8 flex items-center justify-between">
-							<h2 className="font-serif text-3xl font-bold">
-								Potovanja
-							</h2>
+							<h2 className="font-serif text-3xl font-bold">Potovanja</h2>
 							<Button variant="ghost" asChild>
 								<a href="/travel">Poglej vse</a>
 							</Button>
@@ -223,43 +216,56 @@ export default function HomePage() {
 
 			{/* Instagram */}
 			<section className="py-16">
-				<div className="mx-auto max-w-md px-4 sm:px-6 lg:px-8">
+				<div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
 					<h2 className="mb-6 text-center font-serif text-3xl font-bold">Instagram</h2>
-					<InstagramFeed />
+					<InstagramFeed variant="wide" />
+				</div>
+			</section>
+
+			{/* About CTA */}
+			<section className="bg-muted/50 py-16">
+				<div className="mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8">
+					<h2 className="font-serif text-3xl font-bold">Spoznaj me</h2>
+					<p className="mt-3 text-sm text-muted-foreground">
+						Hej, sem Eva ✌️ Ustvarjalka, ki verjame, da lahko vsakdanje življenje postane lepše in
+						okusnejše, če vanj dodamo kanček ustvarjalnosti, zdravih navad in pozitivne energije. Ta
+						blog sem ustvarila za vse, ki radi kuhajo, potujejo, raziskujejo nove ideje in iščejo
+						navdih za bolj uravnotežen življenjski slog. Vsak projekt, ki ga sprejemem, poskušam
+						obogatiti z osebno noto in avtentičnostjo, ki odraža moj pristop do kuhanja, življenja
+						in pripovedovanja zgodb. Hvala, da si del moje skupnosti ☀️
+					</p>
+					<div className="mt-6">
+						<Button size="lg" variant="outline" asChild>
+							<a href="/about">O meni</a>
+						</Button>
+					</div>
 				</div>
 			</section>
 
 			{/* Services */}
-			<section className="bg-muted/50 py-16">
+			<section className="py-16">
 				<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-					<h2 className="mb-3 text-center font-serif text-3xl font-bold">
-						Storitve
-					</h2>
+					<h2 className="mb-3 text-center font-serif text-3xl font-bold">Storitve</h2>
 					<p className="mx-auto mb-10 max-w-xl text-center text-muted-foreground">
-						Vesela sem vsake priložnosti, kjer lahko odkrivam nove okuse,
-						spoznavam izdelke in ustvarjam avtentično vsebino. Če imate idejo
-						za sodelovanje, iščete sveže ideje, fotografije ali UGC vsebine,
-						ste na pravem mestu.
+						Vesela sem vsake priložnosti, kjer lahko odkrivam nove okuse, spoznavam izdelke in
+						ustvarjam avtentično vsebino. Če imate idejo za sodelovanje, iščete sveže ideje,
+						fotografije ali UGC vsebine, ste na pravem mestu.
 					</p>
 					<div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
 						<div className="rounded-xl border border-border bg-card p-6 text-center shadow-sm">
 							<span className="text-3xl">📸</span>
-							<h3 className="mt-3 font-serif text-lg font-semibold">
-								Sponzorirane objave
-							</h3>
+							<h3 className="mt-3 font-serif text-lg font-semibold">Sponzorirane objave</h3>
 							<p className="mt-2 text-sm text-muted-foreground">
-								Promocija vaših izdelkov in storitev na mojem Instagram profilu, s
-								skupnostjo preko 10k sledilci.
+								Promocija vaših izdelkov in storitev na mojem Instagram profilu, s skupnostjo preko
+								10k sledilci.
 							</p>
 						</div>
 						<div className="rounded-xl border border-border bg-card p-6 text-center shadow-sm">
 							<span className="text-3xl">🎬</span>
-							<h3 className="mt-3 font-serif text-lg font-semibold">
-								UGC vsebine
-							</h3>
+							<h3 className="mt-3 font-serif text-lg font-semibold">UGC vsebine</h3>
 							<p className="mt-2 text-sm text-muted-foreground">
-								Avtentične vsebine za vaše organske profile, spletne strani ali
-								oglase (možnosti tudi sponsorship ads in dark post).
+								Avtentične vsebine za vaše organske profile, spletne strani ali oglase (možnosti
+								tudi sponsorship ads in dark post).
 							</p>
 						</div>
 						<div className="rounded-xl border border-border bg-card p-6 text-center shadow-sm">
@@ -268,38 +274,15 @@ export default function HomePage() {
 								Razvoj receptov & fotografija
 							</h3>
 							<p className="mt-2 text-sm text-muted-foreground">
-								Uživam v kreiranju novih receptov in še bolj v tem, da jih
-								prikažem v najlepši obliki - video ali foto. Za vas lahko
-								ustvarim recepte za vaše spletne strani, socialna omrežja ali
-								tiskovine.
+								Uživam v kreiranju novih receptov in še bolj v tem, da jih prikažem v najlepši
+								obliki - video ali foto. Za vas lahko ustvarim recepte za vaše spletne strani,
+								socialna omrežja ali tiskovine.
 							</p>
 						</div>
 					</div>
 					<div className="mt-10 text-center">
 						<Button size="lg" asChild>
 							<a href="mailto:evasusin97@gmail.com">Pošlji povpraševanje</a>
-						</Button>
-					</div>
-				</div>
-			</section>
-
-			{/* About CTA */}
-			<section className="py-16">
-				<div className="mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8">
-					<h2 className="font-serif text-3xl font-bold">Spoznaj me</h2>
-					<p className="mt-3 text-sm text-muted-foreground">
-						Hej, sem Eva ✌️ Ustvarjalka, ki verjame, da lahko vsakdanje
-						življenje postane lepše in okusnejše, če vanj dodamo kanček
-						ustvarjalnosti, zdravih navad in pozitivne energije. Ta blog sem
-						ustvarila za vse, ki radi kuhajo, potujejo, raziskujejo nove ideje
-						in iščejo navdih za bolj uravnotežen življenjski slog. Vsak
-						projekt, ki ga sprejemem, poskušam obogatiti z osebno noto in
-						avtentičnostjo, ki odraža moj pristop do kuhanja, življenja in
-						pripovedovanja zgodb. Hvala, da si del moje skupnosti ☀️
-					</p>
-					<div className="mt-6">
-						<Button size="lg" variant="outline" asChild>
-							<a href="/about">O meni</a>
 						</Button>
 					</div>
 				</div>

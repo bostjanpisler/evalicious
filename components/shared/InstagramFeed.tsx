@@ -14,7 +14,11 @@ const RECENT_POSTS = [
 	"DScjJwfgRXa",
 ];
 
-export function InstagramFeed() {
+interface InstagramFeedProps {
+	variant?: "default" | "wide";
+}
+
+export function InstagramFeed({ variant = "default" }: InstagramFeedProps) {
 	const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
 	const handleError = (shortcode: string) => {
@@ -22,6 +26,11 @@ export function InstagramFeed() {
 	};
 
 	const visiblePosts = RECENT_POSTS.filter((sc) => !failedImages.has(sc));
+	const gridClass =
+		variant === "wide"
+			? "grid grid-cols-3 gap-1.5 overflow-hidden rounded-md sm:grid-cols-4 lg:grid-cols-5"
+			: "grid grid-cols-3 gap-1 overflow-hidden rounded-md";
+	const postCount = variant === "wide" ? visiblePosts.length : 9;
 
 	return (
 		<div className="rounded-lg border border-border bg-card p-4">
@@ -32,7 +41,7 @@ export function InstagramFeed() {
 				className="mb-3 flex items-center gap-2.5"
 			>
 				<img
-					src="https://eva-licious.com/wp-content/uploads/2024/07/Untitled-design-4.png"
+					src="/images/eva-profile.svg"
 					alt="@susiiiiin"
 					width={36}
 					height={36}
@@ -47,9 +56,8 @@ export function InstagramFeed() {
 				</div>
 			</a>
 
-			{/* 3x3 post grid */}
-			<div className="grid grid-cols-3 gap-1 overflow-hidden rounded-md">
-				{visiblePosts.slice(0, 9).map((shortcode) => (
+			<div className={gridClass}>
+				{visiblePosts.slice(0, postCount).map((shortcode) => (
 					<a
 						key={shortcode}
 						href={`https://www.instagram.com/reel/${shortcode}/`}
@@ -81,6 +89,7 @@ export function InstagramFeed() {
 					stroke="currentColor"
 					strokeWidth={2}
 					className="h-4 w-4"
+					aria-hidden="true"
 				>
 					<rect x={2} y={2} width={20} height={20} rx={5} />
 					<circle cx={12} cy={12} r={5} />

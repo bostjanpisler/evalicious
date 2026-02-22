@@ -1,6 +1,5 @@
 export const SITE_NAME = "Eva-licious";
-export const SITE_DESCRIPTION =
-	"Okusne jedi na rastlinski osnovi, knjižice z recepti, kuharski tečaji in delavnice ter raziskovanje sveta z Evo.";
+export const SITE_DESCRIPTION = "Božanski recepti in nasveti za potepanje po svetu";
 export const SITE_URL =
 	typeof window === "undefined"
 		? (process.env.BETTER_AUTH_URL ?? "http://localhost:3100")
