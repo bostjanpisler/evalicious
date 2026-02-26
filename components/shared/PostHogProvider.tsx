@@ -19,6 +19,7 @@ export function PostHogProvider() {
 			capture_pageview: true,
 			capture_pageleave: true,
 			persistence: "localStorage+cookie",
+			person_profiles: "identified_only",
 		});
 
 		initialized.current = true;
