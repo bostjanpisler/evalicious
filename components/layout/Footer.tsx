@@ -7,7 +7,8 @@ export function Footer() {
 				<div className="mb-8 text-center md:mb-0 md:text-left">
 					<span className="font-serif text-xl font-bold text-primary">{SITE_NAME}</span>
 					<p className="mt-2 text-sm text-muted-foreground">
-						Božanski recepti in nasveti za potepanje po svetu
+						Okusne jedi na rastlinski osnovi, knjižice z recepti, kuharski tečaji in delavnice ter
+						raziskovanje sveta.
 					</p>
 				</div>
 				<div className="mt-6 grid grid-cols-2 gap-8 md:mt-8 md:grid-cols-3">
