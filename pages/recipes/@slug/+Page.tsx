@@ -1,4 +1,4 @@
-import { Bean, ChefHat, Clock, CupSoda, Droplet, Flame, Nut, Users, Wheat } from "lucide-react";
+import { Bean, ChefHat, Clock, Droplet, Flame, Nut, Users, Wheat } from "lucide-react";
 import { useConfig } from "vike-react/useConfig";
 import { useData } from "vike-react/useData";
 import { extractHeadings, PortableTextRenderer } from "@/components/blog/PortableTextRenderer";
@@ -9,6 +9,7 @@ import { IngredientChecklist } from "@/components/recipes/IngredientChecklist";
 import { RecipeCard } from "@/components/recipes/RecipeCard";
 import { SaveRecipeButton } from "@/components/recipes/SaveRecipeButton";
 import { StepChecklist } from "@/components/recipes/StepChecklist";
+import { SugarCubesIcon } from "@/components/recipes/SugarCubesIcon";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
 import { ProfileSidebar } from "@/components/shared/ProfileSidebar";
 import { Badge } from "@/components/ui/badge";
@@ -164,7 +165,7 @@ export default function RecipePage() {
 								{recipe.sugarFree && (
 									<span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700 dark:bg-green-950 dark:text-green-300">
 										<span className="relative">
-											<CupSoda className="h-3.5 w-3.5" />
+											<SugarCubesIcon className="h-3.5 w-3.5" />
 											<span className="absolute inset-0 flex items-center justify-center">
 												<span className="h-[130%] w-px rotate-45 bg-current opacity-70" />
 											</span>
