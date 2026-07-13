@@ -11,7 +11,7 @@ downloadHandler.get("/free/:productSlug", async (c) => {
 	const { productSlug } = c.req.param();
 	const product = await db.product.findUnique({ where: { slug: productSlug } });
 
-	if (!product || product.type !== "ebook" || product.priceInCents > 0) {
+	if (!product || !product.published || product.type !== "ebook" || product.priceInCents > 0) {
 		return c.json({ error: "File not found" }, 404);
 	}
 	if (!(await isFreePublishedEbook(productSlug))) {

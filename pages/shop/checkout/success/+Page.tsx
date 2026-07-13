@@ -1,45 +1,61 @@
 "use client";
 
+import { AlertCircle, CheckCircle, Clock, Download, Play, ShoppingBag } from "lucide-react";
 import { useEffect } from "react";
 import { useData } from "vike-react/useData";
-import { CheckCircle, Download, Play, ShoppingBag } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import posthog from "posthog-js";
+import { Card, CardContent } from "@/components/ui/card";
+import { capture } from "@/lib/analytics-client";
 import type { Data } from "./+data.server";
 
 export default function CheckoutSuccessPage() {
-	const { productName, productType, courseSlug, orderId } = useData<Data>();
+	const { status, productName, productType, courseSlug, orderId } = useData<Data>();
 
 	useEffect(() => {
-		posthog.capture("purchase_completed", {
+		if (status !== "confirmed") return;
+		capture("purchase_completed", {
 			product_name: productName,
 			product_type: productType,
 			order_id: orderId,
 		});
-	}, [orderId, productName, productType]);
+	}, [orderId, productName, productType, status]);
+
+	const confirmed = status === "confirmed";
+	const processing = status === "processing";
 
 	return (
 		<div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
 			<Card className="mx-auto max-w-lg text-center">
 				<CardContent className="p-8">
-					<CheckCircle className="mx-auto h-16 w-16 text-green-500" />
+					{confirmed ? (
+						<CheckCircle className="mx-auto h-16 w-16 text-green-500" />
+					) : processing ? (
+						<Clock className="mx-auto h-16 w-16 text-amber-500" />
+					) : (
+						<AlertCircle className="mx-auto h-16 w-16 text-destructive" />
+					)}
 					<h1 className="mt-6 font-serif text-3xl font-bold">
-						Hvala za nakup!
+						{confirmed
+							? "Hvala za nakup!"
+							: processing
+								? "Plačilo obdelujemo"
+								: "Plačila ni bilo mogoče potrditi"}
 					</h1>
 
 					{productName && (
-						<p className="mt-2 text-lg font-medium text-muted-foreground">
-							{productName}
-						</p>
+						<p className="mt-2 text-lg font-medium text-muted-foreground">{productName}</p>
 					)}
 
 					<p className="mt-3 text-muted-foreground">
-						Tvoje naročilo je potrjeno. Potrditev smo poslali na tvoj e-poštni naslov.
+						{confirmed
+							? "Tvoje naročilo je potrjeno. Potrditev smo poslali na tvoj e-poštni naslov."
+							: processing
+								? "Plačilo je uspelo, naročilo pa še pripravljamo. Osveži stran čez nekaj trenutkov."
+								: "Preveri stanje plačila ali se vrni v trgovino in poskusi znova."}
 					</p>
 
 					<div className="mt-8 flex flex-col gap-3">
-						{productType === "ebook" && orderId && (
+						{confirmed && productType === "ebook" && orderId && (
 							<a href={`/api/download/${orderId}`}>
 								<Button size="lg" className="w-full gap-2">
 									<Download className="h-4 w-4" />
@@ -48,7 +64,7 @@ export default function CheckoutSuccessPage() {
 							</a>
 						)}
 
-						{productType === "ecourse" && courseSlug && (
+						{confirmed && productType === "ecourse" && courseSlug && (
 							<a href={`/dashboard/my-courses/${courseSlug}`}>
 								<Button size="lg" className="w-full gap-2">
 									<Play className="h-4 w-4" />
@@ -63,6 +79,13 @@ export default function CheckoutSuccessPage() {
 								Moja naročila
 							</Button>
 						</a>
+						{!confirmed && (
+							<a href="/shop">
+								<Button variant="outline" className="w-full">
+									Nazaj v trgovino
+								</Button>
+							</a>
+						)}
 					</div>
 				</CardContent>
 			</Card>

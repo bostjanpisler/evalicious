@@ -1,25 +1,35 @@
 import { Hono } from "hono";
 import type Stripe from "stripe";
 import { db } from "../lib/db.js";
-import { sendPurchaseConfirmation } from "../lib/email.js";
 import { enqueueOrderInvoice } from "../lib/invoice-worker.js";
-import { getSignedDownloadUrl } from "../lib/r2.js";
+import { fulfillOrder } from "../lib/order-fulfillment.js";
 import { sanityClient } from "../lib/sanity.js";
 import { getStripe } from "../lib/stripe.js";
 import { requireAuth } from "../middleware/guard.js";
 
-export const stripeHandler = new Hono();
+type StripeVariables = {
+	user: { id: string; email: string };
+};
+
+export const stripeHandler = new Hono<{ Variables: StripeVariables }>();
 
 // Create checkout session
 stripeHandler.post("/checkout", requireAuth, async (c) => {
-	const user = c.get("user") as { id: string; email: string };
+	const user = c.get("user");
 	const { productSlug } = await c.req.json<{ productSlug: string }>();
 
 	const product = await db.product.findUnique({ where: { slug: productSlug } });
-	if (!product || product.priceInCents <= 0) {
+	if (!product || !product.published || product.priceInCents <= 0) {
 		return c.json({ error: "Product does not require checkout" }, 400);
 	}
 	if (!product.stripePriceId || !product.stripeProductId) {
+		return c.json({ error: "Product not found" }, 404);
+	}
+	const publishedProduct = await sanityClient.fetch<{ _id: string }>(
+		`*[_type == "product" && _id == $id && published == true][0]{ _id }`,
+		{ id: product.sanityId },
+	);
+	if (!publishedProduct) {
 		return c.json({ error: "Product not found" }, 404);
 	}
 
@@ -67,7 +77,7 @@ stripeHandler.post("/webhook", async (c) => {
 		if (session.payment_status !== "paid") {
 			return c.json({ received: true });
 		}
-		const { userId, productId, productType } = session.metadata ?? {};
+		const { userId, productId } = session.metadata ?? {};
 
 		if (!userId || !productId) {
 			return c.json({ error: "Missing metadata" }, 400);
@@ -76,24 +86,18 @@ stripeHandler.post("/webhook", async (c) => {
 		const product = await db.product.findUnique({ where: { id: productId } });
 		if (!product) return c.json({ error: "Product not found" }, 400);
 
-		const existingOrder = await db.order.findUnique({
+		const order = await db.order.upsert({
 			where: { stripeSessionId: session.id },
-		});
-		if (existingOrder) {
-			await enqueueOrderInvoice(existingOrder.id);
-			return c.json({ received: true });
-		}
-
-		// Create order
-		await db.order.create({
-			data: {
+			update: {},
+			create: {
 				userId,
 				stripeSessionId: session.id,
-				stripePaymentIntentId: session.payment_intent as string,
+				stripePaymentIntentId:
+					typeof session.payment_intent === "string" ? session.payment_intent : null,
 				status: "completed",
 				totalInCents: session.amount_total ?? product.priceInCents,
 				currency: session.currency?.toUpperCase() ?? product.currency,
-				email: session.customer_email ?? "",
+				email: session.customer_details?.email ?? session.customer_email ?? "",
 				spaceInvoiceNextTryAt: new Date(),
 				items: {
 					create: {
@@ -104,37 +108,8 @@ stripeHandler.post("/webhook", async (c) => {
 			},
 		});
 
-		// Handle product-type-specific actions
-		if (productType === "ebook") {
-			if (product.r2FileKey) {
-				const downloadUrl = await getSignedDownloadUrl(product.r2FileKey, 86400);
-				await sendPurchaseConfirmation(session.customer_email ?? "", product.slug, downloadUrl);
-			} else {
-				await sendPurchaseConfirmation(session.customer_email ?? "", product.slug);
-			}
-		} else if (productType === "ecourse") {
-			// Get course ID from Sanity product
-			const sanityProduct = await sanityClient.fetch(
-				`*[_type == "product" && _id == $id][0]{ "courseId": course._ref }`,
-				{ id: product.sanityId },
-			);
-			if (sanityProduct?.courseId) {
-				await db.courseAccess.upsert({
-					where: {
-						userId_courseId: {
-							userId,
-							courseId: sanityProduct.courseId,
-						},
-					},
-					create: {
-						userId,
-						courseId: sanityProduct.courseId,
-					},
-					update: {},
-				});
-			}
-			await sendPurchaseConfirmation(session.customer_email ?? "", product.slug);
-		}
+		await enqueueOrderInvoice(order.id);
+		await fulfillOrder(order.id);
 	}
 
 	return c.json({ received: true });

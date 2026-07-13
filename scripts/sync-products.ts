@@ -28,8 +28,13 @@ const products = await sanityClient.fetch<SanityProduct[]>(
 	}`,
 );
 
+if (!products) {
+	throw new Error("Unable to load products from Sanity; no database changes were made.");
+}
+
 let synced = 0;
 let skipped = 0;
+const synchronizedSanityIds: string[] = [];
 
 for (const product of products ?? []) {
 	if (
@@ -54,6 +59,7 @@ for (const product of products ?? []) {
 			stripePriceId: product.stripePriceId,
 			stripeProductId: product.stripeProductId,
 			r2FileKey: product.r2FileKey,
+			published: product.published === true,
 		},
 		update: {
 			slug: product.slug,
@@ -63,10 +69,17 @@ for (const product of products ?? []) {
 			stripePriceId: product.stripePriceId,
 			stripeProductId: product.stripeProductId,
 			r2FileKey: product.r2FileKey,
+			published: product.published === true,
 		},
 	});
+	synchronizedSanityIds.push(product._id);
 	synced += 1;
 }
+
+await db.product.updateMany({
+	where: synchronizedSanityIds.length > 0 ? { sanityId: { notIn: synchronizedSanityIds } } : {},
+	data: { published: false },
+});
 
 await db.$disconnect();
 console.log(`Synced ${synced} product${synced === 1 ? "" : "s"}; skipped ${skipped}.`);

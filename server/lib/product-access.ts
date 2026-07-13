@@ -1,5 +1,13 @@
 import { sanityClient } from "./sanity.js";
 
+export function canAccessLesson(input: {
+	lessonIsFree: boolean;
+	hasCourseAccess: boolean;
+	courseIsFree: boolean;
+}): boolean {
+	return input.lessonIsFree || input.hasCourseAccess || input.courseIsFree;
+}
+
 export async function isFreePublishedCourse(courseId: string): Promise<boolean> {
 	const product = await sanityClient.fetch<{ _id: string }>(
 		`*[

@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { courseStepIdsQuery } from "@/lib/sanity.queries";
 import { db } from "../lib/db.js";
-import { isFreePublishedCourse } from "../lib/product-access.js";
+import { canAccessLesson, isFreePublishedCourse } from "../lib/product-access.js";
 import { sanityClient } from "../lib/sanity.js";
 import { requireAuth } from "../middleware/guard.js";
 
@@ -73,8 +73,11 @@ progressHandler.post("/lesson/:lessonId", async (c) => {
 		return c.json({ error: "Invalid progress update" }, 400);
 	}
 
-	const course = await sanityClient.fetch<{ _id: string } | null>(
-		`*[_type == "course" && $lessonId in steps[]._ref][0]{ _id }`,
+	const course = await sanityClient.fetch<{ _id: string; lessonIsFree: boolean } | null>(
+		`*[_type == "course" && $lessonId in steps[]._ref][0]{
+			_id,
+			"lessonIsFree": coalesce(steps[_ref == $lessonId][0]->isFree, false)
+		}`,
 		{ lessonId },
 	);
 	if (!course) {
@@ -84,7 +87,15 @@ progressHandler.post("/lesson/:lessonId", async (c) => {
 	const access = await db.courseAccess.findUnique({
 		where: { userId_courseId: { userId: user.id, courseId: course._id } },
 	});
-	if (!access && !(await isFreePublishedCourse(course._id))) {
+	const courseIsFree =
+		course.lessonIsFree || access ? false : await isFreePublishedCourse(course._id);
+	if (
+		!canAccessLesson({
+			lessonIsFree: course.lessonIsFree,
+			hasCourseAccess: !!access,
+			courseIsFree,
+		})
+	) {
 		return c.json({ error: "No access" }, 403);
 	}
 

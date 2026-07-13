@@ -76,6 +76,7 @@ model Product {
   stripePriceId   String?     @unique
   stripeProductId String?     @unique
   r2FileKey       String?
+  published       Boolean     @default(false)
   orderItems      OrderItem[]
 }
 
@@ -92,6 +93,11 @@ model Order {
   spaceInvoiceAttempts  Int         @default(0)
   spaceInvoiceNextTryAt DateTime?
   spaceInvoiceWorkingAt DateTime?
+  fulfillmentCompletedAt DateTime?
+  fulfillmentError       String?
+  fulfillmentWorkingAt   DateTime?
+  deliveryUrl            String?
+  deliveryUrlExpiresAt   DateTime?
   status                String      @default("pending")
   totalInCents          Int
   currency              String      @default("EUR")

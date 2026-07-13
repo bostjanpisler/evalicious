@@ -3,7 +3,7 @@ import type { PageContextServer } from "vike/types";
 import { courseFullQuery } from "@/lib/sanity.queries";
 import { generateBunnyEmbedUrl } from "@/server/lib/bunny";
 import { db } from "@/server/lib/db";
-import { isFreePublishedCourse } from "@/server/lib/product-access";
+import { canAccessLesson, isFreePublishedCourse } from "@/server/lib/product-access";
 import { sanityClient } from "@/server/lib/sanity";
 import type { CourseFull, StepFull } from "@/types/course";
 
@@ -28,7 +28,7 @@ export type Data = {
 };
 
 export async function data(pageContext: PageContextServer): Promise<Data> {
-	const user = (pageContext as Record<string, unknown>).user as { id: string } | null;
+	const user = (pageContext as unknown as Record<string, unknown>).user as { id: string } | null;
 	if (!user) throw render(403, "Unauthorized");
 
 	const { courseSlug, lessonSlug } = pageContext.routeParams;
@@ -36,20 +36,29 @@ export async function data(pageContext: PageContextServer): Promise<Data> {
 	const course = await sanityClient.fetch<CourseFull>(courseFullQuery, { slug: courseSlug });
 	if (!course) throw render(404, "Course not found");
 
-	// Verify access
-	const access = await db.courseAccess.findUnique({
-		where: { userId_courseId: { userId: user.id, courseId: course._id } },
-	});
-	if (!access && !(await isFreePublishedCourse(course._id))) {
-		throw render(403, "No access to this course");
-	}
-
 	// Find the current step
 	const steps = course.steps ?? [];
 	const currentIndex = steps.findIndex((s) => s.slug === lessonSlug);
 	if (currentIndex === -1) throw render(404, "Step not found");
 
 	const currentStep = steps[currentIndex];
+	if (!currentStep) throw render(404, "Step not found");
+
+	// Explicitly free lessons are previews even when their course is paid.
+	const access = await db.courseAccess.findUnique({
+		where: { userId_courseId: { userId: user.id, courseId: course._id } },
+	});
+	const courseIsFree =
+		currentStep.isFree || access ? false : await isFreePublishedCourse(course._id);
+	if (
+		!canAccessLesson({
+			lessonIsFree: currentStep.isFree === true,
+			hasCourseAccess: !!access,
+			courseIsFree,
+		})
+	) {
+		throw render(403, "No access to this course");
+	}
 
 	// Generate signed embed URL
 	const stepView: StepView = {

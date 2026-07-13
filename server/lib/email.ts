@@ -11,25 +11,36 @@ function getResend(): Resend {
 
 const EMAIL_FROM = process.env.EMAIL_FROM ?? "Eva <hello@eva-licious.com>";
 
+export function assertEmailSent(result: { error: { message: string } | null }, kind: string): void {
+	if (result.error) {
+		throw new Error(`${kind} email failed: ${result.error.message}`);
+	}
+}
+
 export async function sendPurchaseConfirmation(
 	to: string,
 	productName: string,
 	downloadUrl?: string,
+	idempotencyKey?: string,
 ) {
-	await getResend().emails.send({
-		from: EMAIL_FROM,
-		to,
-		subject: `Your purchase: ${productName}`,
-		html: `
+	const result = await getResend().emails.send(
+		{
+			from: EMAIL_FROM,
+			to,
+			subject: `Your purchase: ${productName}`,
+			html: `
       <h1>Thank you for your purchase!</h1>
       <p>You've successfully purchased <strong>${productName}</strong>.</p>
       ${downloadUrl ? `<p><a href="${downloadUrl}">Download your file</a></p><p>This link expires in 24 hours.</p>` : "<p>You can access your content from your dashboard.</p>"}
     `,
-	});
+		},
+		idempotencyKey ? { idempotencyKey } : undefined,
+	);
+	assertEmailSent(result, "Purchase confirmation");
 }
 
 export async function sendWelcomeEmail(to: string, name: string) {
-	await getResend().emails.send({
+	const result = await getResend().emails.send({
 		from: EMAIL_FROM,
 		to,
 		subject: "Welcome to Eva-licious!",
@@ -38,4 +49,5 @@ export async function sendWelcomeEmail(to: string, name: string) {
       <p>Thanks for joining Eva-licious. Explore recipes, save your favorites, and more!</p>
     `,
 	});
+	assertEmailSent(result, "Welcome");
 }
