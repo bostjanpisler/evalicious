@@ -45,7 +45,7 @@ export function InstagramFeed({ variant = "default" }: InstagramFeedProps) {
 					alt="@susiiiiin"
 					width={36}
 					height={36}
-					className="rounded-full object-cover"
+					className="h-9 w-9 shrink-0 rounded-full object-cover"
 					loading="lazy"
 				/>
 				<div className="min-w-0">
