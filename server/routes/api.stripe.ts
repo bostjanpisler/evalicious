@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import type Stripe from "stripe";
 import { db } from "../lib/db.js";
 import { sendPurchaseConfirmation } from "../lib/email.js";
+import { enqueueOrderInvoice } from "../lib/invoice-worker.js";
 import { getSignedDownloadUrl } from "../lib/r2.js";
 import { sanityClient } from "../lib/sanity.js";
 import { getStripe } from "../lib/stripe.js";
@@ -63,6 +64,9 @@ stripeHandler.post("/webhook", async (c) => {
 
 	if (event.type === "checkout.session.completed") {
 		const session = event.data.object as Stripe.Checkout.Session;
+		if (session.payment_status !== "paid") {
+			return c.json({ received: true });
+		}
 		const { userId, productId, productType } = session.metadata ?? {};
 
 		if (!userId || !productId) {
@@ -76,6 +80,7 @@ stripeHandler.post("/webhook", async (c) => {
 			where: { stripeSessionId: session.id },
 		});
 		if (existingOrder) {
+			await enqueueOrderInvoice(existingOrder.id);
 			return c.json({ received: true });
 		}
 
@@ -87,8 +92,9 @@ stripeHandler.post("/webhook", async (c) => {
 				stripePaymentIntentId: session.payment_intent as string,
 				status: "completed",
 				totalInCents: session.amount_total ?? product.priceInCents,
-				currency: product.currency,
+				currency: session.currency?.toUpperCase() ?? product.currency,
 				email: session.customer_email ?? "",
+				spaceInvoiceNextTryAt: new Date(),
 				items: {
 					create: {
 						productId: product.id,

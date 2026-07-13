@@ -9,10 +9,13 @@ import { listsHandler } from "./routes/api.lists.js";
 import { progressHandler } from "./routes/api.progress.js";
 import { downloadHandler } from "./routes/api.download.js";
 import { allowedOrigins } from "./lib/origins.js";
+import { startInvoiceWorker } from "./lib/invoice-worker.js";
 
 const isProduction = process.env.NODE_ENV === "production";
 
 const app = new Hono();
+
+startInvoiceWorker();
 
 app.use("*", logger());
 app.use(
