@@ -84,6 +84,14 @@ model Order {
   userId                String
   stripeSessionId       String?     @unique
   stripePaymentIntentId String?     @unique
+  spaceInvoiceId        String?     @unique
+  spaceInvoiceNumber    String?
+  spaceInvoiceIssuedAt  DateTime?
+  spaceInvoiceSentAt    DateTime?
+  spaceInvoiceError     String?
+  spaceInvoiceAttempts  Int         @default(0)
+  spaceInvoiceNextTryAt DateTime?
+  spaceInvoiceWorkingAt DateTime?
   status                String      @default("pending")
   totalInCents          Int
   currency              String      @default("EUR")
@@ -94,6 +102,7 @@ model Order {
   items                 OrderItem[]
 
   @@index([userId])
+  @@index([spaceInvoiceNextTryAt])
 }
 
 model OrderItem {
