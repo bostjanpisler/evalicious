@@ -2,6 +2,7 @@ export default function Head() {
 	return (
 		<>
 			<meta charSet="utf-8" />
+			<script src="/theme.js" />
 			<link rel="preconnect" href="https://fonts.googleapis.com" />
 			<link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
 			<link

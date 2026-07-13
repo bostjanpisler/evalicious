@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import posthog from "posthog-js";
+import { capture } from "@/lib/analytics-client";
 
 interface ResetProgressProps {
 	courseId: string;
@@ -19,8 +19,8 @@ export function ResetProgress({ courseId, dark = false }: ResetProgressProps) {
 				method: "DELETE",
 			});
 			if (res.ok) {
-				posthog.capture("course_progress_reset", { course_id: courseId });
-			window.location.reload();
+				capture("course_progress_reset", { course_id: courseId });
+				window.location.reload();
 			}
 		} catch {
 			// ignore
@@ -33,9 +33,7 @@ export function ResetProgress({ courseId, dark = false }: ResetProgressProps) {
 	if (confirming) {
 		return (
 			<div className="flex items-center gap-2">
-				<span className={`text-sm ${dark ? "text-gray-300" : "text-gray-500"}`}>
-					Ponastavi?
-				</span>
+				<span className={`text-sm ${dark ? "text-gray-300" : "text-gray-500"}`}>Ponastavi?</span>
 				<button
 					type="button"
 					onClick={handleReset}

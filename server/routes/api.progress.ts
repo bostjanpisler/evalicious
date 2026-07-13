@@ -5,13 +5,17 @@ import { isFreePublishedCourse } from "../lib/product-access.js";
 import { sanityClient } from "../lib/sanity.js";
 import { requireAuth } from "../middleware/guard.js";
 
-export const progressHandler = new Hono();
+type ProgressVariables = {
+	user: { id: string };
+};
+
+export const progressHandler = new Hono<{ Variables: ProgressVariables }>();
 
 progressHandler.use("*", requireAuth);
 
 // Get progress for a course (filtered by course steps)
 progressHandler.get("/:courseId", async (c) => {
-	const user = c.get("user") as { id: string };
+	const user = c.get("user");
 	const courseId = c.req.param("courseId");
 
 	// Verify access
@@ -36,7 +40,7 @@ progressHandler.get("/:courseId", async (c) => {
 
 // Reset all progress for a course
 progressHandler.delete("/:courseId", async (c) => {
-	const user = c.get("user") as { id: string };
+	const user = c.get("user");
 	const courseId = c.req.param("courseId");
 
 	// Verify access
@@ -62,9 +66,27 @@ progressHandler.delete("/:courseId", async (c) => {
 
 // Toggle lesson completion
 progressHandler.post("/lesson/:lessonId", async (c) => {
-	const user = c.get("user") as { id: string };
+	const user = c.get("user");
 	const lessonId = c.req.param("lessonId");
 	const { completed } = await c.req.json<{ completed: boolean }>();
+	if (!lessonId || lessonId.length > 200 || typeof completed !== "boolean") {
+		return c.json({ error: "Invalid progress update" }, 400);
+	}
+
+	const course = await sanityClient.fetch<{ _id: string } | null>(
+		`*[_type == "course" && $lessonId in steps[]._ref][0]{ _id }`,
+		{ lessonId },
+	);
+	if (!course) {
+		return c.json({ error: "Lesson not found" }, 404);
+	}
+
+	const access = await db.courseAccess.findUnique({
+		where: { userId_courseId: { userId: user.id, courseId: course._id } },
+	});
+	if (!access && !(await isFreePublishedCourse(course._id))) {
+		return c.json({ error: "No access" }, 403);
+	}
 
 	const progress = await db.lessonProgress.upsert({
 		where: { userId_lessonId: { userId: user.id, lessonId } },

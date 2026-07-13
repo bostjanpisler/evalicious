@@ -2,8 +2,8 @@
 
 import { Heart } from "lucide-react";
 import { useState } from "react";
-import posthog from "posthog-js";
 import { Button } from "@/components/ui/button";
+import { capture } from "@/lib/analytics-client";
 import { cn } from "@/lib/utils";
 
 interface SaveRecipeButtonProps {
@@ -26,7 +26,9 @@ export function SaveRecipeButton({ recipeId, initialFavorited = false }: SaveRec
 			if (res.ok) {
 				const data = await res.json();
 				setFavorited(data.favorited);
-				posthog.capture(data.favorited ? "recipe_favorited" : "recipe_unfavorited", { recipe_id: recipeId });
+				capture(data.favorited ? "recipe_favorited" : "recipe_unfavorited", {
+					recipe_id: recipeId,
+				});
 			}
 		} finally {
 			setLoading(false);
@@ -41,9 +43,7 @@ export function SaveRecipeButton({ recipeId, initialFavorited = false }: SaveRec
 			disabled={loading}
 			aria-label={favorited ? "Odstrani iz priljubljenih" : "Shrani med priljubljene"}
 		>
-			<Heart
-				className={cn("mr-1.5 h-4 w-4", favorited && "fill-primary text-primary")}
-			/>
+			<Heart className={cn("mr-1.5 h-4 w-4", favorited && "fill-primary text-primary")} />
 			{favorited ? "Shranjeno" : "Shrani"}
 		</Button>
 	);

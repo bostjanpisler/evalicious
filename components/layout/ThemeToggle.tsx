@@ -8,20 +8,14 @@ type Theme = "light" | "dark" | "system";
 
 function getSystemTheme(): "light" | "dark" {
 	if (typeof window === "undefined") return "light";
-	return window.matchMedia("(prefers-color-scheme: dark)").matches
-		? "dark"
-		: "light";
+	return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
-function getInitialTheme(): Theme {
-	if (typeof document === "undefined") return "system";
-	const cookie = document.cookie
-		.split("; ")
-		.find((c) => c.startsWith("theme="));
+function getStoredTheme(): Theme {
+	const cookie = document.cookie.split("; ").find((c) => c.startsWith("theme="));
 	if (cookie) {
 		const value = cookie.split("=")[1];
-		if (value === "light" || value === "dark" || value === "system")
-			return value;
+		if (value === "light" || value === "dark" || value === "system") return value;
 	}
 	return "system";
 }
@@ -43,12 +37,21 @@ const NEXT_THEME: Record<Theme, Theme> = {
 };
 
 export function ThemeToggle() {
-	const [theme, setTheme] = useState<Theme>(getInitialTheme);
+	const [theme, setTheme] = useState<Theme>("system");
+	const [ready, setReady] = useState(false);
 
 	useEffect(() => {
+		const storedTheme = getStoredTheme();
+		setTheme(storedTheme);
+		applyTheme(storedTheme);
+		setReady(true);
+	}, []);
+
+	useEffect(() => {
+		if (!ready) return;
 		applyTheme(theme);
 		document.cookie = `theme=${theme};path=/;max-age=31536000`;
-	}, [theme]);
+	}, [ready, theme]);
 
 	useEffect(() => {
 		if (theme !== "system") return;

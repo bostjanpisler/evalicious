@@ -43,7 +43,7 @@ export const allRecipesQuery = `
 `;
 
 export const recipeBySlugQuery = `
-  *[_type == "recipe" && slug.current == $slug][0] {
+  *[_type == "recipe" && published == true && slug.current == $slug][0] {
     _id,
     title,
     "slug": slug.current,
@@ -129,7 +129,7 @@ export const allBlogPostsQuery = `
 `;
 
 export const blogPostBySlugQuery = `
-  *[_type == "blogPost" && slug.current == $slug][0] {
+  *[_type == "blogPost" && published == true && slug.current == $slug][0] {
     _id,
     title,
     "slug": slug.current,
@@ -167,7 +167,7 @@ export const allTravelEntriesQuery = `
 `;
 
 export const travelEntryBySlugQuery = `
-  *[_type == "travelEntry" && slug.current == $slug][0] {
+  *[_type == "travelEntry" && published == true && slug.current == $slug][0] {
     _id,
     title,
     "slug": slug.current,
@@ -253,7 +253,7 @@ export const allCoursesQuery = `
 `;
 
 export const courseBySlugQuery = `
-  *[_type == "course" && slug.current == $slug][0] {
+  *[_type == "course" && published == true && slug.current == $slug][0] {
     _id,
     title,
     "slug": slug.current,

@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import posthog from "posthog-js";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { capture } from "@/lib/analytics-client";
 
 export function RegisterForm() {
 	const [name, setName] = useState("");
@@ -29,11 +29,11 @@ export function RegisterForm() {
 			if (!res.ok) {
 				const data = await res.json();
 				setError(data.message ?? "Registracija ni uspela");
-				posthog.capture("sign_up_error", { error: data.message });
+				capture("sign_up_error", { error: data.message });
 				return;
 			}
 
-			posthog.capture("sign_up_success");
+			capture("sign_up_success");
 			window.location.href = "/dashboard/my-recipes";
 		} catch {
 			setError("Nekaj je šlo narobe. Poskusi znova.");
@@ -51,9 +51,7 @@ export function RegisterForm() {
 			<CardContent>
 				<form onSubmit={handleSubmit} className="space-y-4">
 					{error && (
-						<div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-							{error}
-						</div>
+						<div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
 					)}
 					<div className="space-y-2">
 						<Label htmlFor="name">Ime</Label>

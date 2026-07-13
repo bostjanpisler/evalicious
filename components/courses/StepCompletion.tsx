@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useCallback } from "react";
 import confetti from "canvas-confetti";
-import posthog from "posthog-js";
+import { useCallback, useState } from "react";
+import { capture } from "@/lib/analytics-client";
 
 interface StepCompletionProps {
 	lessonId: string;
@@ -61,8 +61,14 @@ export function StepCompletion({
 			if (!res.ok) {
 				setCompleted(!next);
 			} else {
-				posthog.capture(next ? "lesson_completed" : "lesson_uncompleted", { lesson_id: lessonId, method: "manual" });
-				if (next) onComplete?.();
+				capture(next ? "lesson_completed" : "lesson_uncompleted", {
+					lesson_id: lessonId,
+					method: "manual",
+				});
+				if (next) {
+					fireConfetti();
+					onComplete?.();
+				}
 			}
 		} catch {
 			setCompleted(!next);
@@ -103,6 +109,7 @@ export function StepCompletion({
 						className="h-3.5 w-3.5"
 						viewBox="0 0 20 20"
 						fill="currentColor"
+						aria-hidden="true"
 					>
 						<path
 							fillRule="evenodd"
@@ -112,9 +119,7 @@ export function StepCompletion({
 					</svg>
 				)}
 			</span>
-			<span>
-				{completed ? "Opravljeno" : compact ? "Opravljeno?" : "Označi kot opravljeno"}
-			</span>
+			<span>{completed ? "Opravljeno" : compact ? "Opravljeno?" : "Označi kot opravljeno"}</span>
 		</button>
 	);
 }

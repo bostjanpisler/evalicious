@@ -1,9 +1,9 @@
 "use client";
 
 import { Search, X } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { badgeVariants } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
 	Select,
 	SelectContent,
@@ -11,7 +11,12 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { RECIPE_CATEGORIES, RECIPE_DIFFICULTIES, RECIPE_CATEGORY_LABELS, RECIPE_DIFFICULTY_LABELS } from "@/lib/constants";
+import {
+	RECIPE_CATEGORIES,
+	RECIPE_CATEGORY_LABELS,
+	RECIPE_DIFFICULTIES,
+	RECIPE_DIFFICULTY_LABELS,
+} from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 interface RecipeFiltersProps {
@@ -38,8 +43,12 @@ export function RecipeFilters({
 	return (
 		<div className="space-y-4">
 			<div className="relative">
-				<Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+				<Search
+					className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+					aria-hidden="true"
+				/>
 				<Input
+					aria-label="Išči recepte"
 					placeholder="Išči recepte..."
 					value={search}
 					onChange={(e) => onSearchChange(e.target.value)}
@@ -50,14 +59,18 @@ export function RecipeFilters({
 			<div className="flex flex-wrap items-center gap-2">
 				<span className="text-sm font-medium text-muted-foreground">Kategorija:</span>
 				{RECIPE_CATEGORIES.map((cat) => (
-					<Badge
+					<button
+						type="button"
 						key={cat}
-						variant={category === cat ? "default" : "outline"}
-						className={cn("cursor-pointer", category === cat && "bg-primary")}
+						aria-pressed={category === cat}
+						className={cn(
+							badgeVariants({ variant: category === cat ? "default" : "outline" }),
+							category === cat && "bg-primary",
+						)}
 						onClick={() => onCategoryChange(category === cat ? "" : cat)}
 					>
 						{RECIPE_CATEGORY_LABELS[cat] ?? cat}
-					</Badge>
+					</button>
 				))}
 			</div>
 

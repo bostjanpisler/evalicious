@@ -1,7 +1,5 @@
-import posthog from "posthog-js";
+import { capture } from "@/lib/analytics-client";
 
 export function onPageTransitionEnd() {
-	if (posthog.__loaded) {
-		posthog.capture("$pageview");
-	}
+	capture("$pageview");
 }

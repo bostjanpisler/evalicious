@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import posthog from "posthog-js";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { capture } from "@/lib/analytics-client";
 
 export function LoginForm() {
 	const [email, setEmail] = useState("");
@@ -28,11 +28,11 @@ export function LoginForm() {
 			if (!res.ok) {
 				const data = await res.json();
 				setError(data.message ?? "Napačni podatki za prijavo");
-				posthog.capture("sign_in_error", { error: data.message });
+				capture("sign_in_error", { error: data.message });
 				return;
 			}
 
-			posthog.capture("sign_in_success");
+			capture("sign_in_success");
 			window.location.href = "/dashboard/my-recipes";
 		} catch {
 			setError("Nekaj je šlo narobe. Poskusi znova.");
@@ -50,9 +50,7 @@ export function LoginForm() {
 			<CardContent>
 				<form onSubmit={handleSubmit} className="space-y-4">
 					{error && (
-						<div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-							{error}
-						</div>
+						<div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
 					)}
 					<div className="space-y-2">
 						<Label htmlFor="email">E-pošta</Label>

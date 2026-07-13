@@ -1,31 +1,21 @@
 "use client";
 
 import { PortableText, type PortableTextComponents } from "@portabletext/react";
-import { useEffect, useRef } from "react";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
 
-function HtmlEmbed({ code }: { code: string }) {
-	const containerRef = useRef<HTMLDivElement>(null);
+function HtmlEmbed({ code, title }: { code: string; title?: string }) {
+	if (!code) return null;
 
-	useEffect(() => {
-		const el = containerRef.current;
-		if (!el || !code) return;
-
-		el.innerHTML = code;
-
-		// Execute any script tags that were inserted
-		const scripts = el.querySelectorAll("script");
-		for (const oldScript of scripts) {
-			const newScript = document.createElement("script");
-			for (const attr of oldScript.attributes) {
-				newScript.setAttribute(attr.name, attr.value);
-			}
-			newScript.textContent = oldScript.textContent;
-			oldScript.parentNode?.replaceChild(newScript, oldScript);
-		}
-	}, [code]);
-
-	return <div ref={containerRef} />;
+	return (
+		<iframe
+			title={title ?? "Embedded content"}
+			srcDoc={code}
+			sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-scripts"
+			className="min-h-96 w-full rounded-lg border-0"
+			loading="lazy"
+			referrerPolicy="no-referrer"
+		/>
+	);
 }
 
 function extractYouTubeId(input: string): string {
@@ -33,7 +23,7 @@ function extractYouTubeId(input: string): string {
 	const match = input.match(
 		/(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
 	);
-	return match ? match[1] : input;
+	return match?.[1] ?? input;
 }
 
 const components: PortableTextComponents = {
@@ -122,7 +112,7 @@ const components: PortableTextComponents = {
 		},
 		htmlEmbed: ({ value }) => (
 			<div className="my-8">
-				<HtmlEmbed code={value.code} />
+				<HtmlEmbed code={value.code} title={value.title} />
 			</div>
 		),
 	},

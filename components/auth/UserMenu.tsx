@@ -1,6 +1,7 @@
 "use client";
 
-import { LogOut, Settings, Heart, User } from "lucide-react";
+import { Heart, LogOut, Settings, User } from "lucide-react";
+import { usePageContext } from "vike-react/usePageContext";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -9,8 +10,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import posthog from "posthog-js";
-import { usePageContext } from "vike-react/usePageContext";
+import { capture } from "@/lib/analytics-client";
 import { authClient } from "@/lib/auth-client";
 
 export function UserMenu() {
@@ -61,7 +61,7 @@ export function UserMenu() {
 				<DropdownMenuSeparator />
 				<DropdownMenuItem
 					onClick={async () => {
-						posthog.capture("sign_out");
+						capture("sign_out");
 						await authClient.signOut();
 						window.location.href = "/";
 					}}

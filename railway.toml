@@ -3,7 +3,7 @@ builder = "dockerfile"
 dockerfilePath = "Dockerfile"
 
 [deploy]
-startCommand = "bun server/prod.ts"
+startCommand = "bunx prisma migrate deploy && exec bun server/prod.ts"
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10
 

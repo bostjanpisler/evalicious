@@ -1,9 +1,9 @@
 "use client";
 
 import { Search, X } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { badgeVariants } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 interface TravelFiltersProps {
@@ -34,8 +34,12 @@ export function TravelFilters({
 	return (
 		<div className="space-y-4">
 			<div className="relative">
-				<Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+				<Search
+					className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+					aria-hidden="true"
+				/>
 				<Input
+					aria-label="Išči potovanja"
 					placeholder="Išči potovanja..."
 					value={search}
 					onChange={(e) => onSearchChange(e.target.value)}
@@ -45,44 +49,44 @@ export function TravelFilters({
 
 			{countries.length > 0 && (
 				<div className="flex flex-wrap items-center gap-2">
-					<span className="text-sm font-medium text-muted-foreground">
-						Država:
-					</span>
+					<span className="text-sm font-medium text-muted-foreground">Država:</span>
 					{countries.map((country) => (
-						<Badge
+						<button
+							type="button"
 							key={country}
-							variant={selectedCountry === country ? "default" : "outline"}
+							aria-pressed={selectedCountry === country}
 							className={cn(
-								"cursor-pointer",
+								badgeVariants({
+									variant: selectedCountry === country ? "default" : "outline",
+								}),
 								selectedCountry === country && "bg-primary",
 							)}
-							onClick={() =>
-								onCountryChange(selectedCountry === country ? "" : country)
-							}
+							onClick={() => onCountryChange(selectedCountry === country ? "" : country)}
 						>
 							{country}
-						</Badge>
+						</button>
 					))}
 				</div>
 			)}
 
 			{tags.length > 0 && (
 				<div className="flex flex-wrap items-center gap-2">
-					<span className="text-sm font-medium text-muted-foreground">
-						Oznake:
-					</span>
+					<span className="text-sm font-medium text-muted-foreground">Oznake:</span>
 					{tags.map((tag) => (
-						<Badge
+						<button
+							type="button"
 							key={tag}
-							variant={selectedTag === tag ? "default" : "outline"}
+							aria-pressed={selectedTag === tag}
 							className={cn(
-								"cursor-pointer",
+								badgeVariants({
+									variant: selectedTag === tag ? "default" : "outline",
+								}),
 								selectedTag === tag && "bg-primary",
 							)}
 							onClick={() => onTagChange(selectedTag === tag ? "" : tag)}
 						>
 							{tag}
-						</Badge>
+						</button>
 					))}
 				</div>
 			)}
