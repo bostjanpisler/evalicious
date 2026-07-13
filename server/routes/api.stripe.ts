@@ -1,11 +1,11 @@
 import { Hono } from "hono";
-import { getStripe } from "../lib/stripe.js";
-import { db } from "../lib/db.js";
-import { getSignedDownloadUrl } from "../lib/r2.js";
-import { sendPurchaseConfirmation } from "../lib/email.js";
-import { sanityClient } from "../lib/sanity.js";
-import { requireAuth } from "../middleware/guard.js";
 import type Stripe from "stripe";
+import { db } from "../lib/db.js";
+import { sendPurchaseConfirmation } from "../lib/email.js";
+import { getSignedDownloadUrl } from "../lib/r2.js";
+import { sanityClient } from "../lib/sanity.js";
+import { getStripe } from "../lib/stripe.js";
+import { requireAuth } from "../middleware/guard.js";
 
 export const stripeHandler = new Hono();
 
@@ -15,7 +15,10 @@ stripeHandler.post("/checkout", requireAuth, async (c) => {
 	const { productSlug } = await c.req.json<{ productSlug: string }>();
 
 	const product = await db.product.findUnique({ where: { slug: productSlug } });
-	if (!product || !product.stripePriceId) {
+	if (!product || product.priceInCents <= 0) {
+		return c.json({ error: "Product does not require checkout" }, 400);
+	}
+	if (!product.stripePriceId || !product.stripeProductId) {
 		return c.json({ error: "Product not found" }, 404);
 	}
 
@@ -69,8 +72,15 @@ stripeHandler.post("/webhook", async (c) => {
 		const product = await db.product.findUnique({ where: { id: productId } });
 		if (!product) return c.json({ error: "Product not found" }, 400);
 
+		const existingOrder = await db.order.findUnique({
+			where: { stripeSessionId: session.id },
+		});
+		if (existingOrder) {
+			return c.json({ received: true });
+		}
+
 		// Create order
-		const order = await db.order.create({
+		await db.order.create({
 			data: {
 				userId,
 				stripeSessionId: session.id,
@@ -90,18 +100,11 @@ stripeHandler.post("/webhook", async (c) => {
 
 		// Handle product-type-specific actions
 		if (productType === "ebook") {
-			// Fetch ebook file key from Sanity
-			const sanityProduct = await sanityClient.fetch(
-				`*[_type == "product" && _id == $id][0]{ "fileKey": digitalFile.asset->url }`,
-				{ id: product.sanityId },
-			);
-			if (sanityProduct?.fileKey) {
-				const downloadUrl = await getSignedDownloadUrl(sanityProduct.fileKey, 86400);
-				await sendPurchaseConfirmation(
-					session.customer_email ?? "",
-					product.slug,
-					downloadUrl,
-				);
+			if (product.r2FileKey) {
+				const downloadUrl = await getSignedDownloadUrl(product.r2FileKey, 86400);
+				await sendPurchaseConfirmation(session.customer_email ?? "", product.slug, downloadUrl);
+			} else {
+				await sendPurchaseConfirmation(session.customer_email ?? "", product.slug);
 			}
 		} else if (productType === "ecourse") {
 			// Get course ID from Sanity product
@@ -110,11 +113,18 @@ stripeHandler.post("/webhook", async (c) => {
 				{ id: product.sanityId },
 			);
 			if (sanityProduct?.courseId) {
-				await db.courseAccess.create({
-					data: {
+				await db.courseAccess.upsert({
+					where: {
+						userId_courseId: {
+							userId,
+							courseId: sanityProduct.courseId,
+						},
+					},
+					create: {
 						userId,
 						courseId: sanityProduct.courseId,
 					},
+					update: {},
 				});
 			}
 			await sendPurchaseConfirmation(session.customer_email ?? "", product.slug);

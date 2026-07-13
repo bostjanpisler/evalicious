@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import posthog from "posthog-js";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 
 interface BuyButtonProps {
@@ -38,7 +38,7 @@ export function BuyButton({ productSlug, className }: BuyButtonProps) {
 		try {
 			posthog.capture("checkout_started", { product_slug: productSlug });
 
-		const res = await fetch("/api/stripe/checkout", {
+			const res = await fetch("/api/stripe/checkout", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				credentials: "include",
@@ -46,6 +46,10 @@ export function BuyButton({ productSlug, className }: BuyButtonProps) {
 			});
 
 			if (!res.ok) {
+				if (res.status === 401) {
+					window.location.href = `/login?redirect=${encodeURIComponent(`/shop/${productSlug}`)}`;
+					return;
+				}
 				const data = await res.json();
 				setError(data.error ?? "Nekaj je šlo narobe");
 				return;
@@ -73,12 +77,10 @@ export function BuyButton({ productSlug, className }: BuyButtonProps) {
 					: loading
 						? "Preusmerjam..."
 						: !session?.user
-							? "Prijavi se za nakup"
+							? "Prijavi se ali registriraj za nakup"
 							: "Kupi zdaj"}
 			</Button>
-			{error && (
-				<p className="mt-2 text-sm text-destructive">{error}</p>
-			)}
+			{error && <p className="mt-2 text-sm text-destructive">{error}</p>}
 		</div>
 	);
 }

@@ -220,6 +220,7 @@ export const productBySlugQuery = `
     currency,
     stripePriceId,
     stripeProductId,
+    r2FileKey,
     digitalFile,
     featured,
     published,

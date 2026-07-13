@@ -1,12 +1,13 @@
-import type { PageContextServer } from "vike/types";
-import { sanityClient } from "@/server/lib/sanity";
-import { db } from "@/server/lib/db";
-import { auth } from "@/server/lib/auth";
-import { productBySlugQuery } from "@/lib/sanity.queries";
-import type { Product } from "@/types/sanity";
 import { render } from "vike/abort";
+import type { PageContextServer } from "vike/types";
+import { productBySlugQuery } from "@/lib/sanity.queries";
+import { auth } from "@/server/lib/auth";
+import { db } from "@/server/lib/db";
+import { sanityClient } from "@/server/lib/sanity";
+import type { Product } from "@/types/sanity";
 
 export type Data = Product & {
+	isFree: boolean;
 	owned: boolean;
 	ownershipTarget?: string;
 };
@@ -16,12 +17,11 @@ export async function data(pageContext: PageContextServer): Promise<Data> {
 	const product = await sanityClient.fetch<Product>(productBySlugQuery, { slug });
 	if (!product) throw render(404, "Product not found");
 
+	const isFree = product.priceInCents <= 0;
 	let owned = false;
 	let ownershipTarget: string | undefined;
 
-	const headers = (pageContext as Record<string, unknown>).headersOriginal as
-		| Headers
-		| undefined;
+	const headers = (pageContext as Record<string, unknown>).headersOriginal as Headers | undefined;
 
 	if (headers) {
 		try {
@@ -49,5 +49,5 @@ export async function data(pageContext: PageContextServer): Promise<Data> {
 		}
 	}
 
-	return { ...product, owned, ownershipTarget };
+	return { ...product, isFree, owned, ownershipTarget };
 }

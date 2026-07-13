@@ -47,6 +47,8 @@ export interface Product {
 	priceInCents: number;
 	currency: string;
 	stripePriceId?: string;
+	stripeProductId?: string;
+	r2FileKey?: string;
 	// biome-ignore lint/suspicious/noExplicitAny: Portable Text content
 	longDescription?: any[];
 	featured?: boolean;

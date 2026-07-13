@@ -1,8 +1,9 @@
 import { Hono } from "hono";
-import { requireAuth } from "../middleware/guard.js";
-import { db } from "../lib/db.js";
-import { sanityClient } from "../lib/sanity.js";
 import { courseStepIdsQuery } from "@/lib/sanity.queries";
+import { db } from "../lib/db.js";
+import { isFreePublishedCourse } from "../lib/product-access.js";
+import { sanityClient } from "../lib/sanity.js";
+import { requireAuth } from "../middleware/guard.js";
 
 export const progressHandler = new Hono();
 
@@ -17,13 +18,12 @@ progressHandler.get("/:courseId", async (c) => {
 	const access = await db.courseAccess.findUnique({
 		where: { userId_courseId: { userId: user.id, courseId } },
 	});
-	if (!access) return c.json({ error: "No access" }, 403);
+	if (!access && !(await isFreePublishedCourse(courseId))) {
+		return c.json({ error: "No access" }, 403);
+	}
 
 	// Fetch step IDs for this course from Sanity
-	const result = await sanityClient.fetch<{ stepIds: string[] }>(
-		courseStepIdsQuery,
-		{ courseId },
-	);
+	const result = await sanityClient.fetch<{ stepIds: string[] }>(courseStepIdsQuery, { courseId });
 	const stepIds = result?.stepIds ?? [];
 
 	if (stepIds.length === 0) return c.json([]);
@@ -43,13 +43,12 @@ progressHandler.delete("/:courseId", async (c) => {
 	const access = await db.courseAccess.findUnique({
 		where: { userId_courseId: { userId: user.id, courseId } },
 	});
-	if (!access) return c.json({ error: "No access" }, 403);
+	if (!access && !(await isFreePublishedCourse(courseId))) {
+		return c.json({ error: "No access" }, 403);
+	}
 
 	// Fetch step IDs for this course from Sanity
-	const result = await sanityClient.fetch<{ stepIds: string[] }>(
-		courseStepIdsQuery,
-		{ courseId },
-	);
+	const result = await sanityClient.fetch<{ stepIds: string[] }>(courseStepIdsQuery, { courseId });
 	const stepIds = result?.stepIds ?? [];
 
 	if (stepIds.length > 0) {

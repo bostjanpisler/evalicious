@@ -1,9 +1,10 @@
-import type { PageContextServer } from "vike/types";
 import { render } from "vike/abort";
-import { db } from "@/server/lib/db";
-import { sanityClient } from "@/server/lib/sanity";
+import type { PageContextServer } from "vike/types";
 import { courseFullQuery } from "@/lib/sanity.queries";
 import { generateBunnyEmbedUrl } from "@/server/lib/bunny";
+import { db } from "@/server/lib/db";
+import { isFreePublishedCourse } from "@/server/lib/product-access";
+import { sanityClient } from "@/server/lib/sanity";
 import type { CourseFull, StepFull } from "@/types/course";
 
 export interface StepWithEmbed extends StepFull {
@@ -37,7 +38,9 @@ export async function data(pageContext: PageContextServer): Promise<Data> {
 	const access = await db.courseAccess.findUnique({
 		where: { userId_courseId: { userId: user.id, courseId: course._id } },
 	});
-	if (!access) throw render(403, "No access to this course");
+	if (!access && !(await isFreePublishedCourse(course._id))) {
+		throw render(403, "No access to this course");
+	}
 
 	// Generate signed embed URLs for each step
 	const stepsWithEmbed: StepWithEmbed[] = (course.steps ?? []).map((step) => ({

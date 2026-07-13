@@ -75,6 +75,7 @@ model Product {
   currency        String      @default("EUR")
   stripePriceId   String?     @unique
   stripeProductId String?     @unique
+  r2FileKey       String?
   orderItems      OrderItem[]
 }
 

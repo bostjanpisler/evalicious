@@ -1,8 +1,9 @@
-import type { PageContextServer } from "vike/types";
 import { render } from "vike/abort";
+import type { PageContextServer } from "vike/types";
+import { allCoursesQuery, courseFullQuery } from "@/lib/sanity.queries";
 import { db } from "@/server/lib/db";
+import { isFreePublishedCourse } from "@/server/lib/product-access";
 import { sanityClient } from "@/server/lib/sanity";
-import { courseFullQuery, allCoursesQuery } from "@/lib/sanity.queries";
 import type { CourseFull, CourseListing } from "@/types/course";
 
 export interface RecommendedCourse {
@@ -40,7 +41,9 @@ export async function data(pageContext: PageContextServer): Promise<Data> {
 	const access = await db.courseAccess.findUnique({
 		where: { userId_courseId: { userId: user.id, courseId: course._id } },
 	});
-	if (!access) throw render(403, "No access");
+	if (!access && !(await isFreePublishedCourse(course._id))) {
+		throw render(403, "No access");
+	}
 
 	const stepIds = (course.steps ?? []).map((s) => s._id);
 	const completed = await db.lessonProgress.count({

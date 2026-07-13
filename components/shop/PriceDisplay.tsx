@@ -7,5 +7,9 @@ interface PriceDisplayProps {
 }
 
 export function PriceDisplay({ priceInCents, currency = "EUR", className }: PriceDisplayProps) {
+	if (priceInCents <= 0) {
+		return <span className={className}>Brezplačno</span>;
+	}
+
 	return <span className={className}>{formatPrice(priceInCents, currency)}</span>;
 }
