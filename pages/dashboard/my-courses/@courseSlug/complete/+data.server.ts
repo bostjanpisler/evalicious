@@ -24,7 +24,7 @@ export type Data = {
 };
 
 export async function data(pageContext: PageContextServer): Promise<Data> {
-	const user = (pageContext as Record<string, unknown>).user as { id: string } | null;
+	const user = pageContext.user;
 	if (!user) throw render(403, "Unauthorized");
 
 	const { courseSlug } = pageContext.routeParams;

@@ -1,13 +1,18 @@
 import { createHash } from "node:crypto";
 
-const LIBRARY_ID = process.env.BUNNY_STREAM_LIBRARY_ID ?? "597412";
-const TOKEN_KEY = process.env.BUNNY_STREAM_TOKEN_KEY ?? "";
-
 export function generateBunnyEmbedUrl(videoId: string): string {
+	const libraryId = process.env.BUNNY_STREAM_LIBRARY_ID;
+	const tokenKey = process.env.BUNNY_STREAM_TOKEN_KEY;
+	if (!libraryId || !tokenKey) {
+		throw new Error("Bunny Stream signing is not configured");
+	}
+	if (!/^[A-Za-z0-9_-]+$/.test(videoId) || !/^\d+$/.test(libraryId)) {
+		throw new Error("Invalid Bunny Stream identifiers");
+	}
 	const expires = Math.floor(Date.now() / 1000) + 24 * 60 * 60; // 24 hours
 	const token = createHash("sha256")
-		.update(TOKEN_KEY + videoId + String(expires))
+		.update(tokenKey + videoId + String(expires))
 		.digest("hex");
 
-	return `https://iframe.mediadelivery.net/embed/${LIBRARY_ID}/${videoId}?token=${token}&expires=${expires}`;
+	return `https://iframe.mediadelivery.net/embed/${libraryId}/${videoId}?token=${token}&expires=${expires}`;
 }

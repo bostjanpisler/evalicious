@@ -2,14 +2,13 @@
 
 import { useEffect } from "react";
 import { useData } from "vike-react/useData";
-import { fireCompletionConfetti } from "@/components/courses/StepCompletion";
 import { ProgressTracker } from "@/components/courses/ProgressTracker";
+import { fireCompletionConfetti } from "@/components/courses/StepCompletion";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
 import type { Data } from "./+data.server";
 
 export default function CourseCompletePage() {
-	const { courseTitle, courseSlug, totalSteps, completedSteps, recommendations } =
-		useData<Data>();
+	const { courseTitle, courseSlug, totalSteps, completedSteps, recommendations } = useData<Data>();
 
 	const allDone = completedSteps >= totalSteps;
 
@@ -27,6 +26,7 @@ export default function CourseCompletePage() {
 					<>
 						<div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-green-100">
 							<svg
+								aria-hidden="true"
 								xmlns="http://www.w3.org/2000/svg"
 								className="h-10 w-10 text-green-600"
 								viewBox="0 0 20 20"
@@ -41,8 +41,7 @@ export default function CourseCompletePage() {
 						</div>
 						<h1 className="font-serif text-3xl font-bold">Čestitke!</h1>
 						<p className="mt-3 text-lg text-muted-foreground">
-							Uspešno si zaključil/a tečaj{" "}
-							<strong>{courseTitle}</strong>!
+							Uspešno si zaključil/a tečaj <strong>{courseTitle}</strong>!
 						</p>
 						<div className="mt-6 mx-auto max-w-xs">
 							<ProgressTracker completed={completedSteps} total={totalSteps} />
@@ -52,8 +51,7 @@ export default function CourseCompletePage() {
 					<>
 						<h1 className="font-serif text-3xl font-bold">Skoraj!</h1>
 						<p className="mt-3 text-lg text-muted-foreground">
-							Zaključi vse korake tečaja <strong>{courseTitle}</strong>, da dobiš
-							čestitke.
+							Zaključi vse korake tečaja <strong>{courseTitle}</strong>, da dobiš čestitke.
 						</p>
 						<div className="mt-6 mx-auto max-w-xs">
 							<ProgressTracker completed={completedSteps} total={totalSteps} />
@@ -123,6 +121,7 @@ export default function CourseCompletePage() {
 										<span className="inline-flex items-center gap-1 text-xs font-medium text-amber-600 group-hover:text-amber-700">
 											Poglej
 											<svg
+												aria-hidden="true"
 												xmlns="http://www.w3.org/2000/svg"
 												className="h-3 w-3"
 												fill="none"
@@ -130,11 +129,7 @@ export default function CourseCompletePage() {
 												stroke="currentColor"
 												strokeWidth={2}
 											>
-												<path
-													strokeLinecap="round"
-													strokeLinejoin="round"
-													d="M9 5l7 7-7 7"
-												/>
+												<path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
 											</svg>
 										</span>
 									</div>

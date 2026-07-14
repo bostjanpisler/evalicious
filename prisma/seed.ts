@@ -1,7 +1,7 @@
-import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from "@prisma/client";
 import { createClient } from "@sanity/client";
-import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
+import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import "dotenv/config";
 
 // ── Prisma ──────────────────────────────────────────────────────────────────
@@ -11,8 +11,11 @@ const db = new PrismaClient({ adapter });
 
 // ── Sanity (write client) ───────────────────────────────────────────────────
 
+const sanityProjectId = process.env.SANITY_PROJECT_ID;
+if (!sanityProjectId) throw new Error("SANITY_PROJECT_ID is required");
+
 const sanity = createClient({
-	projectId: process.env.SANITY_PROJECT_ID!,
+	projectId: sanityProjectId,
 	dataset: process.env.SANITY_DATASET ?? "production",
 	apiVersion: "2024-01-01",
 	useCdn: false,
@@ -126,8 +129,7 @@ async function seedSanity() {
 		_type: "lesson",
 		title: "Uvod v pečenje kruha",
 		slug: { _type: "slug", current: "uvod-v-pecenje" },
-		description:
-			"Spoznaj osnove pečenja kruha — od izbire moke do gnetenja testa.",
+		description: "Spoznaj osnove pečenja kruha — od izbire moke do gnetenja testa.",
 		sortOrder: 1,
 		durationMinutes: 15,
 		isFree: true,
@@ -138,8 +140,7 @@ async function seedSanity() {
 		_type: "lesson",
 		title: "Kvasni kruh",
 		slug: { _type: "slug", current: "kvasni-kruh" },
-		description:
-			"Peci preprost kvasni kruh s hrustljavo skorjo in mehko sredico.",
+		description: "Peci preprost kvasni kruh s hrustljavo skorjo in mehko sredico.",
 		sortOrder: 2,
 		durationMinutes: 25,
 		isFree: false,
@@ -150,8 +151,7 @@ async function seedSanity() {
 		_type: "lesson",
 		title: "Focaccia z rožmarinom",
 		slug: { _type: "slug", current: "focaccia" },
-		description:
-			"Italijanska focaccia z oljčnim oljem in svežim rožmarinom.",
+		description: "Italijanska focaccia z oljčnim oljem in svežim rožmarinom.",
 		sortOrder: 3,
 		durationMinutes: 30,
 		isFree: false,

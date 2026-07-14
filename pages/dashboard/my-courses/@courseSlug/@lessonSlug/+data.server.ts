@@ -28,7 +28,7 @@ export type Data = {
 };
 
 export async function data(pageContext: PageContextServer): Promise<Data> {
-	const user = (pageContext as unknown as Record<string, unknown>).user as { id: string } | null;
+	const user = pageContext.user;
 	if (!user) throw render(403, "Unauthorized");
 
 	const { courseSlug, lessonSlug } = pageContext.routeParams;
@@ -63,6 +63,9 @@ export async function data(pageContext: PageContextServer): Promise<Data> {
 	// Generate signed embed URL
 	const stepView: StepView = {
 		...currentStep,
+		pdfUrl: currentStep.hasPdf
+			? `/api/download/course/${encodeURIComponent(course.slug)}/${encodeURIComponent(currentStep.slug)}`
+			: undefined,
 		embedUrl: currentStep.bunnyVideoId
 			? generateBunnyEmbedUrl(currentStep.bunnyVideoId)
 			: undefined,

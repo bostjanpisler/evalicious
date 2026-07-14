@@ -70,22 +70,22 @@ export default function OrderDetailPage() {
 									{formatPrice(item.priceInCents, order.currency)}
 								</span>
 								{item.productType === "ebook" && order.status === "completed" && (
-									<a href={`/api/download/${order.id}`}>
-										<Button variant="outline" size="sm" className="gap-1.5">
+									<Button asChild variant="outline" size="sm" className="gap-1.5">
+										<a href={`/api/download/${order.id}`}>
 											<Download className="h-3.5 w-3.5" />
 											Prenesi
-										</Button>
-									</a>
+										</a>
+									</Button>
 								)}
 								{item.productType === "ecourse" &&
 									order.status === "completed" &&
 									item.courseSlug && (
-										<a href={`/dashboard/my-courses/${item.courseSlug}`}>
-											<Button variant="outline" size="sm" className="gap-1.5">
+										<Button asChild variant="outline" size="sm" className="gap-1.5">
+											<a href={`/dashboard/my-courses/${item.courseSlug}`}>
 												<Play className="h-3.5 w-3.5" />
 												Odpri tečaj
-											</Button>
-										</a>
+											</a>
+										</Button>
 									)}
 							</div>
 						</div>

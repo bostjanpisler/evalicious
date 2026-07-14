@@ -8,12 +8,8 @@ export function PdfViewer({ url, title }: PdfViewerProps) {
 		<div className="rounded-lg border border-gray-200 p-6">
 			<div className="flex items-center justify-between">
 				<div>
-					<h4 className="font-serif text-lg font-semibold">
-						{title ?? "PDF Document"}
-					</h4>
-					<p className="text-sm text-gray-500 mt-1">
-						Download or view this document.
-					</p>
+					<h4 className="font-serif text-lg font-semibold">{title ?? "PDF Document"}</h4>
+					<p className="text-sm text-gray-500 mt-1">Download or view this document.</p>
 				</div>
 				<a
 					href={url}
@@ -22,6 +18,7 @@ export function PdfViewer({ url, title }: PdfViewerProps) {
 					className="inline-flex items-center gap-2 rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-700 transition-colors"
 				>
 					<svg
+						aria-hidden="true"
 						xmlns="http://www.w3.org/2000/svg"
 						className="h-4 w-4"
 						fill="none"

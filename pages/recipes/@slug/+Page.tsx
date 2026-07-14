@@ -34,7 +34,7 @@ export default function RecipePage() {
 	// Build combined TOC headings
 	const hasContent = recipe.content && recipe.content.length > 0;
 	const introHeadings = hasContent ? [{ key: "o-receptu", text: "O receptu", level: 2 }] : [];
-	const contentHeadings = hasContent ? extractHeadings(recipe.content) : [];
+	const contentHeadings = hasContent ? extractHeadings(recipe.content ?? []) : [];
 	const sectionHeadings = [
 		{ key: "recept", text: "Recept", level: 2 },
 		{ key: "sestavine", text: "Sestavine", level: 3 },
@@ -67,16 +67,15 @@ export default function RecipePage() {
 					<div className="mt-4 flex items-center gap-2">
 						<SaveRecipeButton recipeId={recipe._id} />
 						<AddToListDialog contentType="recipe" contentId={recipe._id} />
-						<a
-							href="#recept"
+						<button
+							type="button"
 							className="inline-flex items-center gap-1.5 rounded-md border border-input bg-background px-3 py-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground"
-							onClick={(e) => {
-								e.preventDefault();
+							onClick={() => {
 								document.getElementById("recept")?.scrollIntoView({ behavior: "smooth" });
 							}}
 						>
 							Skoči na recept
-						</a>
+						</button>
 					</div>
 
 					{/* Story content */}

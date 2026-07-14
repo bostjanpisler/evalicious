@@ -1,4 +1,4 @@
-import { createClient, type SanityClient } from "@sanity/client";
+import { createClient, type QueryParams, type SanityClient } from "@sanity/client";
 
 let _client: SanityClient | null = null;
 let _configured = false;
@@ -19,11 +19,11 @@ export function getSanityClient(): SanityClient {
 }
 
 export const sanityClient = {
-	async fetch<T>(query: string, params?: Record<string, unknown>): Promise<T | null> {
+	async fetch<T>(query: string, params?: QueryParams): Promise<T | null> {
 		if (!process.env.SANITY_PROJECT_ID) {
 			console.warn("[sanity] SANITY_PROJECT_ID not set, returning null");
 			return null;
 		}
-		return getSanityClient().fetch<T>(query, params);
+		return params ? getSanityClient().fetch<T>(query, params) : getSanityClient().fetch<T>(query);
 	},
 };

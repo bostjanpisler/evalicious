@@ -1,8 +1,11 @@
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-interface Favorite {
+import type { RecipeListing } from "@/types/recipe";
+
+export interface Favorite {
 	contentId: string;
 	contentType: string;
+	recipe?: RecipeListing;
 }
 
 interface UseFavoritesReturn {
@@ -23,13 +26,15 @@ export function useFavorites(): UseFavoritesReturn {
 		setError(null);
 		try {
 			const res = await fetch("/api/favorites");
-			if (!res.ok) throw new Error("Failed to fetch favorites");
-			const data = await res.json();
-			setFavorites(data.favorites ?? []);
+			if (res.status === 401) {
+				setFavorites([]);
+				return;
+			}
+			if (!res.ok) throw new Error("Priljubljenih ni bilo mogoče naložiti.");
+			const data = (await res.json()) as Favorite[];
+			setFavorites(data);
 		} catch (err) {
-			setError(
-				err instanceof Error ? err.message : "Failed to load favorites"
-			);
+			setError(err instanceof Error ? err.message : "Priljubljenih ni bilo mogoče naložiti.");
 		} finally {
 			setLoading(false);
 		}
@@ -39,43 +44,31 @@ export function useFavorites(): UseFavoritesReturn {
 		fetchFavorites();
 	}, [fetchFavorites]);
 
-	const toggle = useCallback(
-		async (contentId: string, contentType: string) => {
-			try {
-				const res = await fetch("/api/favorites", {
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({ contentId, contentType }),
-				});
-				if (!res.ok) throw new Error("Failed to toggle favorite");
-				const data = await res.json();
+	const toggle = useCallback(async (contentId: string, contentType: string) => {
+		try {
+			const res = await fetch("/api/favorites/toggle", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ contentId, contentType }),
+			});
+			if (!res.ok) throw new Error("Priljubljene ni bilo mogoče posodobiti.");
+			const data = await res.json();
 
-				if (data.action === "added") {
-					setFavorites((prev) => [
-						...prev,
-						{ contentId, contentType },
-					]);
-				} else {
-					setFavorites((prev) =>
-						prev.filter((f) => f.contentId !== contentId)
-					);
-				}
-			} catch (err) {
-				setError(
-					err instanceof Error
-						? err.message
-						: "Failed to toggle favorite"
-				);
+			if (data.favorited) {
+				setFavorites((prev) => [...prev, { contentId, contentType }]);
+			} else {
+				setFavorites((prev) => prev.filter((f) => f.contentId !== contentId));
 			}
-		},
-		[]
-	);
+		} catch (err) {
+			setError(err instanceof Error ? err.message : "Priljubljene ni bilo mogoče posodobiti.");
+		}
+	}, []);
 
 	const isFavorited = useCallback(
 		(contentId: string) => {
 			return favorites.some((f) => f.contentId === contentId);
 		},
-		[favorites]
+		[favorites],
 	);
 
 	return { favorites, loading, error, toggle, isFavorited };

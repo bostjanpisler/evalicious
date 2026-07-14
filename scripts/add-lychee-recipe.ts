@@ -1,8 +1,11 @@
 import { createClient } from "@sanity/client";
 import "dotenv/config";
 
+const sanityProjectId = process.env.SANITY_PROJECT_ID;
+if (!sanityProjectId) throw new Error("SANITY_PROJECT_ID is required");
+
 const sanity = createClient({
-	projectId: process.env.SANITY_PROJECT_ID!,
+	projectId: sanityProjectId,
 	dataset: process.env.SANITY_DATASET ?? "production",
 	apiVersion: "2024-01-01",
 	useCdn: false,
@@ -122,8 +125,7 @@ async function main() {
 					},
 					{
 						_key: "s3",
-						instruction:
-							"Kozarce napolnimo z ledom in napitek precedimo skozi cedilo.",
+						instruction: "Kozarce napolnimo z ledom in napitek precedimo skozi cedilo.",
 						tip: "Precejanje poskrbi, da je napitek svilnato gladek brez koščkov.",
 					},
 					{

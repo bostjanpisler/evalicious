@@ -50,6 +50,7 @@ export function ThemeToggle() {
 	useEffect(() => {
 		if (!ready) return;
 		applyTheme(theme);
+		// biome-ignore lint/suspicious/noDocumentCookie: SSR reads this preference and Cookie Store is not universally supported.
 		document.cookie = `theme=${theme};path=/;max-age=31536000`;
 	}, [ready, theme]);
 

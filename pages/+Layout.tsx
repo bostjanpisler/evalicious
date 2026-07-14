@@ -1,10 +1,10 @@
 import "@/pages/globals.css";
-import { Header } from "@/components/layout/Header";
+import type { ReactNode } from "react";
 import { Footer } from "@/components/layout/Footer";
+import { Header } from "@/components/layout/Header";
 import { ChatWidget } from "@/components/shared/ChatWidget";
 import { CookieConsent } from "@/components/shared/CookieConsent";
 import { PostHogProvider } from "@/components/shared/PostHogProvider";
-import type { ReactNode } from "react";
 
 export default function Layout({ children }: { children: ReactNode }) {
 	return (

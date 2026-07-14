@@ -25,7 +25,7 @@ export type Data = {
 };
 
 export async function data(pageContext: PageContextServer): Promise<Data> {
-	const user = (pageContext as Record<string, unknown>).user as { id: string } | null;
+	const user = pageContext.user;
 	if (!user) return { orders: [] };
 
 	const orders = await db.order.findMany({
@@ -43,9 +43,7 @@ export async function data(pageContext: PageContextServer): Promise<Data> {
 	if (orders.length === 0) return { orders: [] };
 
 	// Collect unique sanity IDs to fetch product names
-	const sanityIds = [
-		...new Set(orders.flatMap((o) => o.items.map((i) => i.product.sanityId))),
-	];
+	const sanityIds = [...new Set(orders.flatMap((o) => o.items.map((i) => i.product.sanityId)))];
 
 	const sanityProducts = await sanityClient.fetch<
 		Array<{ _id: string; title: string; courseSlug?: string }>

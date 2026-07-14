@@ -46,8 +46,10 @@ describe("invoice worker", () => {
 	});
 
 	test("does nothing when another worker owns the lease", async () => {
-		const dependencies = createDependencies();
-		dependencies.claim = mock(async () => null);
+		const dependencies = {
+			...createDependencies(),
+			claim: mock(async () => null),
+		};
 
 		expect(await processInvoiceJob("order_3", dependencies)).toBe("skipped");
 		expect(dependencies.issue).not.toHaveBeenCalled();

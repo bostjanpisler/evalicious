@@ -1,14 +1,18 @@
 import { Hono } from "hono";
-import { requireAuth } from "../middleware/guard.js";
 import { db } from "../lib/db.js";
+import { requireAuth } from "../middleware/guard.js";
 
-export const listsHandler = new Hono();
+type ListsVariables = {
+	user: { id: string };
+};
+
+export const listsHandler = new Hono<{ Variables: ListsVariables }>();
 
 listsHandler.use("*", requireAuth);
 
 // Get user lists
 listsHandler.get("/", async (c) => {
-	const user = c.get("user") as { id: string };
+	const user = c.get("user");
 	const lists = await db.userList.findMany({
 		where: { userId: user.id },
 		include: { items: true },
@@ -19,7 +23,7 @@ listsHandler.get("/", async (c) => {
 
 // Create list
 listsHandler.post("/", async (c) => {
-	const user = c.get("user") as { id: string };
+	const user = c.get("user");
 	const { name, description } = await c.req.json<{
 		name: string;
 		description?: string;
@@ -32,7 +36,7 @@ listsHandler.post("/", async (c) => {
 
 // Update list
 listsHandler.patch("/:id", async (c) => {
-	const user = c.get("user") as { id: string };
+	const user = c.get("user");
 	const listId = c.req.param("id");
 	const { name, description } = await c.req.json<{
 		name?: string;
@@ -53,7 +57,7 @@ listsHandler.patch("/:id", async (c) => {
 
 // Delete list
 listsHandler.delete("/:id", async (c) => {
-	const user = c.get("user") as { id: string };
+	const user = c.get("user");
 	const listId = c.req.param("id");
 
 	const list = await db.userList.findFirst({
@@ -67,7 +71,7 @@ listsHandler.delete("/:id", async (c) => {
 
 // Add item to list
 listsHandler.post("/:id/items", async (c) => {
-	const user = c.get("user") as { id: string };
+	const user = c.get("user");
 	const listId = c.req.param("id");
 	const { contentType, contentId } = await c.req.json<{
 		contentType: string;
@@ -87,7 +91,7 @@ listsHandler.post("/:id/items", async (c) => {
 
 // Remove item from list
 listsHandler.delete("/:id/items/:contentId", async (c) => {
-	const user = c.get("user") as { id: string };
+	const user = c.get("user");
 	const listId = c.req.param("id");
 	const contentId = c.req.param("contentId");
 

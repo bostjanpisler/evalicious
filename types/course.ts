@@ -1,9 +1,11 @@
+import type { SanityImageSource } from "@sanity/image-url";
+
 export interface CourseListing {
 	_id: string;
 	title: string;
 	slug: string;
 	description?: string;
-	coverImage?: unknown;
+	coverImage?: SanityImageSource;
 	tags?: string[];
 	publishedAt?: string;
 	stepCount: number;
@@ -15,10 +17,14 @@ export interface CourseOverview {
 	title: string;
 	slug: string;
 	description?: string;
-	coverImage?: unknown;
+	coverImage?: SanityImageSource;
 	tags?: string[];
 	published: boolean;
 	publishedAt?: string;
+	shopProduct?: {
+		slug: string;
+		priceInCents: number;
+	};
 	steps: StepListing[];
 }
 
@@ -52,6 +58,7 @@ export interface StepRecipe {
 
 export interface StepFull extends StepListing {
 	bunnyVideoId?: string;
+	hasPdf?: boolean;
 	pdfUrl?: string;
 	// biome-ignore lint/suspicious/noExplicitAny: Portable Text content
 	content?: any[];

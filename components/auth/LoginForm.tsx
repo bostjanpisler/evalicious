@@ -1,17 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { capture } from "@/lib/analytics-client";
+import { DEFAULT_AUTH_REDIRECT, getSafeRedirect } from "@/lib/safe-redirect";
 
 export function LoginForm() {
+	const [redirectTo, setRedirectTo] = useState(DEFAULT_AUTH_REDIRECT);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
+
+	useEffect(() => {
+		setRedirectTo(getSafeRedirect(new URLSearchParams(window.location.search).get("redirect")));
+	}, []);
 
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
@@ -27,13 +33,13 @@ export function LoginForm() {
 
 			if (!res.ok) {
 				const data = await res.json();
-				setError(data.message ?? "Napačni podatki za prijavo");
+				setError("E-poštni naslov ali geslo ni pravilno.");
 				capture("sign_in_error", { error: data.message });
 				return;
 			}
 
 			capture("sign_in_success");
-			window.location.href = "/dashboard/my-recipes";
+			window.location.href = redirectTo;
 		} catch {
 			setError("Nekaj je šlo narobe. Poskusi znova.");
 		} finally {
@@ -79,7 +85,10 @@ export function LoginForm() {
 				</form>
 				<div className="mt-6 text-center text-sm text-muted-foreground">
 					Še nimaš računa?{" "}
-					<a href="/register" className="text-primary hover:underline">
+					<a
+						href={`/register?redirect=${encodeURIComponent(redirectTo)}`}
+						className="text-primary hover:underline"
+					>
 						Registriraj se
 					</a>
 				</div>

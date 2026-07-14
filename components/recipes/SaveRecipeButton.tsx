@@ -1,7 +1,8 @@
 "use client";
 
 import { Heart } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { usePageContext } from "vike-react/usePageContext";
 import { Button } from "@/components/ui/button";
 import { capture } from "@/lib/analytics-client";
 import { cn } from "@/lib/utils";
@@ -12,10 +13,30 @@ interface SaveRecipeButtonProps {
 }
 
 export function SaveRecipeButton({ recipeId, initialFavorited = false }: SaveRecipeButtonProps) {
+	const pageContext = usePageContext();
+	const user = pageContext.user;
 	const [favorited, setFavorited] = useState(initialFavorited);
 	const [loading, setLoading] = useState(false);
 
+	useEffect(() => {
+		if (!user || initialFavorited) return;
+		let cancelled = false;
+		fetch("/api/favorites")
+			.then((res) => (res.ok ? res.json() : []))
+			.then((favorites: Array<{ contentId: string }>) => {
+				if (!cancelled) setFavorited(favorites.some((item) => item.contentId === recipeId));
+			})
+			.catch(() => {});
+		return () => {
+			cancelled = true;
+		};
+	}, [initialFavorited, recipeId, user]);
+
 	async function toggle() {
+		if (!user) {
+			window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
+			return;
+		}
 		setLoading(true);
 		try {
 			const res = await fetch("/api/favorites/toggle", {

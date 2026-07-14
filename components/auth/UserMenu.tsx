@@ -1,6 +1,6 @@
 "use client";
 
-import { Heart, LogOut, Settings, User } from "lucide-react";
+import { BookOpen, Heart, LogOut, ReceiptText, Settings, User } from "lucide-react";
 import { usePageContext } from "vike-react/usePageContext";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,10 +15,7 @@ import { authClient } from "@/lib/auth-client";
 
 export function UserMenu() {
 	const pageContext = usePageContext();
-	const user = (pageContext as Record<string, unknown>).user as {
-		name: string;
-		email: string;
-	} | null;
+	const user = pageContext.user;
 
 	if (!user) {
 		return (
@@ -36,7 +33,12 @@ export function UserMenu() {
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
-				<Button variant="ghost" size="icon" className="hidden md:flex">
+				<Button
+					variant="ghost"
+					size="icon"
+					className="hidden md:flex"
+					aria-label="Odpri uporabniški meni"
+				>
 					<User className="h-5 w-5" />
 				</Button>
 			</DropdownMenuTrigger>
@@ -50,6 +52,18 @@ export function UserMenu() {
 					<a href="/dashboard/my-recipes">
 						<Heart className="mr-2 h-4 w-4" />
 						Moji recepti
+					</a>
+				</DropdownMenuItem>
+				<DropdownMenuItem asChild>
+					<a href="/dashboard/my-courses">
+						<BookOpen className="mr-2 h-4 w-4" />
+						Moji tečaji
+					</a>
+				</DropdownMenuItem>
+				<DropdownMenuItem asChild>
+					<a href="/dashboard/my-orders">
+						<ReceiptText className="mr-2 h-4 w-4" />
+						Moja naročila
 					</a>
 				</DropdownMenuItem>
 				<DropdownMenuItem asChild>

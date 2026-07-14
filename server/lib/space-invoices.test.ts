@@ -17,7 +17,7 @@ afterEach(() => {
 
 describe("Space Invoices client", () => {
 	test("recovers an existing invoice by order metadata", async () => {
-		const fetchMock = mock(async () =>
+		const fetchMock = mock(async (_input: string | URL | Request, _init?: RequestInit) =>
 			Response.json({ data: [{ id: "inv_existing", number: "2026-001" }] }),
 		);
 		globalThis.fetch = fetchMock as unknown as typeof fetch;
@@ -86,7 +86,9 @@ describe("Space Invoices client", () => {
 	});
 
 	test("sends the invoice with its PDF attached", async () => {
-		const fetchMock = mock(async () => Response.json({ status: "sent" }));
+		const fetchMock = mock(async (_input: string | URL | Request, _init?: RequestInit) =>
+			Response.json({ status: "sent" }),
+		);
 		globalThis.fetch = fetchMock as unknown as typeof fetch;
 
 		await sendSpaceInvoice("inv_1", "customer@example.com");

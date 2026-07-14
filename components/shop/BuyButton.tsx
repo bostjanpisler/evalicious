@@ -50,8 +50,11 @@ export function BuyButton({ productSlug, className }: BuyButtonProps) {
 					window.location.href = `/login?redirect=${encodeURIComponent(`/shop/${productSlug}`)}`;
 					return;
 				}
-				const data = await res.json();
-				setError(data.error ?? "Nekaj je šlo narobe");
+				setError(
+					res.status === 409
+						? "Ta izdelek že imaš v svojih naročilih."
+						: "Plačila trenutno ni mogoče začeti. Poskusi znova pozneje.",
+				);
 				return;
 			}
 

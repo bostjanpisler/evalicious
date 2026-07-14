@@ -1,26 +1,28 @@
 import { db } from "./db.js";
 import { sendPurchaseConfirmation } from "./email.js";
+import { productSellabilityError } from "./product-sellability.js";
 import { getSignedDownloadUrl } from "./r2.js";
-import { sanityClient } from "./sanity.js";
 
 const DELIVERY_URL_LIFETIME_SECONDS = 24 * 60 * 60;
 const DELIVERY_URL_MIN_REMAINING_MS = 5 * 60_000;
 const FULFILLMENT_LEASE_MS = 5 * 60_000;
 
-export async function fulfillOrder(orderId: string): Promise<void> {
+export async function fulfillOrder(orderId: string, alreadyClaimed = false): Promise<void> {
 	const now = new Date();
-	const claim = await db.order.updateMany({
-		where: {
-			id: orderId,
-			status: "completed",
-			fulfillmentCompletedAt: null,
-			OR: [
-				{ fulfillmentWorkingAt: null },
-				{ fulfillmentWorkingAt: { lt: new Date(now.getTime() - FULFILLMENT_LEASE_MS) } },
-			],
-		},
-		data: { fulfillmentWorkingAt: now },
-	});
+	const claim = alreadyClaimed
+		? { count: 1 }
+		: await db.order.updateMany({
+				where: {
+					id: orderId,
+					status: "completed",
+					fulfillmentCompletedAt: null,
+					OR: [
+						{ fulfillmentWorkingAt: null },
+						{ fulfillmentWorkingAt: { lt: new Date(now.getTime() - FULFILLMENT_LEASE_MS) } },
+					],
+				},
+				data: { fulfillmentWorkingAt: now },
+			});
 	if (claim.count === 0) {
 		const state = await db.order.findUnique({
 			where: { id: orderId },
@@ -44,22 +46,28 @@ export async function fulfillOrder(orderId: string): Promise<void> {
 
 	try {
 		if (item.product.type === "ecourse") {
-			const sanityProduct = await sanityClient.fetch<{ courseId?: string }>(
-				`*[_type == "product" && _id == $id][0]{ "courseId": course._ref }`,
-				{ id: item.product.sanityId },
-			);
-			if (!sanityProduct?.courseId) {
+			if (!item.product.courseId) {
 				throw new Error(`Course product ${item.product.sanityId} has no linked course`);
 			}
+			const sellabilityError = productSellabilityError(item.product, item.product, {
+				requirePublished: false,
+			});
+			if (sellabilityError) throw new Error(sellabilityError);
 			await db.courseAccess.upsert({
 				where: {
-					userId_courseId: { userId: order.userId, courseId: sanityProduct.courseId },
+					userId_courseId: { userId: order.userId, courseId: item.product.courseId },
 				},
-				create: { userId: order.userId, courseId: sanityProduct.courseId },
+				create: { userId: order.userId, courseId: item.product.courseId },
 				update: {},
 			});
 			await sendPurchaseConfirmation(email, item.product.slug, undefined, `purchase-${order.id}`);
 		} else if (item.product.type === "ebook") {
+			const sellabilityError = productSellabilityError(
+				item.product,
+				{},
+				{ requirePublished: false },
+			);
+			if (sellabilityError) throw new Error(sellabilityError);
 			let deliveryUrl = order.deliveryUrl;
 			let deliveryUrlExpiresAt = order.deliveryUrlExpiresAt;
 			const mustRefresh =

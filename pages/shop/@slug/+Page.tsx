@@ -31,7 +31,11 @@ export default function ProductPage() {
 
 	return (
 		<>
-			<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+			<div
+				className={`mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 ${
+					!product.owned && !product.isFree ? "pb-24 lg:pb-8" : ""
+				}`}
+			>
 				<Breadcrumbs segments={[{ label: "Trgovina", href: "/shop" }, { label: product.title }]} />
 
 				<div className="mt-6 grid grid-cols-1 gap-10 lg:grid-cols-3">
@@ -133,19 +137,19 @@ export default function ProductPage() {
 										<span className="font-semibold">Brezplačen dostop</span>
 									</div>
 									{product.type === "ebook" ? (
-										<a href={`/api/download/free/${product.slug}`}>
-											<Button className="mt-3 w-full gap-2">
+										<Button asChild className="mt-3 w-full gap-2">
+											<a href={`/api/download/free/${product.slug}`}>
 												<Download className="h-4 w-4" />
 												Prenesi brezplačno
-											</Button>
-										</a>
+											</a>
+										</Button>
 									) : product.type === "ecourse" && product.course?.slug ? (
-										<a href={`/dashboard/my-courses/${product.course.slug}`}>
-											<Button className="mt-3 w-full gap-2">
+										<Button asChild className="mt-3 w-full gap-2">
+											<a href={`/dashboard/my-courses/${product.course.slug}`}>
 												<Play className="h-4 w-4" />
 												Začni tečaj
-											</Button>
-										</a>
+											</a>
+										</Button>
 									) : null}
 								</div>
 							) : product.owned ? (
@@ -155,11 +159,11 @@ export default function ProductPage() {
 										<span className="font-semibold">Že kupljeno</span>
 									</div>
 									{product.ownershipTarget && (
-										<a href={product.ownershipTarget}>
-											<Button variant="outline" className="mt-3 w-full">
+										<Button asChild variant="outline" className="mt-3 w-full">
+											<a href={product.ownershipTarget}>
 												{product.type === "ecourse" ? "Pojdi na tečaj" : "Moja naročila"}
-											</Button>
-										</a>
+											</a>
+										</Button>
 									)}
 								</div>
 							) : (

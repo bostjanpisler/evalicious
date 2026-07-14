@@ -14,7 +14,7 @@ export type Data = {
 };
 
 export async function data(pageContext: PageContextServer): Promise<Data> {
-	const user = (pageContext as Record<string, unknown>).user as { id: string } | null;
+	const user = pageContext.user;
 	if (!user) return { courses: [], suggestions: [] };
 
 	const accessRecords = await db.courseAccess.findMany({

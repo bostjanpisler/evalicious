@@ -21,7 +21,7 @@ export async function data(pageContext: PageContextServer): Promise<Data> {
 	let owned = false;
 	let ownershipTarget: string | undefined;
 
-	const headers = (pageContext as Record<string, unknown>).headersOriginal as Headers | undefined;
+	const headers = pageContext.headers ? new Headers(pageContext.headers) : null;
 
 	if (headers) {
 		try {

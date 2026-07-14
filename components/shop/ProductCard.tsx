@@ -1,10 +1,9 @@
+import { BookOpen, Clock, ListChecks, Play } from "lucide-react";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import { PriceDisplay } from "@/components/shop/PriceDisplay";
+import { Card, CardContent } from "@/components/ui/card";
 import { formatDuration } from "@/lib/utils";
 import type { Product } from "@/types/sanity";
-import { BookOpen, Play, Clock, ListChecks } from "lucide-react";
 
 const typeLabels: Record<string, string> = {
 	ebook: "E-knjiga",
@@ -44,14 +43,13 @@ export function ProductCard({ product }: ProductCardProps) {
 						{product.title}
 					</h3>
 					{product.description && (
-						<p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
-							{product.description}
-						</p>
+						<p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{product.description}</p>
 					)}
 
 					{/* Course meta info */}
 					{product.type === "ecourse" &&
-						(product.courseStepCount != null || (product.courseTotalDuration != null && product.courseTotalDuration > 0)) && (
+						(product.courseStepCount != null ||
+							(product.courseTotalDuration != null && product.courseTotalDuration > 0)) && (
 							<div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
 								{product.courseStepCount != null && (
 									<span className="flex items-center gap-1">

@@ -76,6 +76,7 @@ model Product {
   stripePriceId   String?     @unique
   stripeProductId String?     @unique
   r2FileKey       String?
+  courseId        String?
   published       Boolean     @default(false)
   orderItems      OrderItem[]
 }
@@ -96,6 +97,8 @@ model Order {
   fulfillmentCompletedAt DateTime?
   fulfillmentError       String?
   fulfillmentWorkingAt   DateTime?
+  fulfillmentAttempts    Int         @default(0)
+  fulfillmentNextTryAt   DateTime?
   deliveryUrl            String?
   deliveryUrlExpiresAt   DateTime?
   status                String      @default("pending")
@@ -109,6 +112,7 @@ model Order {
 
   @@index([userId])
   @@index([spaceInvoiceNextTryAt])
+  @@index([fulfillmentNextTryAt])
 }
 
 model OrderItem {

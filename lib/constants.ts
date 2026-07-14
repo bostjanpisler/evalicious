@@ -7,6 +7,8 @@ export const SITE_URL =
 
 export const NAV_ITEMS = [
 	{ label: "Recepti", href: "/recipes" },
+	{ label: "Tečaji", href: "/courses" },
+	{ label: "Blog", href: "/blog" },
 	{ label: "Trgovina", href: "/shop" },
 	{ label: "Potovanja", href: "/travel" },
 	{ label: "O meni", href: "/about" },

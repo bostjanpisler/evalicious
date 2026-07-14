@@ -1,8 +1,8 @@
-import { useData } from "vike-react/useData";
 import { Mail } from "lucide-react";
+import { useData } from "vike-react/useData";
+import { PortableTextRenderer } from "@/components/blog/PortableTextRenderer";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
-import { PortableTextRenderer } from "@/components/blog/PortableTextRenderer";
 import { Button } from "@/components/ui/button";
 import type { Data } from "./+data";
 
@@ -24,14 +24,12 @@ export default function AboutPage() {
 		<div>
 			<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 				<Breadcrumbs segments={[{ label: "O meni" }]} />
-				<h1 className="mt-4 font-serif text-4xl font-bold">
-					{page.title ?? "O meni"}
-				</h1>
+				<h1 className="mt-4 font-serif text-4xl font-bold">{page.title ?? "O meni"}</h1>
 			</div>
 
 			{/* Sections with alternating backgrounds */}
 			{hasSections ? (
-				page.sections!.map((section, index) => {
+				page.sections?.map((section, index) => {
 					const isEven = index % 2 === 0;
 					const imageLeft = index % 2 === 0;
 
@@ -64,9 +62,7 @@ export default function AboutPage() {
 									{/* Text */}
 									<div className="flex-1">
 										{section.heading && (
-											<h2 className="mb-4 font-serif text-2xl font-bold">
-												{section.heading}
-											</h2>
+											<h2 className="mb-4 font-serif text-2xl font-bold">{section.heading}</h2>
 										)}
 										{section.text && (
 											<div className="prose prose-sm max-w-none text-muted-foreground">

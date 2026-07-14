@@ -218,10 +218,6 @@ export const productBySlugQuery = `
     type,
     priceInCents,
     currency,
-    stripePriceId,
-    stripeProductId,
-    r2FileKey,
-    digitalFile,
     featured,
     published,
     tags,
@@ -262,6 +258,12 @@ export const courseBySlugQuery = `
     tags,
     published,
     publishedAt,
+	"shopProduct": *[
+		_type == "product" && published == true && type == "ecourse" && course._ref == ^._id
+	][0] {
+		"slug": slug.current,
+		priceInCents
+	},
     steps[]-> {
       _id,
       title,
@@ -290,7 +292,7 @@ export const courseFullQuery = `
       bunnyVideoId,
       durationMinutes,
       isFree,
-      "pdfUrl": pdfFile.asset->url,
+      "hasPdf": defined(pdfFile.asset),
       content,
       recipe-> {
         _id,

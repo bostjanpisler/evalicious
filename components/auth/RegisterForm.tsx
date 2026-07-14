@@ -1,18 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { capture } from "@/lib/analytics-client";
+import { DEFAULT_AUTH_REDIRECT, getSafeRedirect } from "@/lib/safe-redirect";
 
 export function RegisterForm() {
+	const [redirectTo, setRedirectTo] = useState(DEFAULT_AUTH_REDIRECT);
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
+
+	useEffect(() => {
+		setRedirectTo(getSafeRedirect(new URLSearchParams(window.location.search).get("redirect")));
+	}, []);
 
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
@@ -28,13 +34,13 @@ export function RegisterForm() {
 
 			if (!res.ok) {
 				const data = await res.json();
-				setError(data.message ?? "Registracija ni uspela");
+				setError("Registracija ni uspela. Preveri podatke in poskusi znova.");
 				capture("sign_up_error", { error: data.message });
 				return;
 			}
 
 			capture("sign_up_success");
-			window.location.href = "/dashboard/my-recipes";
+			window.location.href = redirectTo;
 		} catch {
 			setError("Nekaj je šlo narobe. Poskusi znova.");
 		} finally {
@@ -93,7 +99,10 @@ export function RegisterForm() {
 				</form>
 				<div className="mt-6 text-center text-sm text-muted-foreground">
 					Že imaš račun?{" "}
-					<a href="/login" className="text-primary hover:underline">
+					<a
+						href={`/login?redirect=${encodeURIComponent(redirectTo)}`}
+						className="text-primary hover:underline"
+					>
 						Prijavi se
 					</a>
 				</div>

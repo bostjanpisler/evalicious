@@ -1,24 +1,15 @@
 "use client";
 
-import { Menu, Heart, Settings, LogOut } from "lucide-react";
-import { NAV_ITEMS, SITE_NAME } from "@/lib/constants";
-import { Button } from "@/components/ui/button";
-import {
-	Sheet,
-	SheetContent,
-	SheetHeader,
-	SheetTitle,
-	SheetTrigger,
-} from "@/components/ui/sheet";
+import { BookOpen, Heart, LogOut, Menu, ReceiptText, Settings } from "lucide-react";
 import { usePageContext } from "vike-react/usePageContext";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { authClient } from "@/lib/auth-client";
+import { NAV_ITEMS, SITE_NAME } from "@/lib/constants";
 
 export function MobileNav() {
 	const pageContext = usePageContext();
-	const user = (pageContext as Record<string, unknown>).user as {
-		name: string;
-		email: string;
-	} | null;
+	const user = pageContext.user;
 
 	return (
 		<Sheet>
@@ -56,6 +47,20 @@ export function MobileNav() {
 							>
 								<Heart className="h-4 w-4" />
 								Moji recepti
+							</a>
+							<a
+								href="/dashboard/my-courses"
+								className="flex items-center gap-3 rounded-md px-1 py-2 text-sm font-medium text-foreground transition-colors hover:text-primary"
+							>
+								<BookOpen className="h-4 w-4" />
+								Moji tečaji
+							</a>
+							<a
+								href="/dashboard/my-orders"
+								className="flex items-center gap-3 rounded-md px-1 py-2 text-sm font-medium text-foreground transition-colors hover:text-primary"
+							>
+								<ReceiptText className="h-4 w-4" />
+								Moja naročila
 							</a>
 							<a
 								href="/dashboard/settings"

@@ -2,8 +2,8 @@
 
 import { ListPlus, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
+import { usePageContext } from "vike-react/usePageContext";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
 	Dialog,
 	DialogContent,
@@ -11,6 +11,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 interface UserList {
 	id: string;
@@ -24,18 +25,26 @@ interface AddToListDialogProps {
 }
 
 export function AddToListDialog({ contentType, contentId }: AddToListDialogProps) {
+	const pageContext = usePageContext();
+	const user = pageContext.user;
 	const [lists, setLists] = useState<UserList[]>([]);
 	const [newListName, setNewListName] = useState("");
 	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
+		if (!user) return;
 		fetch("/api/lists")
 			.then((r) => (r.ok ? r.json() : []))
 			.then(setLists)
-			.catch(() => {});
-	}, []);
+			.catch(() => setError("Seznamov ni bilo mogoče naložiti."));
+	}, [user]);
 
 	async function createList() {
+		if (!user) {
+			window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
+			return;
+		}
 		if (!newListName.trim()) return;
 		setLoading(true);
 		try {
@@ -48,7 +57,9 @@ export function AddToListDialog({ contentType, contentId }: AddToListDialogProps
 				const list = await res.json();
 				setLists((prev) => [...prev, { ...list, items: [] }]);
 				setNewListName("");
-			}
+			} else setError("Seznama ni bilo mogoče ustvariti.");
+		} catch {
+			setError("Seznama ni bilo mogoče ustvariti.");
 		} finally {
 			setLoading(false);
 		}
@@ -62,11 +73,9 @@ export function AddToListDialog({ contentType, contentId }: AddToListDialogProps
 		});
 		if (res.ok) {
 			setLists((prev) =>
-				prev.map((l) =>
-					l.id === listId ? { ...l, items: [...l.items, { contentId }] } : l,
-				),
+				prev.map((l) => (l.id === listId ? { ...l, items: [...l.items, { contentId }] } : l)),
 			);
-		}
+		} else setError("Recepta ni bilo mogoče dodati na seznam.");
 	}
 
 	async function removeFromList(listId: string) {
@@ -76,12 +85,24 @@ export function AddToListDialog({ contentType, contentId }: AddToListDialogProps
 		if (res.ok) {
 			setLists((prev) =>
 				prev.map((l) =>
-					l.id === listId
-						? { ...l, items: l.items.filter((i) => i.contentId !== contentId) }
-						: l,
+					l.id === listId ? { ...l, items: l.items.filter((i) => i.contentId !== contentId) } : l,
 				),
 			);
-		}
+		} else setError("Recepta ni bilo mogoče odstraniti s seznama.");
+	}
+
+	if (!user) {
+		return (
+			<Button asChild variant="outline" size="sm">
+				<a
+					href={`/login?redirect=${encodeURIComponent(pageContext.urlPathname)}`}
+					aria-label="Prijavi se za dodajanje recepta na seznam"
+				>
+					<ListPlus className="mr-1.5 h-4 w-4" />
+					Dodaj na seznam
+				</a>
+			</Button>
+		);
 	}
 
 	return (
@@ -97,6 +118,7 @@ export function AddToListDialog({ contentType, contentId }: AddToListDialogProps
 					<DialogTitle>Dodaj na seznam</DialogTitle>
 				</DialogHeader>
 				<div className="space-y-3">
+					{error && <p className="text-sm text-destructive">{error}</p>}
 					{lists.map((list) => {
 						const isInList = list.items.some((i) => i.contentId === contentId);
 						return (
@@ -107,9 +129,7 @@ export function AddToListDialog({ contentType, contentId }: AddToListDialogProps
 								className="flex w-full items-center justify-between rounded-md border p-3 text-left transition-colors hover:bg-accent"
 							>
 								<span className="text-sm font-medium">{list.name}</span>
-								{isInList && (
-									<span className="text-xs text-primary">Dodano</span>
-								)}
+								{isInList && <span className="text-xs text-primary">Dodano</span>}
 							</button>
 						);
 					})}

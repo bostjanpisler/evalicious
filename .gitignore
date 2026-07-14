@@ -44,5 +44,4 @@ logs
 .sanity
 
 # Prisma
-prisma/migrations/*.sql
 generated/

@@ -1,5 +1,6 @@
 import "dotenv/config";
 import { db } from "@/server/lib/db";
+import { productSellabilityError } from "@/server/lib/product-sellability";
 import { sanityClient } from "@/server/lib/sanity";
 
 type SanityProduct = {
@@ -12,6 +13,7 @@ type SanityProduct = {
 	stripeProductId?: string;
 	r2FileKey?: string;
 	published?: boolean;
+	courseId?: string;
 };
 
 const products = await sanityClient.fetch<SanityProduct[]>(
@@ -24,7 +26,8 @@ const products = await sanityClient.fetch<SanityProduct[]>(
 		stripePriceId,
 		stripeProductId,
 		r2FileKey,
-		published
+		published,
+		"courseId": course._ref
 	}`,
 );
 
@@ -37,14 +40,23 @@ let skipped = 0;
 const synchronizedSanityIds: string[] = [];
 
 for (const product of products ?? []) {
-	if (
-		!product.slug ||
-		!product.type ||
-		product.priceInCents == null ||
-		(product.priceInCents > 0 && (!product.stripePriceId || !product.stripeProductId))
-	) {
+	if (!product.slug || !product.type || product.priceInCents == null) {
 		skipped += 1;
 		console.warn(`Skipped ${product._id}: missing slug, type, price, or paid-product Stripe IDs.`);
+		continue;
+	}
+	const sellabilityError = productSellabilityError(
+		{
+			...product,
+			published: product.published === true,
+			priceInCents: product.priceInCents,
+			type: product.type,
+		},
+		{ courseId: product.courseId },
+	);
+	if (product.published === true && sellabilityError) {
+		skipped += 1;
+		console.warn(`Skipped ${product._id}: ${sellabilityError}.`);
 		continue;
 	}
 
@@ -59,6 +71,7 @@ for (const product of products ?? []) {
 			stripePriceId: product.stripePriceId,
 			stripeProductId: product.stripeProductId,
 			r2FileKey: product.r2FileKey,
+			courseId: product.courseId,
 			published: product.published === true,
 		},
 		update: {
@@ -69,6 +82,7 @@ for (const product of products ?? []) {
 			stripePriceId: product.stripePriceId,
 			stripeProductId: product.stripeProductId,
 			r2FileKey: product.r2FileKey,
+			courseId: product.courseId,
 			published: product.published === true,
 		},
 	});

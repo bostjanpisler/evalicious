@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 interface CourseProgress {
 	completedLessons: string[];
@@ -14,9 +14,7 @@ interface UseCourseProgressReturn {
 	isCompleted: (lessonSlug: string) => boolean;
 }
 
-export function useCourseProgress(
-	courseId: string
-): UseCourseProgressReturn {
+export function useCourseProgress(courseId: string): UseCourseProgressReturn {
 	const [progress, setProgress] = useState<CourseProgress>({
 		completedLessons: [],
 		totalLessons: 0,
@@ -31,7 +29,7 @@ export function useCourseProgress(
 		setError(null);
 		try {
 			const res = await fetch(`/api/progress/${courseId}`);
-			if (!res.ok) throw new Error("Failed to fetch progress");
+			if (!res.ok) throw new Error("Napredka ni bilo mogoče naložiti.");
 			const data = await res.json();
 			setProgress({
 				completedLessons: data.completedLessons ?? [],
@@ -39,11 +37,7 @@ export function useCourseProgress(
 				percentage: data.percentage ?? 0,
 			});
 		} catch (err) {
-			setError(
-				err instanceof Error
-					? err.message
-					: "Failed to load course progress"
-			);
+			setError(err instanceof Error ? err.message : "Napredka pri tečaju ni bilo mogoče naložiti.");
 		} finally {
 			setLoading(false);
 		}
@@ -61,25 +55,16 @@ export function useCourseProgress(
 					headers: { "Content-Type": "application/json" },
 					body: JSON.stringify({ lessonSlug }),
 				});
-				if (!res.ok) throw new Error("Failed to update progress");
-				const data = await res.json();
-
+				if (!res.ok) throw new Error("Napredka ni bilo mogoče posodobiti.");
 				setProgress((prev) => {
-					const isCurrentlyCompleted =
-						prev.completedLessons.includes(lessonSlug);
+					const isCurrentlyCompleted = prev.completedLessons.includes(lessonSlug);
 					const completedLessons = isCurrentlyCompleted
-						? prev.completedLessons.filter(
-								(s) => s !== lessonSlug
-							)
+						? prev.completedLessons.filter((s) => s !== lessonSlug)
 						: [...prev.completedLessons, lessonSlug];
 
 					const percentage =
 						prev.totalLessons > 0
-							? Math.round(
-									(completedLessons.length /
-										prev.totalLessons) *
-										100
-								)
+							? Math.round((completedLessons.length / prev.totalLessons) * 100)
 							: 0;
 
 					return {
@@ -89,21 +74,17 @@ export function useCourseProgress(
 					};
 				});
 			} catch (err) {
-				setError(
-					err instanceof Error
-						? err.message
-						: "Failed to update progress"
-				);
+				setError(err instanceof Error ? err.message : "Napredka ni bilo mogoče posodobiti.");
 			}
 		},
-		[courseId]
+		[courseId],
 	);
 
 	const isCompleted = useCallback(
 		(lessonSlug: string) => {
 			return progress.completedLessons.includes(lessonSlug);
 		},
-		[progress.completedLessons]
+		[progress.completedLessons],
 	);
 
 	return { progress, loading, error, toggleLesson, isCompleted };

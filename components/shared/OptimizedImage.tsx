@@ -1,4 +1,4 @@
-import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
+import type { SanityImageSource } from "@sanity/image-url";
 import { urlFor } from "@/lib/sanity.image";
 
 interface OptimizedImageProps {

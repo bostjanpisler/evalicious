@@ -56,35 +56,33 @@ export default function CheckoutSuccessPage() {
 
 					<div className="mt-8 flex flex-col gap-3">
 						{confirmed && productType === "ebook" && orderId && (
-							<a href={`/api/download/${orderId}`}>
-								<Button size="lg" className="w-full gap-2">
+							<Button asChild size="lg" className="w-full gap-2">
+								<a href={`/api/download/${orderId}`}>
 									<Download className="h-4 w-4" />
 									Prenesi svojo e-knjigo
-								</Button>
-							</a>
+								</a>
+							</Button>
 						)}
 
 						{confirmed && productType === "ecourse" && courseSlug && (
-							<a href={`/dashboard/my-courses/${courseSlug}`}>
-								<Button size="lg" className="w-full gap-2">
+							<Button asChild size="lg" className="w-full gap-2">
+								<a href={`/dashboard/my-courses/${courseSlug}`}>
 									<Play className="h-4 w-4" />
 									Začni tečaj
-								</Button>
-							</a>
+								</a>
+							</Button>
 						)}
 
-						<a href="/dashboard/my-orders">
-							<Button variant="outline" className="w-full gap-2">
+						<Button asChild variant="outline" className="w-full gap-2">
+							<a href="/dashboard/my-orders">
 								<ShoppingBag className="h-4 w-4" />
 								Moja naročila
-							</Button>
-						</a>
-						{!confirmed && (
-							<a href="/shop">
-								<Button variant="outline" className="w-full">
-									Nazaj v trgovino
-								</Button>
 							</a>
+						</Button>
+						{!confirmed && (
+							<Button asChild variant="outline" className="w-full">
+								<a href="/shop">Nazaj v trgovino</a>
+							</Button>
 						)}
 					</div>
 				</CardContent>

@@ -1,8 +1,7 @@
 import { useData } from "vike-react/useData";
-import { OptimizedImage } from "@/components/shared/OptimizedImage";
 import { ResetProgress } from "@/components/courses/ResetProgress";
-import { formatDuration } from "@/lib/utils";
-import { cn } from "@/lib/utils";
+import { OptimizedImage } from "@/components/shared/OptimizedImage";
+import { cn, formatDuration } from "@/lib/utils";
 import type { Data } from "./+data.server";
 
 export default function CourseViewPage() {
@@ -12,11 +11,9 @@ export default function CourseViewPage() {
 	const totalSteps = course.steps.length;
 	const percentage = totalSteps > 0 ? Math.round((completedCount / totalSteps) * 100) : 0;
 	const firstIncomplete = course.steps.find((s) => !progress[s._id]);
+	const nextStep = firstIncomplete ?? course.steps.at(0);
 	const allDone = completedCount === totalSteps && totalSteps > 0;
-	const totalDuration = course.steps.reduce(
-		(sum, step) => sum + (step.durationMinutes ?? 0),
-		0,
-	);
+	const totalDuration = course.steps.reduce((sum, step) => sum + (step.durationMinutes ?? 0), 0);
 
 	return (
 		<div>
@@ -52,6 +49,7 @@ export default function CourseViewPage() {
 						<div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-gray-300">
 							<span className="flex items-center gap-1.5">
 								<svg
+									aria-hidden="true"
 									xmlns="http://www.w3.org/2000/svg"
 									className="h-4 w-4"
 									fill="none"
@@ -77,6 +75,7 @@ export default function CourseViewPage() {
 							{totalDuration > 0 && (
 								<span className="flex items-center gap-1.5">
 									<svg
+										aria-hidden="true"
 										xmlns="http://www.w3.org/2000/svg"
 										className="h-4 w-4"
 										fill="none"
@@ -99,13 +98,9 @@ export default function CourseViewPage() {
 						<div className="mt-4">
 							<div className="flex items-center justify-between text-sm text-gray-300 mb-2">
 								<span>
-									{allDone
-										? "Vse opravljeno!"
-										: `${completedCount} od ${totalSteps} opravljeno`}
+									{allDone ? "Vse opravljeno!" : `${completedCount} od ${totalSteps} opravljeno`}
 								</span>
-								<span className="font-medium text-white">
-									{percentage}%
-								</span>
+								<span className="font-medium text-white">{percentage}%</span>
 							</div>
 							<div className="h-2 rounded-full bg-white/20 overflow-hidden">
 								<div
@@ -127,6 +122,7 @@ export default function CourseViewPage() {
 								>
 									Ogled zaključka
 									<svg
+										aria-hidden="true"
 										xmlns="http://www.w3.org/2000/svg"
 										className="h-4 w-4"
 										viewBox="0 0 20 20"
@@ -139,13 +135,14 @@ export default function CourseViewPage() {
 										/>
 									</svg>
 								</a>
-							) : totalSteps > 0 ? (
+							) : nextStep ? (
 								<a
-									href={`/dashboard/my-courses/${course.slug}/${(firstIncomplete ?? course.steps[0]).slug}`}
+									href={`/dashboard/my-courses/${course.slug}/${nextStep.slug}`}
 									className="inline-flex items-center gap-2 rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 transition-colors"
 								>
 									{completedCount > 0 ? "Nadaljuj" : "Začni tečaj"}
 									<svg
+										aria-hidden="true"
 										xmlns="http://www.w3.org/2000/svg"
 										className="h-4 w-4"
 										fill="none"
@@ -182,13 +179,13 @@ export default function CourseViewPage() {
 								? "koraka"
 								: totalSteps <= 4
 									? "koraki"
-									: "korakov"})
+									: "korakov"}
+						)
 					</h2>
 					<div className="space-y-2">
 						{course.steps.map((step, index) => {
 							const isCompleted = progress[step._id] === true;
-							const isNext =
-								!isCompleted && firstIncomplete?._id === step._id;
+							const isNext = !isCompleted && firstIncomplete?._id === step._id;
 
 							return (
 								<a
@@ -207,6 +204,7 @@ export default function CourseViewPage() {
 									{isCompleted ? (
 										<span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-500 text-white">
 											<svg
+												aria-hidden="true"
 												xmlns="http://www.w3.org/2000/svg"
 												className="h-4 w-4"
 												viewBox="0 0 20 20"
@@ -271,27 +269,28 @@ export default function CourseViewPage() {
 
 									{/* Duration + arrow */}
 									<div className="flex items-center gap-3 flex-shrink-0 pt-0.5">
-										{step.durationMinutes != null &&
-											step.durationMinutes > 0 && (
-												<span className="flex items-center gap-1 text-xs text-muted-foreground">
-													<svg
-														xmlns="http://www.w3.org/2000/svg"
-														className="h-3.5 w-3.5"
-														fill="none"
-														viewBox="0 0 24 24"
-														stroke="currentColor"
-														strokeWidth={2}
-													>
-														<path
-															strokeLinecap="round"
-															strokeLinejoin="round"
-															d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-														/>
-													</svg>
-													{step.durationMinutes} min
-												</span>
-											)}
+										{step.durationMinutes != null && step.durationMinutes > 0 && (
+											<span className="flex items-center gap-1 text-xs text-muted-foreground">
+												<svg
+													aria-hidden="true"
+													xmlns="http://www.w3.org/2000/svg"
+													className="h-3.5 w-3.5"
+													fill="none"
+													viewBox="0 0 24 24"
+													stroke="currentColor"
+													strokeWidth={2}
+												>
+													<path
+														strokeLinecap="round"
+														strokeLinejoin="round"
+														d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+													/>
+												</svg>
+												{step.durationMinutes} min
+											</span>
+										)}
 										<svg
+											aria-hidden="true"
 											xmlns="http://www.w3.org/2000/svg"
 											className="h-4 w-4 text-muted-foreground/40 group-hover:text-muted-foreground transition-colors"
 											fill="none"
@@ -299,11 +298,7 @@ export default function CourseViewPage() {
 											stroke="currentColor"
 											strokeWidth={2}
 										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												d="M9 5l7 7-7 7"
-											/>
+											<path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
 										</svg>
 									</div>
 								</a>
@@ -312,9 +307,7 @@ export default function CourseViewPage() {
 					</div>
 				</div>
 			) : (
-				<p className="text-muted-foreground py-12 text-center">
-					Ta tečaj nima korakov.
-				</p>
+				<p className="text-muted-foreground py-12 text-center">Ta tečaj nima korakov.</p>
 			)}
 		</div>
 	);

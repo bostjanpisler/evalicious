@@ -57,24 +57,15 @@ export function CourseStepper({
 					const isLast = index === steps.length - 1;
 
 					return (
-						<div
-							key={step._id}
-							className={cn(
-								"flex items-center",
-								!isLast && "flex-1 min-w-0",
-							)}
-						>
+						<div key={step._id} className={cn("flex items-center", !isLast && "flex-1 min-w-0")}>
 							{/* Circle — smaller on mobile */}
 							<a
 								href={`/dashboard/my-courses/${courseSlug}/${step.slug}`}
 								title={step.title}
 								className={cn(
 									"relative flex h-6 w-6 sm:h-8 sm:w-8 flex-shrink-0 items-center justify-center rounded-full text-[10px] sm:text-xs font-medium transition-all",
-									isActive &&
-										"bg-amber-500 text-white ring-2 ring-amber-200 ring-offset-2",
-									isCompleted &&
-										!isActive &&
-										"bg-green-500 text-white",
+									isActive && "bg-amber-500 text-white ring-2 ring-amber-200 ring-offset-2",
+									isCompleted && !isActive && "bg-green-500 text-white",
 									!isCompleted &&
 										!isActive &&
 										"border-2 border-gray-300 text-gray-400 hover:border-gray-400 hover:text-gray-500",
@@ -82,6 +73,7 @@ export function CourseStepper({
 							>
 								{isCompleted && !isActive ? (
 									<svg
+										aria-hidden="true"
 										xmlns="http://www.w3.org/2000/svg"
 										className="h-3 w-3 sm:h-4 sm:w-4"
 										viewBox="0 0 20 20"
@@ -104,9 +96,7 @@ export function CourseStepper({
 									<div
 										className={cn(
 											"h-full rounded-full",
-											isCompleted
-												? "bg-green-400"
-												: "bg-gray-200",
+											isCompleted ? "bg-green-400" : "bg-gray-200",
 										)}
 									/>
 								</div>
