@@ -79,6 +79,8 @@ const components: PortableTextComponents = {
 					image={value}
 					alt={value.alt ?? ""}
 					width={800}
+					sizes="(max-width: 1023px) calc(100vw - 2rem), (max-width: 1279px) calc(66vw - 3rem), 820px"
+					quality={90}
 					className="w-full rounded-lg"
 				/>
 				{value.caption && (

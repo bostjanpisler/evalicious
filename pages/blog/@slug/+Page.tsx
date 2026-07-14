@@ -1,16 +1,13 @@
-import { useData } from "vike-react/useData";
+import { Clock } from "lucide-react";
 import { useConfig } from "vike-react/useConfig";
-import { Clock, Tag } from "lucide-react";
+import { useData } from "vike-react/useData";
+import { extractHeadings, PortableTextRenderer } from "@/components/blog/PortableTextRenderer";
+import { TableOfContents } from "@/components/blog/TableOfContents";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
-import { TableOfContents } from "@/components/blog/TableOfContents";
-import {
-	PortableTextRenderer,
-	extractHeadings,
-} from "@/components/blog/PortableTextRenderer";
 import { Badge } from "@/components/ui/badge";
-import { formatDate } from "@/lib/utils";
 import { urlFor } from "@/lib/sanity.image";
+import { formatDate } from "@/lib/utils";
 import type { Data } from "./+data";
 
 export default function BlogPostPage() {
@@ -27,9 +24,7 @@ export default function BlogPostPage() {
 
 	return (
 		<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-			<Breadcrumbs
-				segments={[{ label: "Blog", href: "/blog" }, { label: post.title }]}
-			/>
+			<Breadcrumbs segments={[{ label: "Blog", href: "/blog" }, { label: post.title }]} />
 
 			<div className="mt-6 grid grid-cols-1 gap-10 lg:grid-cols-3">
 				{/* Main content */}
@@ -40,6 +35,8 @@ export default function BlogPostPage() {
 							alt={post.title}
 							width={900}
 							height={506}
+							sizes="(max-width: 1023px) calc(100vw - 2rem), (max-width: 1279px) calc(66vw - 3rem), 820px"
+							quality={90}
 							className="w-full rounded-xl object-cover"
 							priority
 						/>
@@ -62,9 +59,7 @@ export default function BlogPostPage() {
 						<h1 className="mt-4 font-serif text-4xl font-bold">{post.title}</h1>
 
 						<div className="mt-4 flex flex-wrap gap-4 text-sm text-muted-foreground">
-							{post.publishedAt && (
-								<span>{formatDate(post.publishedAt)}</span>
-							)}
+							{post.publishedAt && <span>{formatDate(post.publishedAt)}</span>}
 							{post.estimatedReadingTime && (
 								<span className="flex items-center gap-1.5">
 									<Clock className="h-4 w-4" />

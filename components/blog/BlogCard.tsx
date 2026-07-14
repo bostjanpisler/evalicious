@@ -20,6 +20,8 @@ export function BlogCard({ post }: BlogCardProps) {
 							alt={post.title}
 							width={600}
 							height={338}
+							sizes="(max-width: 639px) calc(100vw - 2rem), (max-width: 1023px) calc(50vw - 2rem), (max-width: 1279px) calc(33vw - 2rem), 400px"
+							quality={88}
 							className="h-full w-full object-cover transition-transform group-hover:scale-105"
 						/>
 					</div>
@@ -34,9 +36,7 @@ export function BlogCard({ post }: BlogCardProps) {
 						{post.title}
 					</h3>
 					{post.description && (
-						<p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
-							{post.description}
-						</p>
+						<p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{post.description}</p>
 					)}
 					<div className="mt-3 flex items-center gap-3 text-sm text-muted-foreground">
 						{post.publishedAt && <span>{formatDate(post.publishedAt)}</span>}
