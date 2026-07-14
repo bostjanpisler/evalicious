@@ -1,8 +1,8 @@
+import { BookOpen, Download, Play, ShoppingBag } from "lucide-react";
 import { useData } from "vike-react/useData";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { formatPrice, formatDate } from "@/lib/utils";
-import { BookOpen, Download, Play, ShoppingBag } from "lucide-react";
+import { formatDate, formatPrice } from "@/lib/utils";
 import type { Data } from "./+data.server";
 
 const typeLabels: Record<string, string> = {
@@ -49,15 +49,10 @@ export default function MyOrdersPage() {
 
 			<div className="space-y-4">
 				{orders.map((order) => (
-					<div
-						key={order.id}
-						className="rounded-lg border bg-card p-5"
-					>
+					<div key={order.id} className="rounded-lg border bg-card p-5">
 						<div className="flex flex-wrap items-center justify-between gap-2 mb-4">
 							<div className="flex items-center gap-3">
-								<span className="text-sm text-muted-foreground">
-									{formatDate(order.createdAt)}
-								</span>
+								<span className="text-sm text-muted-foreground">{formatDate(order.createdAt)}</span>
 								<Badge
 									variant={order.status === "completed" ? "default" : "secondary"}
 									className="text-xs"
@@ -71,10 +66,7 @@ export default function MyOrdersPage() {
 						</div>
 
 						{order.items.map((item) => (
-							<div
-								key={item.id}
-								className="flex flex-wrap items-center justify-between gap-3"
-							>
+							<div key={item.id} className="flex flex-wrap items-center justify-between gap-3">
 								<div className="flex items-center gap-3">
 									<div className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted">
 										{item.productType === "ebook" ? (
@@ -118,6 +110,15 @@ export default function MyOrdersPage() {
 								</div>
 							</div>
 						))}
+
+						<div className="mt-4 border-t pt-4 text-right">
+							<a
+								href={`/dashboard/my-orders/${order.id}`}
+								className="text-sm font-medium text-amber-700 transition-colors hover:text-amber-800"
+							>
+								Prikaži podrobnosti →
+							</a>
+						</div>
 					</div>
 				))}
 			</div>
