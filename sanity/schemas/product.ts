@@ -79,9 +79,9 @@ export const product = defineType({
 		}),
 		defineField({
 			name: "r2FileKey",
-			title: "R2 File Key",
+			title: "File Key",
 			type: "string",
-			description: "Object key in the private R2 bucket used for secure digital delivery.",
+			description: "Object key in the private file storage bucket (Railway) used for secure digital delivery.",
 			hidden: ({ document }) => document?.type !== "ebook",
 		}),
 		defineField({

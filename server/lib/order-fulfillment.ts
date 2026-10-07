@@ -60,7 +60,7 @@ export async function fulfillOrder(orderId: string, alreadyClaimed = false): Pro
 				create: { userId: order.userId, courseId: item.product.courseId },
 				update: {},
 			});
-			await sendPurchaseConfirmation(email, item.product.slug, undefined, `purchase-${order.id}`);
+			await sendPurchaseConfirmation(email, item.product.slug);
 		} else if (item.product.type === "ebook") {
 			const sellabilityError = productSellabilityError(
 				item.product,
@@ -87,13 +87,7 @@ export async function fulfillOrder(orderId: string, alreadyClaimed = false): Pro
 				});
 			}
 
-			const deliveryVersion = deliveryUrlExpiresAt?.getTime() ?? 0;
-			await sendPurchaseConfirmation(
-				email,
-				item.product.slug,
-				deliveryUrl ?? undefined,
-				`purchase-${order.id}-${deliveryVersion}`,
-			);
+			await sendPurchaseConfirmation(email, item.product.slug, deliveryUrl ?? undefined);
 		} else {
 			throw new Error(`Unsupported product type ${item.product.type}`);
 		}

@@ -54,5 +54,5 @@ and cancellation URLs.
    fulfillment email.
 
 Do not perform the paid end-to-end check with live credentials. The automated suite covers order
-ownership/enrichment and fulfillment helpers; Stripe, email, R2, and webhook delivery still require
+ownership/enrichment and fulfillment helpers; Stripe, email, file storage, and webhook delivery still require
 the sandbox smoke test above.

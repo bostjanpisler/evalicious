@@ -14,6 +14,18 @@ export function initializeAnalytics(): Promise<void> {
 				capture_pageleave: true,
 				persistence: "localStorage+cookie",
 				person_profiles: "identified_only",
+				before_send: (event) => {
+					// Never send one-time tokens (password setup, download links) to analytics.
+					if (event?.properties) {
+						for (const key of ["$current_url", "$referrer"]) {
+							const value = event.properties[key];
+							if (typeof value === "string") {
+								event.properties[key] = value.replace(/([?&#])token=[^&#]*/g, "$1token=redacted");
+							}
+						}
+					}
+					return event;
+				},
 			});
 			client = posthog;
 		})

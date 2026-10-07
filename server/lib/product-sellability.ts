@@ -15,13 +15,15 @@ export function deliveryConfigurationError(
 	productType: string,
 	environment: Record<string, string | undefined> = process.env,
 ): string | null {
-	if (!environment.RESEND_API_KEY) return "Purchase delivery email is not configured";
+	if (!environment.SES_ACCESS_KEY_ID || !environment.SES_SECRET_ACCESS_KEY) {
+		return "Purchase delivery email is not configured";
+	}
 	if (
 		productType === "ebook" &&
-		(!environment.R2_ACCOUNT_ID ||
-			!environment.R2_ACCESS_KEY_ID ||
-			!environment.R2_SECRET_ACCESS_KEY ||
-			!environment.R2_BUCKET_NAME)
+		(!environment.STORAGE_ENDPOINT ||
+			!environment.STORAGE_ACCESS_KEY_ID ||
+			!environment.STORAGE_SECRET_ACCESS_KEY ||
+			!environment.STORAGE_BUCKET)
 	) {
 		return "Ebook delivery storage is not configured";
 	}

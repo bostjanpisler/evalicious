@@ -40,7 +40,6 @@ export default defineConfig({
 			"@prisma/adapter-pg",
 			"better-auth",
 			"stripe",
-			"resend",
 			"@aws-sdk/client-s3",
 			"@aws-sdk/s3-request-presigner",
 			"@sanity/client",
