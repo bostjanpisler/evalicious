@@ -33,6 +33,7 @@
 	},
 	"dependencies": {
 		"@aws-sdk/client-s3": "^3.1086.0",
+		"@aws-sdk/client-sesv2": "^3.1147.0",
 		"@aws-sdk/s3-request-presigner": "^3.1086.0",
 		"@hono/node-server": "^1.19.14",
 		"@portabletext/react": "^6.0.2",
@@ -64,7 +65,6 @@
 		"prisma": "^7.3.0",
 		"react": "^19",
 		"react-dom": "^19",
-		"resend": "^6.9.2",
 		"sanity": "^5.9.0",
 		"stripe": "^20.3.1",
 		"tailwind-merge": "^3.4.0",

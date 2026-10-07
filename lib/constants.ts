@@ -5,6 +5,9 @@ export const SITE_URL =
 		? (process.env.BETTER_AUTH_URL ?? "http://localhost:3100")
 		: window.location.origin;
 
+export const FREE_DOWNLOAD_CONSENT_TEXT =
+	"Strinjam se, da mi Eva-licious na e-poštni naslov pošlje brezplačno gradivo ter občasne novice, recepte in ponudbe. Odjava je mogoča kadarkoli.";
+
 export const NAV_ITEMS = [
 	{ label: "Recepti", href: "/recipes" },
 	{ label: "Tečaji", href: "/courses" },

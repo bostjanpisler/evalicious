@@ -1,12 +1,24 @@
 import { Hono } from "hono";
+import { FREE_DOWNLOAD_CONSENT_TEXT } from "@/lib/constants";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { auth } from "../lib/auth.js";
 import { db } from "../lib/db.js";
+import { sendFreeDownloadEmail } from "../lib/email.js";
+import {
+	confirmLead,
+	createFreeDownloadToken,
+	createPasswordSetupToken,
+	emailHasLogin,
+	normalizeEmail,
+	verifyFreeDownloadToken,
+} from "../lib/free-download.js";
+import { isHalConfigured, syncFreeDownloadLeadToHal } from "../lib/hal.js";
 import {
 	canAccessLesson,
+	getFreePublishedEbook,
 	isFreePublishedCourse,
-	isFreePublishedEbook,
 } from "../lib/product-access.js";
+import { deliveryConfigurationError } from "../lib/product-sellability.js";
 import { getSignedDownloadUrl } from "../lib/r2.js";
 import { sanityClient } from "../lib/sanity.js";
 
@@ -18,15 +30,56 @@ const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_REQUESTS = 10;
 const downloadWindows = new Map<string, { count: number; resetsAt: number }>();
 
-function isRateLimited(key: string): boolean {
+const FREE_REQUEST_IP_LIMIT = 10;
+const FREE_REQUEST_IP_WINDOW_MS = 10 * 60_000;
+const FREE_REQUEST_EMAIL_LIMIT = 3;
+const FREE_REQUEST_EMAIL_WINDOW_MS = 60 * 60_000;
+const FREE_REQUEST_GLOBAL_LIMIT = 200;
+const FREE_REQUEST_GLOBAL_WINDOW_MS = 10 * 60_000;
+const SLUG_PATTERN = /^[a-z0-9-]{1,100}$/i;
+
+function isRateLimited(
+	key: string,
+	limit = RATE_LIMIT_REQUESTS,
+	windowMs = RATE_LIMIT_WINDOW_MS,
+): boolean {
 	const now = Date.now();
+	if (downloadWindows.size > 10_000) {
+		for (const [entryKey, entry] of downloadWindows) {
+			if (entry.resetsAt <= now) downloadWindows.delete(entryKey);
+		}
+	}
 	const current = downloadWindows.get(key);
 	if (!current || current.resetsAt <= now) {
-		downloadWindows.set(key, { count: 1, resetsAt: now + RATE_LIMIT_WINDOW_MS });
+		downloadWindows.set(key, { count: 1, resetsAt: now + windowMs });
 		return false;
 	}
 	current.count += 1;
-	return current.count > RATE_LIMIT_REQUESTS;
+	return current.count > limit;
+}
+
+// Railway's edge sets X-Real-IP; the left-most X-Forwarded-For entry is client-controlled.
+function clientIp(headers: Headers): string | null {
+	return (
+		headers.get("x-real-ip")?.trim() ||
+		headers.get("x-forwarded-for")?.split(",").at(-1)?.trim() ||
+		null
+	);
+}
+
+function siteUrl(): string {
+	return (process.env.BETTER_AUTH_URL ?? "http://localhost:3000").replace(/\/$/, "");
+}
+
+async function findFreeEbook(productSlug: string) {
+	if (!SLUG_PATTERN.test(productSlug)) return null;
+	const product = await db.product.findUnique({ where: { slug: productSlug } });
+	if (!product || !product.published || product.type !== "ebook" || product.priceInCents > 0) {
+		return null;
+	}
+	const content = await getFreePublishedEbook(productSlug);
+	if (!content) return null;
+	return { product, title: content.title };
 }
 
 async function fetchPdf(url: string, allowedHost?: string): Promise<Uint8Array> {
@@ -66,22 +119,120 @@ async function fetchPdf(url: string, allowedHost?: string): Promise<Uint8Array> 
 	return bytes;
 }
 
-downloadHandler.get("/free/:productSlug", async (c) => {
+downloadHandler.post("/free/:productSlug", async (c) => {
 	const { productSlug } = c.req.param();
-	const product = await db.product.findUnique({ where: { slug: productSlug } });
+	const body = (await c.req.json().catch(() => null)) as { email?: unknown; consent?: unknown } | null;
+	const email = normalizeEmail(body?.email);
+	if (!email) return c.json({ error: "Invalid email" }, 400);
+	if (body?.consent !== true) return c.json({ error: "Consent required" }, 400);
 
-	if (!product || !product.published || product.type !== "ebook" || product.priceInCents > 0) {
-		return c.json({ error: "File not found" }, 404);
-	}
-	if (!(await isFreePublishedEbook(productSlug))) {
-		return c.json({ error: "File not found" }, 404);
-	}
-
-	if (!product.r2FileKey) {
+	const ebook = await findFreeEbook(productSlug);
+	if (!ebook) return c.json({ error: "File not found" }, 404);
+	if (!ebook.product.r2FileKey || deliveryConfigurationError("ebook")) {
 		return c.json({ error: "File not available" }, 404);
 	}
 
-	const fileUrl = await getSignedDownloadUrl(product.r2FileKey, 300);
+	const ip = clientIp(c.req.raw.headers);
+	if (
+		isRateLimited("free-global", FREE_REQUEST_GLOBAL_LIMIT, FREE_REQUEST_GLOBAL_WINDOW_MS) ||
+		(ip && isRateLimited(`free-ip:${ip}`, FREE_REQUEST_IP_LIMIT, FREE_REQUEST_IP_WINDOW_MS)) ||
+		isRateLimited(`free-email:${email}`, FREE_REQUEST_EMAIL_LIMIT, FREE_REQUEST_EMAIL_WINDOW_MS)
+	) {
+		return c.json({ error: "Too many download requests" }, 429);
+	}
+
+	// Consent is only recorded here; the account and CRM entry are created when
+	// the mailbox owner clicks a link in the email (double opt-in).
+	const lead = await db.freeDownloadLead.create({
+		data: {
+			email,
+			productId: ebook.product.id,
+			consentText: FREE_DOWNLOAD_CONSENT_TEXT,
+			ipAddress: ip,
+			userAgent: c.req.header("user-agent")?.slice(0, 500) ?? null,
+		},
+	});
+
+	const token = encodeURIComponent(createFreeDownloadToken(lead.id, productSlug));
+	const base = `${siteUrl()}/api/download/free/${productSlug}`;
+
+	try {
+		await sendFreeDownloadEmail({
+			to: email,
+			productTitle: ebook.title,
+			downloadUrl: `${base}?token=${token}`,
+			setPasswordUrl: (await emailHasLogin(email)) ? undefined : `${base}/account?token=${token}`,
+		});
+		await db.freeDownloadLead.update({ where: { id: lead.id }, data: { emailSentAt: new Date() } });
+	} catch (error) {
+		console.error("Free download email failed", error);
+		return c.json({ error: "Email could not be sent" }, 502);
+	}
+
+	return c.json({ ok: true });
+});
+
+async function confirmFreeDownload(productSlug: string, token: string | undefined) {
+	const leadId = token ? verifyFreeDownloadToken(token, productSlug) : null;
+	if (!leadId) return null;
+	const confirmation = await confirmLead(leadId);
+	if (!confirmation || confirmation.lead.product.slug !== productSlug) return null;
+	const { lead, user, firstConfirmation } = confirmation;
+
+	if (firstConfirmation && isHalConfigured()) {
+		const ebook = await getFreePublishedEbook(productSlug).catch(() => null);
+		void syncFreeDownloadLeadToHal({
+			leadId: lead.id,
+			email: lead.email,
+			name: user.name,
+			userId: user.id,
+			productSlug,
+			productTitle: ebook?.title ?? productSlug,
+			consentedAt: lead.consentedAt,
+		})
+			.then(({ contactId }) =>
+				db.freeDownloadLead.update({
+					where: { id: lead.id },
+					data: { halContactId: contactId, halSyncedAt: new Date(), halError: null },
+				}),
+			)
+			.catch((error: unknown) => {
+				console.error("Hal lead sync failed", error);
+				return db.freeDownloadLead
+					.update({
+						where: { id: lead.id },
+						data: { halError: String(error instanceof Error ? error.message : error).slice(0, 500) },
+					})
+					.catch(() => undefined);
+			});
+	}
+
+	return confirmation;
+}
+
+downloadHandler.get("/free/:productSlug/account", async (c) => {
+	const { productSlug } = c.req.param();
+	const confirmation = await confirmFreeDownload(productSlug, c.req.query("token"));
+	c.header("Cache-Control", "private, no-store");
+	c.header("Referrer-Policy", "no-referrer");
+	if (!confirmation) return c.redirect(`/shop/${encodeURIComponent(productSlug)}?download=expired`);
+	if (!confirmation.user.needsPassword) return c.redirect("/login");
+	// Fragment keeps the token out of server logs and analytics page URLs.
+	return c.redirect(`/reset-password#token=${encodeURIComponent(await createPasswordSetupToken(confirmation.user.id))}`);
+});
+
+downloadHandler.get("/free/:productSlug", async (c) => {
+	const { productSlug } = c.req.param();
+	const confirmation = await confirmFreeDownload(productSlug, c.req.query("token"));
+	if (!confirmation) return c.redirect(`/shop/${encodeURIComponent(productSlug)}?download=expired`);
+
+	const ebook = await findFreeEbook(productSlug);
+	if (!ebook) return c.json({ error: "File not found" }, 404);
+	if (!ebook.product.r2FileKey) return c.json({ error: "File not available" }, 404);
+
+	const fileUrl = await getSignedDownloadUrl(ebook.product.r2FileKey, 300);
+	c.header("Cache-Control", "private, no-store");
+	c.header("Referrer-Policy", "no-referrer");
 	return c.redirect(fileUrl);
 });
 
@@ -92,7 +243,7 @@ downloadHandler.get("/course/:courseSlug/:lessonSlug", async (c) => {
 		return c.json({ error: "Too many download requests" }, 429);
 	}
 	const { courseSlug, lessonSlug } = c.req.param();
-	if (!/^[a-z0-9-]{1,100}$/i.test(courseSlug) || !/^[a-z0-9-]{1,100}$/i.test(lessonSlug)) {
+	if (!SLUG_PATTERN.test(courseSlug) || !SLUG_PATTERN.test(lessonSlug)) {
 		return c.json({ error: "File not found" }, 404);
 	}
 	const course = await sanityClient.fetch<{

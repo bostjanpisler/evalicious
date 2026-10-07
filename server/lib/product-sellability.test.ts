@@ -47,14 +47,18 @@ describe("product sellability", () => {
 
 	test("fails checkout configuration closed when delivery providers are missing", () => {
 		expect(deliveryConfigurationError("ecourse", {})).toContain("email");
-		expect(deliveryConfigurationError("ebook", { RESEND_API_KEY: "re_test" })).toContain("storage");
+		expect(deliveryConfigurationError("ebook", {
+				SES_ACCESS_KEY_ID: "key",
+				SES_SECRET_ACCESS_KEY: "secret",
+			})).toContain("storage");
 		expect(
 			deliveryConfigurationError("ebook", {
-				RESEND_API_KEY: "re_test",
-				R2_ACCOUNT_ID: "account",
-				R2_ACCESS_KEY_ID: "access",
-				R2_SECRET_ACCESS_KEY: "secret",
-				R2_BUCKET_NAME: "bucket",
+				SES_ACCESS_KEY_ID: "key",
+				SES_SECRET_ACCESS_KEY: "secret",
+				STORAGE_ENDPOINT: "https://storage.example.com",
+				STORAGE_ACCESS_KEY_ID: "access",
+				STORAGE_SECRET_ACCESS_KEY: "secret",
+				STORAGE_BUCKET: "bucket",
 			}),
 		).toBeNull();
 	});

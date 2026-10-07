@@ -23,17 +23,19 @@ export async function isFreePublishedCourse(courseId: string): Promise<boolean> 
 	return !!product;
 }
 
-export async function isFreePublishedEbook(productSlug: string): Promise<boolean> {
-	const product = await sanityClient.fetch<{ _id: string }>(
+export async function getFreePublishedEbook(
+	productSlug: string,
+): Promise<{ _id: string; title: string } | null> {
+	const product = await sanityClient.fetch<{ _id: string; title: string } | null>(
 		`*[
 			_type == "product" &&
 			published == true &&
 			type == "ebook" &&
 			priceInCents <= 0 &&
 			slug.current == $productSlug
-		][0]{ _id }`,
+		][0]{ _id, title }`,
 		{ productSlug },
 	);
 
-	return !!product;
+	return product ?? null;
 }

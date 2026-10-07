@@ -20,8 +20,8 @@ Recipe/lifestyle website built with Hono + Vike + React 19 on Bun.
 - **CMS**: Sanity v3 (content) + PostgreSQL via Prisma (user data)
 - **Auth**: Better Auth with email/password + Google OAuth
 - **Payments**: Stripe Checkout + Webhooks
-- **Storage**: Cloudflare R2 (files), Bunny Stream (video)
-- **Email**: Resend
+- **Storage**: Railway bucket, S3-compatible (files), Bunny Stream (video)
+- **Email**: AWS SES (eu-central-1, `eva-licious.com` identity)
 - **Linting**: Biome (tabs, double quotes, semicolons)
 - **Deploy**: Railway (Bun Dockerfile)
 

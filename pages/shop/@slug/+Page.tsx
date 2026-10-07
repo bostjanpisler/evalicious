@@ -5,6 +5,7 @@ import { PortableTextRenderer } from "@/components/blog/PortableTextRenderer";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
 import { BuyButton } from "@/components/shop/BuyButton";
+import { FreeDownloadForm } from "@/components/shop/FreeDownloadForm";
 import { PriceDisplay } from "@/components/shop/PriceDisplay";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -137,12 +138,7 @@ export default function ProductPage() {
 										<span className="font-semibold">Brezplačen dostop</span>
 									</div>
 									{product.type === "ebook" ? (
-										<Button asChild className="mt-3 w-full gap-2">
-											<a href={`/api/download/free/${product.slug}`}>
-												<Download className="h-4 w-4" />
-												Prenesi brezplačno
-											</a>
-										</Button>
+										<FreeDownloadForm productSlug={product.slug} />
 									) : product.type === "ecourse" && product.course?.slug ? (
 										<Button asChild className="mt-3 w-full gap-2">
 											<a href={`/dashboard/my-courses/${product.course.slug}`}>

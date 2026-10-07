@@ -22,6 +22,7 @@ model User {
   orders          Order[]
   courseAccess     CourseAccess[]
   lessonProgress  LessonProgress[]
+  freeDownloads   FreeDownloadLead[]
 }
 
 model Session {
@@ -79,6 +80,7 @@ model Product {
   courseId        String?
   published       Boolean     @default(false)
   orderItems      OrderItem[]
+  freeDownloads   FreeDownloadLead[]
 }
 
 model Order {
@@ -186,4 +188,27 @@ model UserListItem {
 
   @@unique([listId, contentId])
   @@index([listId])
+}
+
+model FreeDownloadLead {
+  id           String    @id @default(cuid())
+  email        String
+  userId       String?
+  productId    String
+  consentText  String
+  consentedAt  DateTime  @default(now())
+  confirmedAt  DateTime?
+  ipAddress    String?
+  userAgent    String?
+  emailSentAt  DateTime?
+  halContactId String?
+  halSyncedAt  DateTime?
+  halError     String?
+  createdAt    DateTime  @default(now())
+  user         User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product      Product   @relation(fields: [productId], references: [id])
+
+  @@index([email])
+  @@index([userId])
+  @@index([productId])
 }

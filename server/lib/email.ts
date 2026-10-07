@@ -1,49 +1,62 @@
-import { Resend } from "resend";
+import { SESv2Client, SendEmailCommand } from "@aws-sdk/client-sesv2";
 
-let _resend: Resend | null = null;
+let _ses: SESv2Client | null = null;
 
-function getResend(): Resend {
-	if (!_resend) {
-		const apiKey = process.env.RESEND_API_KEY;
-		if (!apiKey) throw new Error("RESEND_API_KEY is not configured");
-		_resend = new Resend(apiKey);
+function getSes(): SESv2Client {
+	if (!_ses) {
+		const accessKeyId = process.env.SES_ACCESS_KEY_ID;
+		const secretAccessKey = process.env.SES_SECRET_ACCESS_KEY;
+		if (!accessKeyId || !secretAccessKey) throw new Error("SES is not configured");
+		_ses = new SESv2Client({
+			region: process.env.SES_REGION ?? "eu-central-1",
+			credentials: { accessKeyId, secretAccessKey },
+		});
 	}
-	return _resend;
+	return _ses;
 }
 
 const EMAIL_FROM = process.env.EMAIL_FROM ?? "Eva <hello@eva-licious.com>";
+const EMAIL_REPLY_TO = process.env.EMAIL_REPLY_TO;
 
-export function assertEmailSent(result: { error: { message: string } | null }, kind: string): void {
-	if (result.error) {
-		throw new Error(`${kind} email failed: ${result.error.message}`);
-	}
+export function buildSendEmailInput(message: { to: string; subject: string; html: string }) {
+	return {
+		FromEmailAddress: EMAIL_FROM,
+		Destination: { ToAddresses: [message.to] },
+		...(EMAIL_REPLY_TO ? { ReplyToAddresses: [EMAIL_REPLY_TO] } : {}),
+		...(process.env.SES_CONFIGURATION_SET
+			? { ConfigurationSetName: process.env.SES_CONFIGURATION_SET }
+			: {}),
+		Content: {
+			Simple: {
+				Subject: { Data: message.subject, Charset: "UTF-8" },
+				Body: { Html: { Data: message.html, Charset: "UTF-8" } },
+			},
+		},
+	};
+}
+
+async function sendEmail(message: { to: string; subject: string; html: string }): Promise<void> {
+	await getSes().send(new SendEmailCommand(buildSendEmailInput(message)));
 }
 
 export async function sendPurchaseConfirmation(
 	to: string,
 	productName: string,
 	downloadUrl?: string,
-	idempotencyKey?: string,
 ) {
-	const result = await getResend().emails.send(
-		{
-			from: EMAIL_FROM,
-			to,
-			subject: `Your purchase: ${productName}`,
-			html: `
+	await sendEmail({
+		to,
+		subject: `Your purchase: ${productName}`,
+		html: `
       <h1>Thank you for your purchase!</h1>
       <p>You've successfully purchased <strong>${productName}</strong>.</p>
       ${downloadUrl ? `<p><a href="${downloadUrl}">Download your file</a></p><p>This link expires in 24 hours.</p>` : "<p>You can access your content from your dashboard.</p>"}
     `,
-		},
-		idempotencyKey ? { idempotencyKey } : undefined,
-	);
-	assertEmailSent(result, "Purchase confirmation");
+	});
 }
 
 export async function sendWelcomeEmail(to: string, name: string) {
-	const result = await getResend().emails.send({
-		from: EMAIL_FROM,
+	await sendEmail({
 		to,
 		subject: "Welcome to Eva-licious!",
 		html: `
@@ -51,5 +64,37 @@ export async function sendWelcomeEmail(to: string, name: string) {
       <p>Thanks for joining Eva-licious. Explore recipes, save your favorites, and more!</p>
     `,
 	});
-	assertEmailSent(result, "Welcome");
+}
+
+function escapeHtml(value: string): string {
+	return value
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;");
+}
+
+export async function sendFreeDownloadEmail(input: {
+	to: string;
+	productTitle: string;
+	downloadUrl: string;
+	setPasswordUrl?: string;
+}) {
+	const title = escapeHtml(input.productTitle);
+	await sendEmail({
+		to: input.to,
+		subject: `Tvoje brezplačno gradivo: ${input.productTitle}`,
+		html: `
+      <h1>Hvala za zanimanje!</h1>
+      <p>Tukaj je tvoje brezplačno gradivo <strong>${title}</strong>.</p>
+      <p><a href="${escapeHtml(input.downloadUrl)}">Prenesi PDF</a></p>
+      <p>Povezava velja 7 dni.</p>
+      ${
+				input.setPasswordUrl
+					? `<p>Na Eva-licious te čaka tudi račun, kjer lahko shranjuješ recepte in dostopaš do svojih gradiv. <a href="${escapeHtml(input.setPasswordUrl)}">Nastavi geslo</a> in se prijavi.</p>`
+					: ""
+			}
+      <p>Lep pozdrav,<br>Eva</p>
+    `,
+	});
 }
