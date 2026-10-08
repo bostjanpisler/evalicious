@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { mergeTags, syncFreeDownloadLeadToHal } from "./hal";
+import { mergeTags, requestFreeDownloadEmail, syncFreeDownloadLeadToHal } from "./hal";
 
 const env = { HAL_API_KEY: "key" } as NodeJS.ProcessEnv;
 const lead = {
@@ -52,8 +52,8 @@ describe("syncFreeDownloadLeadToHal", () => {
 			"PATCH /companies/co_1",
 		]);
 		expect(calls[0]?.body).toMatchObject({
-			name: "free_download",
-			event_key: "free_download:lead_1",
+			name: "free-download-confirmed",
+			event_key: "free-download-confirmed:lead_1",
 			email: "eva@example.com",
 			user_id: "user_1",
 			company_id: "user_1",
@@ -79,5 +79,39 @@ describe("syncFreeDownloadLeadToHal", () => {
 			"GET /contacts/c_9",
 			"GET /companies",
 		]);
+	});
+});
+
+describe("requestFreeDownloadEmail", () => {
+	test("tracks the request event with the per-lead link as contact properties, without consent", async () => {
+		const { calls, http } = recorder({});
+		await requestFreeDownloadEmail(
+			{
+				leadId: "lead_1",
+				email: "Eva@Example.com",
+				productSlug: "free-ebook",
+				productTitle: "Free ebook",
+				downloadToken: "lead_1.123.sig",
+				needsAccount: true,
+				name: "eva",
+			},
+			env,
+			http,
+		);
+
+		expect(calls).toHaveLength(1);
+		expect(calls[0]?.route).toBe("POST /events/track");
+		expect(calls[0]?.body).toMatchObject({
+			name: "free-download-requested",
+			event_key: "free-download-requested:lead_1",
+			email: "eva@example.com",
+			metadata: {
+				download_title: "Free ebook",
+				download_token: "lead_1.123.sig",
+				needs_account: "yes",
+			},
+			overwrite_metadata: true,
+		});
+		expect(JSON.stringify(calls[0]?.body)).not.toContain("marketing_consent");
 	});
 });

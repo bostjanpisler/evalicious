@@ -65,36 +65,3 @@ export async function sendWelcomeEmail(to: string, name: string) {
     `,
 	});
 }
-
-function escapeHtml(value: string): string {
-	return value
-		.replace(/&/g, "&amp;")
-		.replace(/</g, "&lt;")
-		.replace(/>/g, "&gt;")
-		.replace(/"/g, "&quot;");
-}
-
-export async function sendFreeDownloadEmail(input: {
-	to: string;
-	productTitle: string;
-	downloadUrl: string;
-	setPasswordUrl?: string;
-}) {
-	const title = escapeHtml(input.productTitle);
-	await sendEmail({
-		to: input.to,
-		subject: `Tvoje brezplačno gradivo: ${input.productTitle}`,
-		html: `
-      <h1>Hvala za zanimanje!</h1>
-      <p>Tukaj je tvoje brezplačno gradivo <strong>${title}</strong>.</p>
-      <p><a href="${escapeHtml(input.downloadUrl)}">Prenesi PDF</a></p>
-      <p>Povezava velja 7 dni.</p>
-      ${
-				input.setPasswordUrl
-					? `<p>Na Eva-licious te čaka tudi račun, kjer lahko shranjuješ recepte in dostopaš do svojih gradiv. <a href="${escapeHtml(input.setPasswordUrl)}">Nastavi geslo</a> in se prijavi.</p>`
-					: ""
-			}
-      <p>Lep pozdrav,<br>Eva</p>
-    `,
-	});
-}

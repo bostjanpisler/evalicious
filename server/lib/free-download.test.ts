@@ -11,23 +11,27 @@ const secret = "test-secret";
 const now = Date.UTC(2026, 9, 7);
 
 describe("free download tokens", () => {
-	test("round-trips the lead id for the same product", () => {
-		const token = createFreeDownloadToken("lead_1", "ebook", now, secret);
-		expect(verifyFreeDownloadToken(token, "ebook", now, secret)).toBe("lead_1");
+	test("round-trips the lead id", () => {
+		const token = createFreeDownloadToken("lead_1", now, secret);
+		expect(verifyFreeDownloadToken(token, now, secret)).toEqual({ leadId: "lead_1", expired: false });
 	});
 
-	test("rejects a token used for another product", () => {
-		const token = createFreeDownloadToken("lead_1", "ebook", now, secret);
-		expect(verifyFreeDownloadToken(token, "other-ebook", now, secret)).toBeNull();
+	test("rejects tampered tokens and a different secret", () => {
+		const token = createFreeDownloadToken("lead_1", now, secret);
+		expect(verifyFreeDownloadToken(token.replace("lead_1", "lead_2"), now, secret)).toBeNull();
+		expect(verifyFreeDownloadToken(token, now, "other-secret")).toBeNull();
+		expect(verifyFreeDownloadToken("garbage", now, secret)).toBeNull();
 	});
 
-	test("rejects tampered and expired tokens", () => {
-		const token = createFreeDownloadToken("lead_1", "ebook", now, secret);
-		expect(verifyFreeDownloadToken(token.replace("lead_1", "lead_2"), "ebook", now, secret)).toBeNull();
-		expect(verifyFreeDownloadToken(token, "ebook", now, "other-secret")).toBeNull();
+	test("flags a correctly signed token as expired after its lifetime", () => {
+		const token = createFreeDownloadToken("lead_1", now, secret);
 		const later = now + (FREE_DOWNLOAD_LINK_TTL_SECONDS + 1) * 1000;
-		expect(verifyFreeDownloadToken(token, "ebook", later, secret)).toBeNull();
-		expect(verifyFreeDownloadToken("garbage", "ebook", now, secret)).toBeNull();
+		expect(verifyFreeDownloadToken(token, later, secret)).toEqual({ leadId: "lead_1", expired: true });
+	});
+
+	test("is URL-safe so it can be dropped into a link unencoded", () => {
+		const token = createFreeDownloadToken("cmuxs46z80f0d2po7tu8wo176", now, secret);
+		expect(token).toMatch(/^[A-Za-z0-9_.-]+$/);
 	});
 });
 
