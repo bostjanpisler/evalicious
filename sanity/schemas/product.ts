@@ -81,7 +81,8 @@ export const product = defineType({
 			name: "r2FileKey",
 			title: "File Key",
 			type: "string",
-			description: "Object key in the private file storage bucket (Railway) used for secure digital delivery.",
+			description:
+				"Optional. Leave empty: the product sync copies the Digital File PDF into private storage automatically.",
 			hidden: ({ document }) => document?.type !== "ebook",
 		}),
 		defineField({
