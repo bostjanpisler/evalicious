@@ -41,3 +41,17 @@ export async function getFreePublishedEbook(
 
 	return product ?? null;
 }
+
+/** Display title of any product in the buyer's language; the slug when Sanity has no match. */
+export async function getProductTitle(
+	productSlug: string,
+	locale: Locale = DEFAULT_LOCALE,
+): Promise<string> {
+	const product = await sanityClient.fetch<{ title: string | null } | null>(
+		`*[_type == "product" && slug.current == $productSlug][0]{
+			"title": select($locale == "en" && defined(en.title) => en.title, title)
+		}`,
+		{ productSlug, locale },
+	);
+	return product?.title || productSlug;
+}

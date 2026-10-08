@@ -19,8 +19,10 @@ import {
 	requestFreeDownloadEmail,
 	syncFreeDownloadLeadToHal,
 } from "../lib/hal.js";
+import { ORDER_DOWNLOAD_PURPOSE } from "../lib/order-fulfillment.js";
 import { requestLocale } from "../lib/recipe-i18n.js";
 import { clientIp, isRateLimited } from "../lib/rate-limit.js";
+import { verifySignedToken } from "../lib/signed-token.js";
 import { verifyTurnstile } from "../lib/turnstile.js";
 import {
 	canAccessLesson,
@@ -261,6 +263,27 @@ downloadHandler.get("/f", async (c) => {
 	if (!ebook.product.r2FileKey) return c.json({ error: "File not available" }, 404);
 
 	return c.redirect(await getSignedDownloadUrl(ebook.product.r2FileKey, 300));
+});
+
+// "Prenesi datoteko" link in the purchase email. The token proves the email was
+// received; each click gets a fresh short-lived storage URL.
+downloadHandler.get("/o", async (c) => {
+	c.header("Cache-Control", "private, no-store");
+	if (isRateLimited(`order-link:${clientIp(c.req.raw.headers) ?? "unknown"}`, 30, 10 * 60_000)) {
+		return c.json({ error: "Too many download requests" }, 429);
+	}
+	const token = verifySignedToken(ORDER_DOWNLOAD_PURPOSE, c.req.query("token") ?? "");
+	if (!token) return c.json({ error: "Invalid link" }, 400);
+	if (token.expired)
+		return c.json({ error: "This link has expired. Write to info@eva-licious.com." }, 410);
+
+	const order = await db.order.findFirst({
+		where: { id: token.id, status: "completed" },
+		include: { items: { include: { product: true } } },
+	});
+	const fileKey = order?.items.find((item) => item.product.type === "ebook")?.product.r2FileKey;
+	if (!fileKey) return c.json({ error: "File not available" }, 404);
+	return c.redirect(await getSignedDownloadUrl(fileKey, 300));
 });
 
 downloadHandler.get("/course/:courseSlug/:lessonSlug", async (c) => {
