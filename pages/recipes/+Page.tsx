@@ -6,9 +6,11 @@ import { usePageContext } from "vike-react/usePageContext";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { RecipeCard } from "@/components/recipes/RecipeCard";
 import { RecipeFilters } from "@/components/recipes/RecipeFilters";
+import { useI18n } from "@/lib/i18n/react";
 import type { Data } from "./+data";
 
 export default function RecipesPage() {
+	const { t } = useI18n();
 	const { recipes } = useData<Data>();
 	const pageContext = usePageContext();
 	const params = pageContext.urlParsed?.search ?? {};
@@ -33,12 +35,10 @@ export default function RecipesPage() {
 
 	return (
 		<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-			<Breadcrumbs segments={[{ label: "Recepti" }]} />
+			<Breadcrumbs segments={[{ label: t("recipes.title") }]} />
 
-			<h1 className="mt-4 font-serif text-4xl font-bold">Recepti</h1>
-			<p className="mt-2 text-muted-foreground">
-				Razišči vse recepte. Uporabi filtre, da najdeš točno to, kar iščeš.
-			</p>
+			<h1 className="mt-4 font-serif text-4xl font-bold">{t("recipes.title")}</h1>
+			<p className="mt-2 text-muted-foreground">{t("recipes.list.intro")}</p>
 
 			<div className="mt-8">
 				<RecipeFilters
@@ -58,9 +58,7 @@ export default function RecipesPage() {
 
 			<div className="mt-8">
 				{filtered.length === 0 ? (
-					<p className="py-12 text-center text-muted-foreground">
-						Ni receptov, ki ustrezajo tvojim filtrom.
-					</p>
+					<p className="py-12 text-center text-muted-foreground">{t("recipes.list.empty")}</p>
 				) : (
 					<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
 						{filtered.map((recipe) => (

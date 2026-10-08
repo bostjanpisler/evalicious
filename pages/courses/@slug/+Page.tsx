@@ -3,11 +3,13 @@ import { useData } from "vike-react/useData";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n/react";
 import { cn, formatDuration } from "@/lib/utils";
 import type { Data } from "./+data";
 
 export default function CourseDetailPage() {
 	const course = useData<Data>();
+	const { t, l } = useI18n();
 	const config = useConfig();
 	config({
 		title: `${course.title} | Eva-licious`,
@@ -18,16 +20,23 @@ export default function CourseDetailPage() {
 	const stepCount = course.steps?.length ?? 0;
 	const courseTarget = course.shopProduct
 		? course.shopProduct.priceInCents <= 0
-			? `/dashboard/my-courses/${course.slug}`
-			: `/shop/${course.shopProduct.slug}`
+			? l(`/dashboard/my-courses/${course.slug}`)
+			: l(`/shop/${course.shopProduct.slug}`)
 		: null;
 	const courseCtaLabel =
-		course.shopProduct && course.shopProduct.priceInCents <= 0 ? "Začni tečaj" : "Kupi tečaj";
+		course.shopProduct && course.shopProduct.priceInCents <= 0
+			? t("courses.detail.startCourse")
+			: t("courses.detail.buyCourse");
 
 	return (
 		<>
 			<div className="mx-auto max-w-7xl px-4 py-8 pb-24 sm:px-6 lg:px-8 lg:pb-8">
-				<Breadcrumbs segments={[{ label: "Tečaji", href: "/courses" }, { label: course.title }]} />
+				<Breadcrumbs
+					segments={[
+						{ label: t("courses.list.breadcrumb"), href: l("/courses") },
+						{ label: course.title },
+					]}
+				/>
 
 				{/* Hero — full-width cover image with overlay */}
 				<div className="relative mt-6 overflow-hidden rounded-2xl bg-gray-900">
@@ -67,14 +76,7 @@ export default function CourseDetailPage() {
 											d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
 										/>
 									</svg>
-									{stepCount}{" "}
-									{stepCount === 1
-										? "korak"
-										: stepCount === 2
-											? "koraka"
-											: stepCount <= 4
-												? "koraki"
-												: "korakov"}
+									{t("courses.stepCount", { n: stepCount })}
 								</span>
 								{totalDuration > 0 && (
 									<span className="flex items-center gap-1.5">
@@ -112,7 +114,7 @@ export default function CourseDetailPage() {
 											d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
 										/>
 									</svg>
-									Video delavnica
+									{t("courses.card.videoWorkshop")}
 								</span>
 							</div>
 						</div>
@@ -126,7 +128,7 @@ export default function CourseDetailPage() {
 						{/* Description */}
 						{course.description && (
 							<div className="mb-10">
-								<h2 className="font-serif text-2xl font-bold mb-4">O delavnici</h2>
+								<h2 className="font-serif text-2xl font-bold mb-4">{t("courses.detail.about")}</h2>
 								<p className="text-muted-foreground leading-relaxed text-lg">
 									{course.description}
 								</p>
@@ -151,15 +153,9 @@ export default function CourseDetailPage() {
 						{course.steps && course.steps.length > 0 && (
 							<div>
 								<h2 className="font-serif text-2xl font-bold mb-6">
-									Vsebina ({stepCount}{" "}
-									{stepCount === 1
-										? "korak"
-										: stepCount === 2
-											? "koraka"
-											: stepCount <= 4
-												? "koraki"
-												: "korakov"}
-									)
+									{t("courses.detail.contentHeading", {
+										steps: t("courses.stepCount", { n: stepCount }),
+									})}
 								</h2>
 								<div className="space-y-2">
 									{course.steps.map((step, index) => (
@@ -182,7 +178,7 @@ export default function CourseDetailPage() {
 													<h3 className="font-medium text-foreground">{step.title}</h3>
 													{step.isFree && (
 														<span className="rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700">
-															Brezplačno
+															{t("courses.detail.free")}
 														</span>
 													)}
 												</div>
@@ -209,7 +205,7 @@ export default function CourseDetailPage() {
 															d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
 														/>
 													</svg>
-													{step.durationMinutes} min
+													{t("courses.minutes", { n: step.durationMinutes })}
 												</span>
 											)}
 										</div>
@@ -223,34 +219,34 @@ export default function CourseDetailPage() {
 					<div className="mt-10 lg:mt-0 lg:w-80 lg:flex-shrink-0">
 						<div className="lg:sticky lg:top-4 rounded-2xl border border-border bg-card p-6 shadow-sm">
 							<div className="text-center">
-								<p className="text-sm text-muted-foreground mb-1">Delavnica</p>
+								<p className="text-sm text-muted-foreground mb-1">{t("courses.detail.workshop")}</p>
 								<p className="font-serif text-3xl font-bold text-foreground">{course.title}</p>
 							</div>
 
 							<div className="mt-6 space-y-3 text-sm text-muted-foreground">
 								<div className="flex items-center justify-between">
-									<span>Koraki</span>
+									<span>{t("courses.detail.steps")}</span>
 									<span className="font-medium text-foreground">{stepCount}</span>
 								</div>
 								{totalDuration > 0 && (
 									<div className="flex items-center justify-between">
-										<span>Trajanje</span>
+										<span>{t("courses.detail.duration")}</span>
 										<span className="font-medium text-foreground">
 											{formatDuration(totalDuration)}
 										</span>
 									</div>
 								)}
 								<div className="flex items-center justify-between">
-									<span>Video vsebina</span>
-									<span className="font-medium text-green-600">Da</span>
+									<span>{t("courses.detail.videoContent")}</span>
+									<span className="font-medium text-green-600">{t("courses.detail.yes")}</span>
 								</div>
 								<div className="flex items-center justify-between">
-									<span>PDF materiali</span>
-									<span className="font-medium text-green-600">Da</span>
+									<span>{t("courses.detail.pdfMaterials")}</span>
+									<span className="font-medium text-green-600">{t("courses.detail.yes")}</span>
 								</div>
 								<div className="flex items-center justify-between">
-									<span>Recepti</span>
-									<span className="font-medium text-green-600">Da</span>
+									<span>{t("courses.detail.recipes")}</span>
+									<span className="font-medium text-green-600">{t("courses.detail.yes")}</span>
 								</div>
 							</div>
 
@@ -261,11 +257,11 @@ export default function CourseDetailPage() {
 									</Button>
 								) : (
 									<Button disabled size="lg" className="h-auto w-full rounded-xl py-3.5 text-base">
-										Trenutno ni na voljo
+										{t("courses.detail.unavailable")}
 									</Button>
 								)}
 								<p className="mt-3 text-center text-xs text-muted-foreground">
-									Dostop za vedno. Brez naročnine.
+									{t("courses.detail.lifetimeAccess")}
 								</p>
 							</div>
 						</div>
@@ -281,7 +277,7 @@ export default function CourseDetailPage() {
 					</Button>
 				) : (
 					<Button disabled size="lg" className="h-auto w-full rounded-xl py-3 text-base">
-						Trenutno ni na voljo
+						{t("courses.detail.unavailable")}
 					</Button>
 				)}
 			</div>

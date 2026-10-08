@@ -9,19 +9,19 @@ import { FreeDownloadForm } from "@/components/shop/FreeDownloadForm";
 import { PriceDisplay } from "@/components/shop/PriceDisplay";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n/react";
 import { urlFor } from "@/lib/sanity.image";
 import { formatDuration } from "@/lib/utils";
 import type { Data } from "./+data.server";
 
-const typeLabels: Record<string, string> = {
-	ebook: "E-knjiga",
-	ecourse: "E-tečaj",
-	offline_course: "Tečaj v živo",
-};
-
 export default function ProductPage() {
 	const product = useData<Data>();
 	const config = useConfig();
+	const { t, l } = useI18n();
+	const typeLabel =
+		product.type === "ebook" || product.type === "ecourse" || product.type === "offline_course"
+			? t(`shop.types.${product.type}`)
+			: product.type;
 	config({
 		title: `${product.title} | Eva-licious`,
 		description: product.description,
@@ -37,7 +37,9 @@ export default function ProductPage() {
 					!product.owned && !product.isFree ? "pb-24 lg:pb-8" : ""
 				}`}
 			>
-				<Breadcrumbs segments={[{ label: "Trgovina", href: "/shop" }, { label: product.title }]} />
+				<Breadcrumbs
+					segments={[{ label: t("shop.breadcrumb"), href: l("/shop") }, { label: product.title }]}
+				/>
 
 				<div className="mt-6 grid grid-cols-1 gap-10 lg:grid-cols-3">
 					{/* Image — takes 2 cols */}
@@ -69,7 +71,7 @@ export default function ProductPage() {
 							<Badge variant="secondary" className="gap-1.5">
 								{product.type === "ebook" && <BookOpen className="h-3.5 w-3.5" />}
 								{product.type === "ecourse" && <Play className="h-3.5 w-3.5" />}
-								{typeLabels[product.type] ?? product.type}
+								{typeLabel}
 							</Badge>
 
 							<h1 className="font-serif text-3xl font-bold leading-tight">{product.title}</h1>
@@ -83,10 +85,10 @@ export default function ProductPage() {
 								<div className="flex flex-wrap gap-2">
 									<Badge variant="outline" className="gap-1">
 										<Download className="h-3 w-3" />
-										PDF
+										{t("shop.product.pdf")}
 									</Badge>
 									<Badge variant="outline" className="gap-1">
-										Takojšnji prenos
+										{t("shop.product.instantDownload")}
 									</Badge>
 								</div>
 							)}
@@ -94,19 +96,12 @@ export default function ProductPage() {
 							{/* Ecourse-specific info */}
 							{product.type === "ecourse" && product.course && (
 								<div className="rounded-lg border bg-muted/50 p-4 space-y-3">
-									<h3 className="text-sm font-semibold">Vsebina tečaja</h3>
+									<h3 className="text-sm font-semibold">{t("shop.product.courseContent")}</h3>
 									<div className="flex items-center gap-4 text-sm text-muted-foreground">
 										{product.course.stepCount != null && (
 											<span className="flex items-center gap-1.5">
 												<ListChecks className="h-4 w-4" />
-												{product.course.stepCount}{" "}
-												{product.course.stepCount === 1
-													? "korak"
-													: product.course.stepCount === 2
-														? "koraka"
-														: product.course.stepCount <= 4
-															? "koraki"
-															: "korakov"}
+												{t("shop.steps", { n: product.course.stepCount })}
 											</span>
 										)}
 										{product.course.totalDuration != null && product.course.totalDuration > 0 && (
@@ -135,15 +130,15 @@ export default function ProductPage() {
 								<div className="rounded-lg border border-green-200 bg-green-50 p-4 text-center">
 									<div className="flex items-center justify-center gap-2 text-green-700">
 										<CheckCircle className="h-5 w-5" />
-										<span className="font-semibold">Brezplačen dostop</span>
+										<span className="font-semibold">{t("shop.product.freeAccess")}</span>
 									</div>
 									{product.type === "ebook" ? (
 										<FreeDownloadForm productSlug={product.slug} />
 									) : product.type === "ecourse" && product.course?.slug ? (
 										<Button asChild className="mt-3 w-full gap-2">
-											<a href={`/dashboard/my-courses/${product.course.slug}`}>
+											<a href={l(`/dashboard/my-courses/${product.course.slug}`)}>
 												<Play className="h-4 w-4" />
-												Začni tečaj
+												{t("shop.product.startCourse")}
 											</a>
 										</Button>
 									) : null}
@@ -152,12 +147,14 @@ export default function ProductPage() {
 								<div className="rounded-lg border border-green-200 bg-green-50 p-4 text-center">
 									<div className="flex items-center justify-center gap-2 text-green-700">
 										<CheckCircle className="h-5 w-5" />
-										<span className="font-semibold">Že kupljeno</span>
+										<span className="font-semibold">{t("shop.product.alreadyOwned")}</span>
 									</div>
 									{product.ownershipTarget && (
 										<Button asChild variant="outline" className="mt-3 w-full">
-											<a href={product.ownershipTarget}>
-												{product.type === "ecourse" ? "Pojdi na tečaj" : "Moja naročila"}
+											<a href={l(product.ownershipTarget)}>
+												{product.type === "ecourse"
+													? t("shop.product.goToCourse")
+													: t("shop.product.myOrders")}
 											</a>
 										</Button>
 									)}

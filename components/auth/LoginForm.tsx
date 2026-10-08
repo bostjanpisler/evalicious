@@ -6,18 +6,25 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { capture } from "@/lib/analytics-client";
+import { useI18n } from "@/lib/i18n/react";
 import { DEFAULT_AUTH_REDIRECT, getSafeRedirect } from "@/lib/safe-redirect";
 
 export function LoginForm() {
-	const [redirectTo, setRedirectTo] = useState(DEFAULT_AUTH_REDIRECT);
+	const { t, l } = useI18n();
+	const [redirectTo, setRedirectTo] = useState(l(DEFAULT_AUTH_REDIRECT));
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
-		setRedirectTo(getSafeRedirect(new URLSearchParams(window.location.search).get("redirect")));
-	}, []);
+		setRedirectTo(
+			getSafeRedirect(
+				new URLSearchParams(window.location.search).get("redirect"),
+				l(DEFAULT_AUTH_REDIRECT),
+			),
+		);
+	}, [l]);
 
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
@@ -33,7 +40,7 @@ export function LoginForm() {
 
 			if (!res.ok) {
 				const data = await res.json();
-				setError("E-poštni naslov ali geslo ni pravilno.");
+				setError(t("auth.login.invalid"));
 				capture("sign_in_error", { error: data.message });
 				return;
 			}
@@ -41,7 +48,7 @@ export function LoginForm() {
 			capture("sign_in_success");
 			window.location.href = redirectTo;
 		} catch {
-			setError("Nekaj je šlo narobe. Poskusi znova.");
+			setError(t("auth.errors.generic"));
 		} finally {
 			setLoading(false);
 		}
@@ -50,8 +57,8 @@ export function LoginForm() {
 	return (
 		<Card className="mx-auto w-full max-w-md">
 			<CardHeader className="text-center">
-				<CardTitle className="font-serif text-2xl">Dobrodošli nazaj</CardTitle>
-				<CardDescription>Prijavi se v svoj račun</CardDescription>
+				<CardTitle className="font-serif text-2xl">{t("auth.login.heading")}</CardTitle>
+				<CardDescription>{t("auth.login.description")}</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<form onSubmit={handleSubmit} className="space-y-4">
@@ -59,18 +66,18 @@ export function LoginForm() {
 						<div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
 					)}
 					<div className="space-y-2">
-						<Label htmlFor="email">E-pošta</Label>
+						<Label htmlFor="email">{t("auth.login.email")}</Label>
 						<Input
 							id="email"
 							type="email"
-							placeholder="tvoj@email.com"
+							placeholder={t("auth.login.emailPlaceholder")}
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
 							required
 						/>
 					</div>
 					<div className="space-y-2">
-						<Label htmlFor="password">Geslo</Label>
+						<Label htmlFor="password">{t("auth.login.password")}</Label>
 						<Input
 							id="password"
 							type="password"
@@ -80,16 +87,16 @@ export function LoginForm() {
 						/>
 					</div>
 					<Button type="submit" className="w-full" disabled={loading}>
-						{loading ? "Prijavljam..." : "Prijava"}
+						{loading ? t("auth.login.submitting") : t("auth.login.submit")}
 					</Button>
 				</form>
 				<div className="mt-6 text-center text-sm text-muted-foreground">
-					Še nimaš računa?{" "}
+					{t("auth.login.noAccount")}{" "}
 					<a
-						href={`/register?redirect=${encodeURIComponent(redirectTo)}`}
+						href={`${l("/register")}?redirect=${encodeURIComponent(redirectTo)}`}
 						className="text-primary hover:underline"
 					>
-						Registriraj se
+						{t("auth.login.registerLink")}
 					</a>
 				</div>
 			</CardContent>

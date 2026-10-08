@@ -2,41 +2,46 @@ import { BookOpen, Download, Play, ShoppingBag } from "lucide-react";
 import { useData } from "vike-react/useData";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { formatDate, formatPrice } from "@/lib/utils";
+import type { TranslationKey } from "@/lib/i18n/messages";
+import { useI18n } from "@/lib/i18n/react";
+import { formatPrice } from "@/lib/utils";
 import type { Data } from "./+data.server";
 
-const typeLabels: Record<string, string> = {
-	ebook: "E-knjiga",
-	ecourse: "E-tečaj",
-	offline_course: "Tečaj v živo",
+const typeKeys: Record<string, TranslationKey> = {
+	ebook: "dashboard.orders.types.ebook",
+	ecourse: "dashboard.orders.types.ecourse",
+	offline_course: "dashboard.orders.types.offline_course",
 };
 
-const statusLabels: Record<string, string> = {
-	completed: "Zaključeno",
-	pending: "V obdelavi",
-	failed: "Neuspešno",
+const statusKeys: Record<string, TranslationKey> = {
+	completed: "dashboard.orders.status.completed",
+	pending: "dashboard.orders.status.pending",
+	failed: "dashboard.orders.status.failed",
 };
 
 export default function MyOrdersPage() {
 	const { orders } = useData<Data>();
+	const { t, l, formatDate } = useI18n();
+	const label = (keys: Record<string, TranslationKey>, value: string) => {
+		const key = keys[value];
+		return key ? t(key) : value;
+	};
 
 	if (orders.length === 0) {
 		return (
 			<div>
-				<h2 className="font-serif text-2xl font-bold mb-6">Moja naročila</h2>
+				<h2 className="font-serif text-2xl font-bold mb-6">{t("dashboard.orders.heading")}</h2>
 				<div className="text-center py-16">
 					<ShoppingBag className="mx-auto h-12 w-12 text-muted-foreground/40" />
 					<h3 className="mt-4 font-serif text-lg font-semibold text-muted-foreground">
-						Še nimaš naročil
+						{t("dashboard.orders.emptyTitle")}
 					</h3>
-					<p className="mt-2 text-sm text-muted-foreground">
-						Ko kupiš izdelek, se bo tukaj prikazal.
-					</p>
+					<p className="mt-2 text-sm text-muted-foreground">{t("dashboard.orders.emptyText")}</p>
 					<a
-						href="/shop"
+						href={l("/shop")}
 						className="mt-4 inline-block text-sm font-medium text-amber-600 hover:text-amber-700 transition-colors"
 					>
-						Pojdi v trgovino →
+						{t("dashboard.orders.goToShop")}
 					</a>
 				</div>
 			</div>
@@ -45,7 +50,7 @@ export default function MyOrdersPage() {
 
 	return (
 		<div>
-			<h2 className="font-serif text-2xl font-bold mb-6">Moja naročila</h2>
+			<h2 className="font-serif text-2xl font-bold mb-6">{t("dashboard.orders.heading")}</h2>
 
 			<div className="space-y-4">
 				{orders.map((order) => (
@@ -57,7 +62,7 @@ export default function MyOrdersPage() {
 									variant={order.status === "completed" ? "default" : "secondary"}
 									className="text-xs"
 								>
-									{statusLabels[order.status] ?? order.status}
+									{label(statusKeys, order.status)}
 								</Badge>
 							</div>
 							<span className="text-sm font-semibold">
@@ -77,13 +82,13 @@ export default function MyOrdersPage() {
 									</div>
 									<div>
 										<a
-											href={`/shop/${item.productSlug}`}
+											href={l(`/shop/${item.productSlug}`)}
 											className="text-sm font-medium hover:text-primary"
 										>
 											{item.productName}
 										</a>
 										<p className="text-xs text-muted-foreground">
-											{typeLabels[item.productType] ?? item.productType}
+											{label(typeKeys, item.productType)}
 										</p>
 									</div>
 								</div>
@@ -93,7 +98,7 @@ export default function MyOrdersPage() {
 										<Button asChild variant="outline" size="sm" className="gap-1.5">
 											<a href={`/api/download/${order.id}`}>
 												<Download className="h-3.5 w-3.5" />
-												Prenesi
+												{t("dashboard.orders.download")}
 											</a>
 										</Button>
 									)}
@@ -101,9 +106,9 @@ export default function MyOrdersPage() {
 										order.status === "completed" &&
 										item.courseSlug && (
 											<Button asChild variant="outline" size="sm" className="gap-1.5">
-												<a href={`/dashboard/my-courses/${item.courseSlug}`}>
+												<a href={l(`/dashboard/my-courses/${item.courseSlug}`)}>
 													<Play className="h-3.5 w-3.5" />
-													Pojdi na tečaj
+													{t("dashboard.orders.goToCourse")}
 												</a>
 											</Button>
 										)}
@@ -113,10 +118,10 @@ export default function MyOrdersPage() {
 
 						<div className="mt-4 border-t pt-4 text-right">
 							<a
-								href={`/dashboard/my-orders/${order.id}`}
+								href={l(`/dashboard/my-orders/${order.id}`)}
 								className="text-sm font-medium text-amber-700 transition-colors hover:text-amber-800"
 							>
-								Prikaži podrobnosti →
+								{t("dashboard.orders.viewDetails")}
 							</a>
 						</div>
 					</div>

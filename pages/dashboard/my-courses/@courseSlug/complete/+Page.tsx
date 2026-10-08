@@ -5,10 +5,12 @@ import { useData } from "vike-react/useData";
 import { ProgressTracker } from "@/components/courses/ProgressTracker";
 import { fireCompletionConfetti } from "@/components/courses/StepCompletion";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
+import { useI18n } from "@/lib/i18n/react";
 import type { Data } from "./+data.server";
 
 export default function CourseCompletePage() {
 	const { courseTitle, courseSlug, totalSteps, completedSteps, recommendations } = useData<Data>();
+	const { t, l } = useI18n();
 
 	const allDone = completedSteps >= totalSteps;
 
@@ -39,9 +41,11 @@ export default function CourseCompletePage() {
 								/>
 							</svg>
 						</div>
-						<h1 className="font-serif text-3xl font-bold">Čestitke!</h1>
+						<h1 className="font-serif text-3xl font-bold">{t("courses.complete.congratsTitle")}</h1>
 						<p className="mt-3 text-lg text-muted-foreground">
-							Uspešno si zaključil/a tečaj <strong>{courseTitle}</strong>!
+							{t("courses.complete.congratsPrefix")}
+							<strong>{courseTitle}</strong>
+							{t("courses.complete.congratsSuffix")}
 						</p>
 						<div className="mt-6 mx-auto max-w-xs">
 							<ProgressTracker completed={completedSteps} total={totalSteps} />
@@ -49,18 +53,20 @@ export default function CourseCompletePage() {
 					</>
 				) : (
 					<>
-						<h1 className="font-serif text-3xl font-bold">Skoraj!</h1>
+						<h1 className="font-serif text-3xl font-bold">{t("courses.complete.almostTitle")}</h1>
 						<p className="mt-3 text-lg text-muted-foreground">
-							Zaključi vse korake tečaja <strong>{courseTitle}</strong>, da dobiš čestitke.
+							{t("courses.complete.almostPrefix")}
+							<strong>{courseTitle}</strong>
+							{t("courses.complete.almostSuffix")}
 						</p>
 						<div className="mt-6 mx-auto max-w-xs">
 							<ProgressTracker completed={completedSteps} total={totalSteps} />
 						</div>
 						<a
-							href={`/dashboard/my-courses/${courseSlug}`}
+							href={l(`/dashboard/my-courses/${courseSlug}`)}
 							className="mt-6 inline-block rounded-lg bg-amber-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-amber-700 transition-colors"
 						>
-							Nadaljuj tečaj
+							{t("courses.complete.continueCourse")}
 						</a>
 					</>
 				)}
@@ -75,7 +81,7 @@ export default function CourseCompletePage() {
 						</div>
 						<div className="relative flex justify-center">
 							<span className="bg-background px-4 text-sm font-medium text-muted-foreground">
-								Mogoče te zanima tudi
+								{t("courses.complete.alsoInterested")}
 							</span>
 						</div>
 					</div>
@@ -84,7 +90,7 @@ export default function CourseCompletePage() {
 						{recommendations.map((rec) => (
 							<a
 								key={rec._id}
-								href={`/courses/${rec.slug}`}
+								href={l(`/courses/${rec.slug}`)}
 								className="group rounded-xl border border-border overflow-hidden hover:border-amber-300 hover:shadow-md transition-all"
 							>
 								{rec.coverImage ? (
@@ -109,17 +115,10 @@ export default function CourseCompletePage() {
 									)}
 									<div className="mt-3 flex items-center justify-between">
 										<span className="text-xs text-muted-foreground">
-											{rec.stepCount}{" "}
-											{rec.stepCount === 1
-												? "korak"
-												: rec.stepCount === 2
-													? "koraka"
-													: rec.stepCount <= 4
-														? "koraki"
-														: "korakov"}
+											{t("courses.stepCount", { n: rec.stepCount })}
 										</span>
 										<span className="inline-flex items-center gap-1 text-xs font-medium text-amber-600 group-hover:text-amber-700">
-											Poglej
+											{t("courses.complete.view")}
 											<svg
 												aria-hidden="true"
 												xmlns="http://www.w3.org/2000/svg"
@@ -143,16 +142,16 @@ export default function CourseCompletePage() {
 			{/* Back links */}
 			<div className="mt-10 flex items-center justify-center gap-4">
 				<a
-					href="/dashboard/my-courses"
+					href={l("/dashboard/my-courses")}
 					className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
 				>
-					Moji tečaji
+					{t("courses.complete.myCourses")}
 				</a>
 				<a
-					href="/courses"
+					href={l("/courses")}
 					className="text-sm font-medium text-amber-600 hover:text-amber-700 transition-colors"
 				>
-					Vsi tečaji
+					{t("courses.complete.allCourses")}
 				</a>
 			</div>
 		</div>

@@ -15,17 +15,19 @@ import { RecommendedProducts } from "@/components/shared/RecommendedProducts";
 import { ProfileSidebar } from "@/components/shared/ProfileSidebar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { RECIPE_CATEGORY_LABELS, RECIPE_DIFFICULTY_LABELS } from "@/lib/constants";
+import { recipeCategoryLabel, recipeDifficultyLabel } from "@/lib/constants";
+import { useI18n } from "@/lib/i18n/react";
 import { urlFor } from "@/lib/sanity.image";
 import { formatDuration } from "@/lib/utils";
 import type { Data } from "./+data";
 
 export default function RecipePage() {
+	const { t, l } = useI18n();
 	const recipe = useData<Data>();
 	const config = useConfig();
 	config({
 		title: `${recipe.title} | Eva-licious`,
-		description: recipe.description ?? `Recept: ${recipe.title}`,
+		description: recipe.description ?? t("recipes.detail.metaDescription", { title: recipe.title }),
 		image: recipe.coverImage
 			? urlFor(recipe.coverImage).width(1200).height(630).auto("format").url()
 			: undefined,
@@ -34,16 +36,18 @@ export default function RecipePage() {
 
 	// Build combined TOC headings
 	const hasContent = recipe.content && recipe.content.length > 0;
-	const introHeadings = hasContent ? [{ key: "o-receptu", text: "O receptu", level: 2 }] : [];
+	const introHeadings = hasContent
+		? [{ key: "o-receptu", text: t("recipes.detail.about"), level: 2 }]
+		: [];
 	const contentHeadings = hasContent ? extractHeadings(recipe.content ?? []) : [];
 	const sectionHeadings = [
-		{ key: "recept", text: "Recept", level: 2 },
-		{ key: "sestavine", text: "Sestavine", level: 3 },
-		{ key: "navodila", text: "Navodila", level: 3 },
+		{ key: "recept", text: t("recipes.detail.recipe"), level: 2 },
+		{ key: "sestavine", text: t("recipes.detail.ingredients"), level: 3 },
+		{ key: "navodila", text: t("recipes.detail.instructions"), level: 3 },
 	];
 	const relatedHeadings =
 		recipe.relatedRecipes && recipe.relatedRecipes.length > 0
-			? [{ key: "podobni-recepti", text: "Podobni recepti", level: 2 }]
+			? [{ key: "podobni-recepti", text: t("recipes.detail.related"), level: 2 }]
 			: [];
 	const allHeadings = [
 		...introHeadings,
@@ -54,7 +58,9 @@ export default function RecipePage() {
 
 	return (
 		<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-			<Breadcrumbs segments={[{ label: "Recepti", href: "/recipes" }, { label: recipe.title }]} />
+			<Breadcrumbs
+				segments={[{ label: t("recipes.title"), href: "/recipes" }, { label: recipe.title }]}
+			/>
 
 			<div className="mt-6 grid grid-cols-1 gap-10 lg:grid-cols-3">
 				{/* Main content */}
@@ -75,7 +81,7 @@ export default function RecipePage() {
 								document.getElementById("recept")?.scrollIntoView({ behavior: "smooth" });
 							}}
 						>
-							Skoči na recept
+							{t("recipes.detail.jumpToRecipe")}
 						</button>
 					</div>
 
@@ -84,7 +90,7 @@ export default function RecipePage() {
 						<>
 							<Separator className="my-8" />
 							<h2 id="o-receptu" className="mb-6 scroll-mt-24 font-serif text-2xl font-bold">
-								O receptu
+								{t("recipes.detail.about")}
 							</h2>
 							<PortableTextRenderer
 								value={recipe.content}
@@ -110,18 +116,16 @@ export default function RecipePage() {
 							)}
 							{recipe.categories?.map((cat) => (
 								<Badge key={cat} variant="secondary">
-									{RECIPE_CATEGORY_LABELS[cat] ?? cat}
+									{recipeCategoryLabel(t, cat)}
 								</Badge>
 							))}
 							{recipe.difficulty && (
-								<Badge variant="outline">
-									{RECIPE_DIFFICULTY_LABELS[recipe.difficulty] ?? recipe.difficulty}
-								</Badge>
+								<Badge variant="outline">{recipeDifficultyLabel(t, recipe.difficulty)}</Badge>
 							)}
 							{recipe.servings != null && (
 								<span className="flex items-center gap-1.5 text-sm text-muted-foreground">
 									<Users className="h-4 w-4" />
-									{recipe.servings} {recipe.servings === 1 ? "porcija" : "porcij"}
+									{t("recipes.detail.servings", { n: recipe.servings })}
 								</span>
 							)}
 						</div>
@@ -131,19 +135,19 @@ export default function RecipePage() {
 							{recipe.prepTime != null && recipe.prepTime > 0 && (
 								<span className="flex items-center gap-1.5">
 									<Clock className="h-4 w-4" />
-									Priprava: {formatDuration(recipe.prepTime)}
+									{t("recipes.detail.prep", { time: formatDuration(recipe.prepTime) })}
 								</span>
 							)}
 							{recipe.cookTime != null && recipe.cookTime > 0 && (
 								<span className="flex items-center gap-1.5">
 									<Flame className="h-4 w-4" />
-									Kuhanje: {formatDuration(recipe.cookTime)}
+									{t("recipes.detail.cook", { time: formatDuration(recipe.cookTime) })}
 								</span>
 							)}
 							{totalTime > 0 && (
 								<span className="flex items-center gap-1.5">
 									<Clock className="h-4 w-4" />
-									Skupaj: {formatDuration(totalTime)}
+									{t("recipes.detail.total", { time: formatDuration(totalTime) })}
 								</span>
 							)}
 						</div>
@@ -163,7 +167,7 @@ export default function RecipePage() {
 												<span className="h-[130%] w-px rotate-45 bg-current opacity-70" />
 											</span>
 										</span>
-										Brez glutena
+										{t("recipes.allergens.glutenFree")}
 									</span>
 								)}
 								{recipe.sugarFree && (
@@ -174,7 +178,7 @@ export default function RecipePage() {
 												<span className="h-[130%] w-px rotate-45 bg-current opacity-70" />
 											</span>
 										</span>
-										Brez rafiniranega sladkorja
+										{t("recipes.allergens.sugarFree")}
 									</span>
 								)}
 								{recipe.oilFree && (
@@ -185,7 +189,7 @@ export default function RecipePage() {
 												<span className="h-[130%] w-px rotate-45 bg-current opacity-70" />
 											</span>
 										</span>
-										Brez rafiniranega olja
+										{t("recipes.allergens.oilFree")}
 									</span>
 								)}
 								{recipe.soyFree && (
@@ -196,7 +200,7 @@ export default function RecipePage() {
 												<span className="h-[130%] w-px rotate-45 bg-current opacity-70" />
 											</span>
 										</span>
-										Brez soje
+										{t("recipes.allergens.soyFree")}
 									</span>
 								)}
 								{recipe.nutFree && (
@@ -207,7 +211,7 @@ export default function RecipePage() {
 												<span className="h-[130%] w-px rotate-45 bg-current opacity-70" />
 											</span>
 										</span>
-										Brez oreškov
+										{t("recipes.allergens.nutFree")}
 									</span>
 								)}
 							</div>
@@ -221,25 +225,27 @@ export default function RecipePage() {
 									{recipe.nutritionInfo.calories != null && (
 										<div>
 											<p className="text-2xl font-bold">{recipe.nutritionInfo.calories}</p>
-											<p className="text-xs text-muted-foreground">Kalorije</p>
+											<p className="text-xs text-muted-foreground">
+												{t("recipes.detail.calories")}
+											</p>
 										</div>
 									)}
 									{recipe.nutritionInfo.protein != null && (
 										<div>
 											<p className="text-2xl font-bold">{recipe.nutritionInfo.protein}g</p>
-											<p className="text-xs text-muted-foreground">Beljakovine</p>
+											<p className="text-xs text-muted-foreground">{t("recipes.detail.protein")}</p>
 										</div>
 									)}
 									{recipe.nutritionInfo.fat != null && (
 										<div>
 											<p className="text-2xl font-bold">{recipe.nutritionInfo.fat}g</p>
-											<p className="text-xs text-muted-foreground">Maščobe</p>
+											<p className="text-xs text-muted-foreground">{t("recipes.detail.fat")}</p>
 										</div>
 									)}
 									{recipe.nutritionInfo.carbs != null && (
 										<div>
 											<p className="text-2xl font-bold">{recipe.nutritionInfo.carbs}g</p>
-											<p className="text-xs text-muted-foreground">Ogljikovi hidrati</p>
+											<p className="text-xs text-muted-foreground">{t("recipes.detail.carbs")}</p>
 										</div>
 									)}
 								</div>
@@ -250,7 +256,7 @@ export default function RecipePage() {
 
 						{/* Ingredients with image on the right */}
 						<h3 id="sestavine" className="mb-4 scroll-mt-24 font-serif text-xl font-semibold">
-							Sestavine
+							{t("recipes.detail.ingredients")}
 						</h3>
 						<div className="flex flex-col gap-6 md:flex-row">
 							<div className="min-w-0 flex-1">
@@ -277,7 +283,7 @@ export default function RecipePage() {
 
 						{/* Steps */}
 						<h3 id="navodila" className="mb-4 scroll-mt-24 font-serif text-xl font-semibold">
-							Navodila
+							{t("recipes.detail.instructions")}
 						</h3>
 						{recipe.stepGroups?.length > 0 && <StepChecklist groups={recipe.stepGroups} />}
 
@@ -287,7 +293,7 @@ export default function RecipePage() {
 								<Separator className="my-6" />
 								<div className="flex flex-wrap items-center gap-2">
 									{recipe.tags.map((tag) => (
-										<a key={tag} href={`/recipes?tag=${encodeURIComponent(tag)}`}>
+										<a key={tag} href={l(`/recipes?tag=${encodeURIComponent(tag)}`)}>
 											<Badge variant="outline" className="cursor-pointer hover:bg-accent">
 												{tag}
 											</Badge>
@@ -300,7 +306,7 @@ export default function RecipePage() {
 
 					<RecommendedProducts
 						id="pripomocki"
-						title="Pripomočki in sestavine, ki jih uporabljam"
+						title={t("common.affiliate.tools")}
 						products={recipe.recommendedProducts}
 						label={recipe.slug}
 					/>
@@ -309,7 +315,7 @@ export default function RecipePage() {
 					{recipe.relatedRecipes && recipe.relatedRecipes.length > 0 && (
 						<section className="mt-12">
 							<h2 id="podobni-recepti" className="mb-6 scroll-mt-24 font-serif text-2xl font-bold">
-								Podobni recepti
+								{t("recipes.detail.related")}
 							</h2>
 							<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
 								{recipe.relatedRecipes.map((related) => (

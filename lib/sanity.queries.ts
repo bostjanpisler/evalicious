@@ -1,7 +1,22 @@
+// Language handling (see sanity/schemas/i18n.ts). Every query takes a `$locale` ("sl" | "en").
+// - Recipes, blog posts, travel entries and the home/about pages are one document per language.
+// - Products, courses and lessons are one document with an optional `en` override block.
+const DOC_LANG = `coalesce(language, "sl") == $locale`;
+const OVERRIDE = (field: string) =>
+	`select($locale == "en" && defined(en.${field}) => en.${field}, ${field})`;
+// Which languages this document exists in (itself plus its translations), for hreflang
+// and the language switcher.
+const DOC_META = `
+    "language": coalesce(language, "sl"),
+    "translations": *[
+      _type == ^._type &&
+      (_id == coalesce(^.translationOf._ref, ^._id) || translationOf._ref == coalesce(^.translationOf._ref, ^._id))
+    ] { "language": coalesce(language, "sl"), "slug": slug.current }`;
+
 // ── Recipes ──────────────────────────────────────────────────────────────────
 
 export const recentRecipesQuery = `
-  *[_type == "recipe" && published == true] | order(publishedAt desc) [0...6] {
+  *[_type == "recipe" && ${DOC_LANG} && published == true] | order(publishedAt desc) [0...6] {
     _id,
     title,
     "slug": slug.current,
@@ -22,7 +37,7 @@ export const recentRecipesQuery = `
 `;
 
 export const allRecipesQuery = `
-  *[_type == "recipe" && published == true] | order(publishedAt desc) {
+  *[_type == "recipe" && ${DOC_LANG} && published == true] | order(publishedAt desc) {
     _id,
     title,
     "slug": slug.current,
@@ -43,8 +58,9 @@ export const allRecipesQuery = `
 `;
 
 export const recipeBySlugQuery = `
-  *[_type == "recipe" && published == true && slug.current == $slug][0] {
+  *[_type == "recipe" && ${DOC_LANG} && published == true && slug.current == $slug][0] {
     _id,
+    ${DOC_META},
     title,
     "slug": slug.current,
     description,
@@ -100,7 +116,7 @@ export const recipeBySlugQuery = `
     },
     published,
     publishedAt,
-    "relatedRecipes": *[_type == "recipe" && published == true && slug.current != ^.slug.current && count((select(defined(categories) => categories, defined(category) => [category], []))[@ in ^.categories]) > 0] | order(publishedAt desc) [0...3] {
+    "relatedRecipes": *[_type == "recipe" && ${DOC_LANG} && published == true && slug.current != ^.slug.current && count((select(defined(categories) => categories, defined(category) => [category], []))[@ in ^.categories]) > 0] | order(publishedAt desc) [0...3] {
       _id,
       title,
       "slug": slug.current,
@@ -123,7 +139,7 @@ export const recipeBySlugQuery = `
 // ── Blog Posts ────────────────────────────────────────────────────────────────
 
 export const allBlogPostsQuery = `
-  *[_type == "blogPost" && published == true] | order(publishedAt desc) {
+  *[_type == "blogPost" && ${DOC_LANG} && published == true] | order(publishedAt desc) {
     _id,
     title,
     "slug": slug.current,
@@ -137,8 +153,9 @@ export const allBlogPostsQuery = `
 `;
 
 export const blogPostBySlugQuery = `
-  *[_type == "blogPost" && published == true && slug.current == $slug][0] {
+  *[_type == "blogPost" && ${DOC_LANG} && published == true && slug.current == $slug][0] {
     _id,
+    ${DOC_META},
     title,
     "slug": slug.current,
     description,
@@ -161,7 +178,7 @@ export const blogPostBySlugQuery = `
 // ── Travel Entries ───────────────────────────────────────────────────────────
 
 export const allTravelEntriesQuery = `
-  *[_type == "travelEntry" && published == true] | order(publishedAt desc) {
+  *[_type == "travelEntry" && ${DOC_LANG} && published == true] | order(publishedAt desc) {
     _id,
     title,
     "slug": slug.current,
@@ -175,8 +192,9 @@ export const allTravelEntriesQuery = `
 `;
 
 export const travelEntryBySlugQuery = `
-  *[_type == "travelEntry" && published == true && slug.current == $slug][0] {
+  *[_type == "travelEntry" && ${DOC_LANG} && published == true && slug.current == $slug][0] {
     _id,
+    ${DOC_META},
     title,
     "slug": slug.current,
     description,
@@ -209,15 +227,15 @@ export const travelEntryBySlugQuery = `
 export const allProductsQuery = `
   *[_type == "product" && published == true] | order(featured desc, _createdAt desc) {
     _id,
-    title,
+    "title": ${OVERRIDE("title")},
     "slug": slug.current,
-    description,
+    "description": ${OVERRIDE("description")},
     coverImage,
     type,
     priceInCents,
     currency,
     featured,
-    tags,
+    "tags": ${OVERRIDE("tags")},
     "courseStepCount": count(course->steps),
     "courseTotalDuration": math::sum(course->steps[]->durationMinutes)
   }
@@ -226,22 +244,22 @@ export const allProductsQuery = `
 export const productBySlugQuery = `
   *[_type == "product" && published == true && slug.current == $slug][0] {
     _id,
-    title,
+    "title": ${OVERRIDE("title")},
     "slug": slug.current,
-    description,
-    longDescription,
+    "description": ${OVERRIDE("description")},
+    "longDescription": ${OVERRIDE("longDescription")},
     coverImage,
     type,
     priceInCents,
     currency,
     featured,
     published,
-    tags,
+    "tags": ${OVERRIDE("tags")},
     course-> {
       _id,
-      title,
+      "title": ${OVERRIDE("title")},
       "slug": slug.current,
-      description,
+      "description": ${OVERRIDE("description")},
       "stepCount": count(steps),
       "totalDuration": math::sum(steps[]->durationMinutes)
     }
@@ -253,11 +271,11 @@ export const productBySlugQuery = `
 export const allCoursesQuery = `
   *[_type == "course" && published == true] | order(publishedAt desc) {
     _id,
-    title,
+    "title": ${OVERRIDE("title")},
     "slug": slug.current,
-    description,
+    "description": ${OVERRIDE("description")},
     coverImage,
-    tags,
+    "tags": ${OVERRIDE("tags")},
     publishedAt,
     "stepCount": count(steps),
     "totalDuration": math::sum(steps[]->durationMinutes)
@@ -267,11 +285,11 @@ export const allCoursesQuery = `
 export const courseBySlugQuery = `
   *[_type == "course" && published == true && slug.current == $slug][0] {
     _id,
-    title,
+    "title": ${OVERRIDE("title")},
     "slug": slug.current,
-    description,
+    "description": ${OVERRIDE("description")},
     coverImage,
-    tags,
+    "tags": ${OVERRIDE("tags")},
     published,
     publishedAt,
 	"shopProduct": *[
@@ -282,9 +300,9 @@ export const courseBySlugQuery = `
 	},
     steps[]-> {
       _id,
-      title,
+      "title": ${OVERRIDE("title")},
       "slug": slug.current,
-      description,
+      "description": ${OVERRIDE("description")},
       sortOrder,
       durationMinutes,
       isFree
@@ -295,24 +313,24 @@ export const courseBySlugQuery = `
 export const courseFullQuery = `
   *[_type == "course" && slug.current == $slug][0] {
     _id,
-    title,
+    "title": ${OVERRIDE("title")},
     "slug": slug.current,
-    description,
+    "description": ${OVERRIDE("description")},
     coverImage,
     steps[]-> {
       _id,
-      title,
+      "title": ${OVERRIDE("title")},
       "slug": slug.current,
-      description,
+      "description": ${OVERRIDE("description")},
       sortOrder,
       bunnyVideoId,
       durationMinutes,
       isFree,
       "hasPdf": defined(pdfFile.asset),
-      content,
-      recipe-> {
+      "content": ${OVERRIDE("content")},
+      "recipe": select($locale == "en" => coalesce(*[_type == "recipe" && language == "en" && translationOf._ref == ^.recipe._ref][0], recipe->), recipe->) {
         _id,
-        title,
+        "title": ${OVERRIDE("title")},
         "slug": slug.current,
         coverImage,
         prepTime,
@@ -340,7 +358,7 @@ export const courseStepIdsQuery = `
 // ── Homepage helpers ────────────────────────────────────────────────────────
 
 export const recentBlogPostsQuery = `
-  *[_type == "blogPost" && published == true] | order(publishedAt desc) [0...3] {
+  *[_type == "blogPost" && ${DOC_LANG} && published == true] | order(publishedAt desc) [0...3] {
     _id,
     title,
     "slug": slug.current,
@@ -354,7 +372,7 @@ export const recentBlogPostsQuery = `
 `;
 
 export const recentTravelEntriesQuery = `
-  *[_type == "travelEntry" && published == true] | order(publishedAt desc) [0...3] {
+  *[_type == "travelEntry" && ${DOC_LANG} && published == true] | order(publishedAt desc) [0...3] {
     _id,
     title,
     "slug": slug.current,
@@ -370,11 +388,11 @@ export const recentTravelEntriesQuery = `
 export const recentCoursesQuery = `
   *[_type == "course" && published == true] | order(publishedAt desc) [0...3] {
     _id,
-    title,
+    "title": ${OVERRIDE("title")},
     "slug": slug.current,
-    description,
+    "description": ${OVERRIDE("description")},
     coverImage,
-    tags,
+    "tags": ${OVERRIDE("tags")},
     publishedAt,
     "stepCount": count(steps),
     "totalDuration": math::sum(steps[]->durationMinutes)
@@ -384,13 +402,13 @@ export const recentCoursesQuery = `
 // ── Singleton Pages ──────────────────────────────────────────────────────────
 
 export const homePageQuery = `
-  *[_type == "homePage"][0] {
+  *[_type == "homePage" && ${DOC_LANG}][0] {
     heroTitle,
     heroSubtitle,
     heroImage,
     featuredRecipes[]-> {
       _id,
-      title,
+      "title": ${OVERRIDE("title")},
       "slug": slug.current,
       coverImage,
       "categories": select(defined(categories) => categories, defined(category) => [category], []),
@@ -400,9 +418,9 @@ export const homePageQuery = `
     },
     featuredProducts[]-> {
       _id,
-      title,
+      "title": ${OVERRIDE("title")},
       "slug": slug.current,
-      description,
+      "description": ${OVERRIDE("description")},
       coverImage,
       type,
       priceInCents,
@@ -414,7 +432,7 @@ export const homePageQuery = `
 `;
 
 export const aboutPageQuery = `
-  *[_type == "aboutPage"][0] {
+  *[_type == "aboutPage" && ${DOC_LANG}][0] {
     title,
     sections[] {
       heading,

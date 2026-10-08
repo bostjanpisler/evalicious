@@ -2,6 +2,10 @@ import { describe, expect, test } from "bun:test";
 import { alternatePaths } from "./alternates";
 
 describe("alternatePaths", () => {
+	test("accepts a path that already carries the locale prefix", () => {
+		expect(alternatePaths("/en/about")).toEqual({ sl: "/about", en: "/en/about" });
+	});
+
 	test("uses the same path for pages that are not translated documents", () => {
 		expect(alternatePaths("/about")).toEqual({ sl: "/about", en: "/en/about" });
 		expect(alternatePaths("/", null)).toEqual({ sl: "/", en: "/en" });

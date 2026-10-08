@@ -2,35 +2,33 @@ import { useData } from "vike-react/useData";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { ShoppingBag } from "lucide-react";
+import { useI18n } from "@/lib/i18n/react";
 import type { Data } from "./+data";
 
 export default function ShopPage() {
 	const { products } = useData<Data>();
+	const { t, l } = useI18n();
 
 	return (
 		<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-			<Breadcrumbs segments={[{ label: "Trgovina" }]} />
+			<Breadcrumbs segments={[{ label: t("shop.breadcrumb") }]} />
 
-			<h1 className="mt-4 font-serif text-4xl font-bold">Trgovina</h1>
-			<p className="mt-2 text-muted-foreground">
-				E-knjige, tečaji in več za nadgradnjo tvojega kuhanja.
-			</p>
+			<h1 className="mt-4 font-serif text-4xl font-bold">{t("shop.list.heading")}</h1>
+			<p className="mt-2 text-muted-foreground">{t("shop.list.intro")}</p>
 
 			<div className="mt-8">
 				{products.length === 0 ? (
 					<div className="py-16 text-center">
 						<ShoppingBag className="mx-auto h-12 w-12 text-muted-foreground/40" />
 						<h2 className="mt-4 font-serif text-xl font-semibold text-muted-foreground">
-							Izdelki še niso na voljo
+							{t("shop.list.emptyTitle")}
 						</h2>
-						<p className="mt-2 text-sm text-muted-foreground">
-							Pridno pripravljamo nove vsebine. Preveri kmalu!
-						</p>
+						<p className="mt-2 text-sm text-muted-foreground">{t("shop.list.emptyText")}</p>
 						<a
-							href="/recipes"
+							href={l("/recipes")}
 							className="mt-6 inline-block text-sm font-medium text-amber-600 hover:text-amber-700"
 						>
-							Medtem razišči recepte →
+							{t("shop.list.emptyLink")}
 						</a>
 					</div>
 				) : (

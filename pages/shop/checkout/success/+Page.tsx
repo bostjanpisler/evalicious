@@ -6,9 +6,11 @@ import { useData } from "vike-react/useData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { capture } from "@/lib/analytics-client";
+import { useI18n } from "@/lib/i18n/react";
 import type { Data } from "./+data.server";
 
 export default function CheckoutSuccessPage() {
+	const { t, l } = useI18n();
 	const { status, productName, productType, courseSlug, orderId } = useData<Data>();
 
 	useEffect(() => {
@@ -36,10 +38,10 @@ export default function CheckoutSuccessPage() {
 					)}
 					<h1 className="mt-6 font-serif text-3xl font-bold">
 						{confirmed
-							? "Hvala za nakup!"
+							? t("shop.checkout.thanks")
 							: processing
-								? "Plačilo obdelujemo"
-								: "Plačila ni bilo mogoče potrditi"}
+								? t("shop.checkout.processingTitle")
+								: t("shop.checkout.failedTitle")}
 					</h1>
 
 					{productName && (
@@ -48,10 +50,10 @@ export default function CheckoutSuccessPage() {
 
 					<p className="mt-3 text-muted-foreground">
 						{confirmed
-							? "Tvoje naročilo je potrjeno. Potrditev smo poslali na tvoj e-poštni naslov."
+							? t("shop.checkout.confirmedText")
 							: processing
-								? "Plačilo je uspelo, naročilo pa še pripravljamo. Osveži stran čez nekaj trenutkov."
-								: "Preveri stanje plačila ali se vrni v trgovino in poskusi znova."}
+								? t("shop.checkout.processingText")
+								: t("shop.checkout.failedText")}
 					</p>
 
 					<div className="mt-8 flex flex-col gap-3">
@@ -59,29 +61,29 @@ export default function CheckoutSuccessPage() {
 							<Button asChild size="lg" className="w-full gap-2">
 								<a href={`/api/download/${orderId}`}>
 									<Download className="h-4 w-4" />
-									Prenesi svojo e-knjigo
+									{t("shop.checkout.downloadEbook")}
 								</a>
 							</Button>
 						)}
 
 						{confirmed && productType === "ecourse" && courseSlug && (
 							<Button asChild size="lg" className="w-full gap-2">
-								<a href={`/dashboard/my-courses/${courseSlug}`}>
+								<a href={l(`/dashboard/my-courses/${courseSlug}`)}>
 									<Play className="h-4 w-4" />
-									Začni tečaj
+									{t("shop.checkout.startCourse")}
 								</a>
 							</Button>
 						)}
 
 						<Button asChild variant="outline" className="w-full gap-2">
-							<a href="/dashboard/my-orders">
+							<a href={l("/dashboard/my-orders")}>
 								<ShoppingBag className="h-4 w-4" />
-								Moja naročila
+								{t("shop.checkout.myOrders")}
 							</a>
 						</Button>
 						{!confirmed && (
 							<Button asChild variant="outline" className="w-full">
-								<a href="/shop">Nazaj v trgovino</a>
+								<a href={l("/shop")}>{t("shop.checkout.backToShop")}</a>
 							</Button>
 						)}
 					</div>

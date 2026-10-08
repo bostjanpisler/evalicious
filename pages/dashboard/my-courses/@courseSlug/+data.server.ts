@@ -1,4 +1,5 @@
 import { render } from "vike/abort";
+import { DEFAULT_LOCALE } from "@/lib/i18n/config";
 import type { PageContextServer } from "vike/types";
 import { courseFullQuery } from "@/lib/sanity.queries";
 import { generateBunnyEmbedUrl } from "@/server/lib/bunny";
@@ -26,12 +27,13 @@ export type Data = {
 };
 
 export async function data(pageContext: PageContextServer): Promise<Data> {
+	const locale = pageContext.locale ?? DEFAULT_LOCALE;
 	const user = pageContext.user;
 	if (!user) throw render(403, "Unauthorized");
 
 	const { courseSlug } = pageContext.routeParams;
 
-	const course = await sanityClient.fetch<CourseFull>(courseFullQuery, { slug: courseSlug });
+	const course = await sanityClient.fetch<CourseFull>(courseFullQuery, { slug: courseSlug, locale });
 	if (!course) throw render(404, "Course not found");
 
 	// Verify access

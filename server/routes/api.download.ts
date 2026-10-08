@@ -1,5 +1,7 @@
 import { Hono } from "hono";
-import { FREE_DOWNLOAD_CONSENT_TEXT } from "@/lib/constants";
+import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n/config";
+import { translatorFor } from "@/lib/i18n/messages";
+import { localizePath } from "@/lib/i18n/paths";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { auth } from "../lib/auth.js";
 import { db } from "../lib/db.js";
@@ -71,13 +73,13 @@ function clientIp(headers: Headers): string | null {
 	);
 }
 
-async function findFreeEbook(productSlug: string) {
+async function findFreeEbook(productSlug: string, locale: Locale = DEFAULT_LOCALE) {
 	if (!SLUG_PATTERN.test(productSlug)) return null;
 	const product = await db.product.findUnique({ where: { slug: productSlug } });
 	if (!product || !product.published || product.type !== "ebook" || product.priceInCents > 0) {
 		return null;
 	}
-	const content = await getFreePublishedEbook(productSlug);
+	const content = await getFreePublishedEbook(productSlug, locale);
 	if (!content) return null;
 	return { product, title: content.title };
 }
@@ -122,12 +124,14 @@ async function fetchPdf(url: string, allowedHost?: string): Promise<Uint8Array> 
 downloadHandler.post("/free/:productSlug", async (c) => {
 	const { productSlug } = c.req.param();
 	const body = (await c.req.json().catch(() => null)) as {
+		locale?: unknown;
 		email?: unknown;
 		consent?: unknown;
 	} | null;
 	const email = normalizeEmail(body?.email);
 	if (!email) return c.json({ error: "Invalid email" }, 400);
 	if (body?.consent !== true) return c.json({ error: "Consent required" }, 400);
+	const locale: Locale = isLocale(body?.locale) ? body.locale : DEFAULT_LOCALE;
 
 	const ip = clientIp(c.req.raw.headers);
 	// Per-client limits run first so one client cannot use up the shared budget,
@@ -140,7 +144,7 @@ downloadHandler.post("/free/:productSlug", async (c) => {
 		return c.json({ error: "Too many download requests" }, 429);
 	}
 
-	const ebook = await findFreeEbook(productSlug);
+	const ebook = await findFreeEbook(productSlug, locale);
 	if (!ebook) return c.json({ error: "File not found" }, 404);
 	if (!ebook.product.r2FileKey || deliveryConfigurationError("ebook") || !isHalConfigured()) {
 		return c.json({ error: "File not available" }, 404);
@@ -152,7 +156,9 @@ downloadHandler.post("/free/:productSlug", async (c) => {
 		data: {
 			email,
 			productId: ebook.product.id,
-			consentText: FREE_DOWNLOAD_CONSENT_TEXT,
+			// The exact wording the visitor agreed to, in their language.
+			consentText: translatorFor(locale)("shop.freeDownload.consent"),
+			locale,
 			ipAddress: ip,
 			userAgent: c.req.header("user-agent")?.slice(0, 500) ?? null,
 		},
@@ -168,6 +174,7 @@ downloadHandler.post("/free/:productSlug", async (c) => {
 			productTitle: ebook.title,
 			downloadToken: createFreeDownloadToken(lead.id),
 			needsAccount: !(await emailHasLogin(email)),
+			locale,
 		});
 	} catch (error) {
 		console.error("Free download email request failed", error);
@@ -193,10 +200,14 @@ async function confirmFreeDownload(token: string | undefined) {
 		// Read-only: an expired link must not create an account or confirm consent.
 		const lead = await db.freeDownloadLead.findUnique({
 			where: { id: verified.leadId },
-			select: { product: { select: { slug: true } } },
+			select: { locale: true, product: { select: { slug: true } } },
 		});
 		return lead
-			? { status: "expired" as const, slug: lead.product.slug }
+			? {
+					status: "expired" as const,
+					slug: lead.product.slug,
+					locale: leadLocale(lead.locale),
+				}
 			: { status: "invalid" as const };
 	}
 
@@ -204,10 +215,11 @@ async function confirmFreeDownload(token: string | undefined) {
 	if (!confirmation) return { status: "invalid" as const };
 	const { lead, user } = confirmation;
 	const slug = lead.product.slug;
+	const locale = leadLocale(lead.locale);
 
 	// Retried on every open until it succeeds; the event key makes it idempotent.
 	if (!lead.halSyncedAt && isHalConfigured()) {
-		const ebook = await getFreePublishedEbook(slug).catch(() => null);
+		const ebook = await getFreePublishedEbook(slug, locale).catch(() => null);
 		void syncFreeDownloadLeadToHal({
 			leadId: lead.id,
 			email: lead.email,
@@ -216,6 +228,7 @@ async function confirmFreeDownload(token: string | undefined) {
 			productSlug: slug,
 			productTitle: ebook?.title ?? slug,
 			consentedAt: lead.consentedAt,
+			locale,
 		})
 			.then(({ contactId }) =>
 				db.freeDownloadLead.update({
@@ -236,11 +249,19 @@ async function confirmFreeDownload(token: string | undefined) {
 			});
 	}
 
-	return { status: "ok" as const, slug, user };
+	return { status: "ok" as const, slug, user, locale };
 }
 
-function expiredRedirect(result: { status: string; slug?: string }): string {
-	return result.slug ? `/shop/${encodeURIComponent(result.slug)}?download=expired` : "/shop";
+function leadLocale(value: string): Locale {
+	return isLocale(value) ? value : DEFAULT_LOCALE;
+}
+
+function expiredRedirect(result: { status: string; slug?: string; locale?: Locale }): string {
+	const locale = result.locale ?? DEFAULT_LOCALE;
+	return localizePath(
+		result.slug ? `/shop/${encodeURIComponent(result.slug)}?download=expired` : "/shop",
+		locale,
+	);
 }
 
 // "Nastavi geslo" link in the email. Opening it also confirms the lead.
@@ -248,10 +269,12 @@ downloadHandler.get("/a", async (c) => {
 	const result = await confirmFreeDownload(c.req.query("token"));
 	c.header("Cache-Control", "private, no-store");
 	if (result.status !== "ok") return c.redirect(expiredRedirect(result));
-	if (!result.user.needsPassword) return c.redirect("/login");
+	if (!result.user.needsPassword) return c.redirect(localizePath("/login", result.locale));
 	// Fragment keeps the token out of server logs and analytics page URLs.
 	const setup = await createPasswordSetupToken(result.user.id);
-	return c.redirect(`/reset-password#token=${encodeURIComponent(setup)}`);
+	return c.redirect(
+		`${localizePath("/reset-password", result.locale)}#token=${encodeURIComponent(setup)}`,
+	);
 });
 
 // "Prenesi PDF" link in the email.

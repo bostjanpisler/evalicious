@@ -1,4 +1,5 @@
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
+import { useI18n } from "@/lib/i18n/react";
 import { formatDuration } from "@/lib/utils";
 
 interface CourseCardProps {
@@ -22,6 +23,7 @@ export function CourseCard({
 	totalDuration,
 	completed = false,
 }: CourseCardProps) {
+	const { t } = useI18n();
 	const isPublic = progress === undefined;
 
 	const content = (
@@ -56,7 +58,7 @@ export function CourseCard({
 								d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
 							/>
 						</svg>
-						Video delavnica
+						{t("courses.card.videoWorkshop")}
 					</span>
 				)}
 				{/* Completed badge — dashboard cards */}
@@ -75,7 +77,7 @@ export function CourseCard({
 								clipRule="evenodd"
 							/>
 						</svg>
-						Zaključeno
+						{t("courses.card.completed")}
 					</span>
 				)}
 			</div>
@@ -103,14 +105,7 @@ export function CourseCard({
 										d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
 									/>
 								</svg>
-								{stepCount}{" "}
-								{stepCount === 1
-									? "korak"
-									: stepCount === 2
-										? "koraka"
-										: stepCount <= 4
-											? "koraki"
-											: "korakov"}
+								{t("courses.stepCount", { n: stepCount })}
 							</span>
 						)}
 						{totalDuration != null && totalDuration > 0 && (
@@ -140,7 +135,7 @@ export function CourseCard({
 				{progress !== undefined && (
 					<div className="mb-4">
 						<div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-							<span>{completed ? "Opravljeno" : "Napredek"}</span>
+							<span>{completed ? t("courses.card.done") : t("courses.card.progress")}</span>
 							<span>{Math.round(progress)}%</span>
 						</div>
 						<div className="h-2 rounded-full bg-gray-100 overflow-hidden">
@@ -155,7 +150,7 @@ export function CourseCard({
 				{/* CTA — public cards get a button, dashboard cards rely on the card being a link */}
 				{isPublic ? (
 					<span className="inline-flex items-center gap-1.5 rounded-lg bg-amber-50 px-3.5 py-2 text-sm font-semibold text-amber-700 group-hover:bg-amber-100 transition-colors">
-						Poglej delavnico
+						{t("courses.card.view")}
 						<svg
 							aria-hidden="true"
 							xmlns="http://www.w3.org/2000/svg"
@@ -170,7 +165,12 @@ export function CourseCard({
 					</span>
 				) : (
 					<span className="text-xs font-medium text-amber-600 group-hover:text-amber-700 transition-colors">
-						{completed ? "Ponovi delavnico" : progress && progress > 0 ? "Nadaljuj" : "Začni"} →
+						{completed
+							? t("courses.card.repeat")
+							: progress && progress > 0
+								? t("courses.card.continue")
+								: t("courses.card.start")}{" "}
+						→
 					</span>
 				)}
 			</div>

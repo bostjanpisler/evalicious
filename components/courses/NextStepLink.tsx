@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { capture } from "@/lib/analytics-client";
+import { useI18n } from "@/lib/i18n/react";
 
 interface NextStepLinkProps {
 	href: string;
@@ -11,6 +12,7 @@ interface NextStepLinkProps {
 }
 
 export function NextStepLink({ href, lessonId, children, className }: NextStepLinkProps) {
+	const { t } = useI18n();
 	const [saving, setSaving] = useState(false);
 	const [error, setError] = useState("");
 
@@ -36,7 +38,7 @@ export function NextStepLink({ href, lessonId, children, className }: NextStepLi
 			capture("lesson_completed", { lesson_id: lessonId, method: "next_step" });
 			window.location.assign(href);
 		} catch {
-			setError("Napredka ni bilo mogoče shraniti. Poskusi znova.");
+			setError(t("courses.nextStep.error"));
 			setSaving(false);
 		}
 	}
@@ -44,7 +46,7 @@ export function NextStepLink({ href, lessonId, children, className }: NextStepLi
 	return (
 		<span className="relative">
 			<a href={href} className={className} onClick={handleClick} aria-disabled={saving}>
-				{saving ? "Shranjujem..." : children}
+				{saving ? t("courses.nextStep.saving") : children}
 			</a>
 			{error && (
 				<span

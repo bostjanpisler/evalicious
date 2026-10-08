@@ -1,24 +1,26 @@
 import { useData } from "vike-react/useData";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { BlogCard } from "@/components/blog/BlogCard";
+import { useI18n } from "@/lib/i18n/react";
 import type { Data } from "./+data";
 
 export default function BlogPage() {
 	const { posts } = useData<Data>();
+	const { t } = useI18n();
 
 	return (
 		<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-			<Breadcrumbs segments={[{ label: "Blog" }]} />
+			<Breadcrumbs segments={[{ label: t("blog.title") }]} />
 
-			<h1 className="mt-4 font-serif text-4xl font-bold">Blog</h1>
+			<h1 className="mt-4 font-serif text-4xl font-bold">{t("blog.title")}</h1>
 			<p className="mt-2 text-muted-foreground">
-				Misli, zgodbe in nasveti iz moje kuhinje in širše.
+				{t("blog.subtitle")}
 			</p>
 
 			<div className="mt-8">
 				{posts.length === 0 ? (
 					<p className="py-12 text-center text-muted-foreground">
-						Še ni objav na blogu. Preveri kmalu!
+						{t("blog.empty")}
 					</p>
 				) : (
 					<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">

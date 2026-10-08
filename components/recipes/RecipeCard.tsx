@@ -2,17 +2,18 @@ import { Bean, ChefHat, Clock, Droplet, Nut, Wheat } from "lucide-react";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { RECIPE_CATEGORY_LABELS, RECIPE_DIFFICULTY_LABELS } from "@/lib/constants";
+import { recipeCategoryLabel, recipeDifficultyLabel } from "@/lib/constants";
+import { useI18n } from "@/lib/i18n/react";
 import { formatDuration } from "@/lib/utils";
 import type { RecipeListing } from "@/types/recipe";
 import { SugarCubesIcon } from "./SugarCubesIcon";
 
 const ALLERGEN_ICONS = [
-	{ key: "glutenFree", label: "Brez glutena", Icon: Wheat },
-	{ key: "sugarFree", label: "Brez rafiniranega sladkorja", Icon: SugarCubesIcon },
-	{ key: "oilFree", label: "Brez rafiniranega olja", Icon: Droplet },
-	{ key: "soyFree", label: "Brez soje", Icon: Bean },
-	{ key: "nutFree", label: "Brez oreškov", Icon: Nut },
+	{ key: "glutenFree", Icon: Wheat },
+	{ key: "sugarFree", Icon: SugarCubesIcon },
+	{ key: "oilFree", Icon: Droplet },
+	{ key: "soyFree", Icon: Bean },
+	{ key: "nutFree", Icon: Nut },
 ] as const;
 
 interface RecipeCardProps {
@@ -20,11 +21,12 @@ interface RecipeCardProps {
 }
 
 export function RecipeCard({ recipe }: RecipeCardProps) {
+	const { t, l } = useI18n();
 	const totalTime = (recipe.prepTime ?? 0) + (recipe.cookTime ?? 0);
 	const activeAllergens = ALLERGEN_ICONS.filter((a) => recipe[a.key as keyof RecipeListing]);
 
 	return (
-		<a href={`/recipes/${recipe.slug}`}>
+		<a href={l(`/recipes/${recipe.slug}`)}>
 			<Card className="group overflow-hidden transition-shadow hover:shadow-lg">
 				{recipe.coverImage && (
 					<div className="aspect-[4/3] overflow-hidden">
@@ -40,10 +42,10 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
 				<CardContent className="p-4">
 					{activeAllergens.length > 0 && (
 						<div className="mb-2 flex flex-wrap gap-1">
-							{activeAllergens.map(({ key, label, Icon }) => (
+							{activeAllergens.map(({ key, Icon }) => (
 								<span
 									key={key}
-									title={label}
+									title={t(`recipes.allergens.${key}`)}
 									className="relative inline-flex items-center rounded-full bg-green-50 p-1 text-green-700 dark:bg-green-950 dark:text-green-300"
 								>
 									<Icon className="h-3.5 w-3.5" />
@@ -57,12 +59,12 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
 					<div className="mb-2 flex flex-wrap gap-1.5">
 						{recipe.categories?.map((cat) => (
 							<Badge key={cat} variant="secondary" className="text-xs">
-								{RECIPE_CATEGORY_LABELS[cat] ?? cat}
+								{recipeCategoryLabel(t, cat)}
 							</Badge>
 						))}
 						{recipe.difficulty && (
 							<Badge variant="outline" className="text-xs">
-								{RECIPE_DIFFICULTY_LABELS[recipe.difficulty] ?? recipe.difficulty}
+								{recipeDifficultyLabel(t, recipe.difficulty)}
 							</Badge>
 						)}
 					</div>

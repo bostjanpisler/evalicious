@@ -54,4 +54,12 @@ export const commonSl = {
 		seeAt: "Poglej pri {shop}",
 		see: "Poglej",
 	},
+	email: {
+		purchaseSubject: "Tvoj nakup: {product}",
+		purchaseTitle: "Hvala za nakup!",
+		purchaseBody: "Uspešno si kupil/a <strong>{product}</strong>.",
+		downloadLink: "Prenesi datoteko",
+		linkExpires: "Povezava poteče čez 24 ur.",
+		dashboardNote: "Do vsebine lahko dostopaš iz svojega računa.",
+	},
 };

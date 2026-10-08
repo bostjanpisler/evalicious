@@ -1,3 +1,4 @@
+import type { Locale } from "@/lib/i18n/config";
 const HAL_API_BASE = process.env.HAL_API_BASE ?? "https://api.chatwithhal.com/api/v1";
 const HAL_TIMEOUT_MS = 15_000;
 // "Lead" stage of the Evalicious Hal project.
@@ -42,6 +43,7 @@ export type FreeDownloadLeadSync = {
 	productSlug: string;
 	productTitle: string;
 	consentedAt: Date;
+	locale?: Locale;
 };
 
 export type FreeDownloadEmailRequest = {
@@ -52,6 +54,7 @@ export type FreeDownloadEmailRequest = {
 	downloadToken: string;
 	needsAccount: boolean;
 	name: string;
+	locale?: Locale;
 };
 
 /**
@@ -68,7 +71,8 @@ export async function requestFreeDownloadEmail(
 ): Promise<void> {
 	if (!env.HAL_API_KEY?.trim()) throw new Error("Hal is not configured");
 	await http("POST", "/events/track", {
-		name: "free-download-requested",
+		// One workflow per language renders the email in that language.
+		name: request.locale === "en" ? "free-download-requested-en" : "free-download-requested",
 		event_key: `free-download-requested:${request.leadId}`,
 		entity: "visitor",
 		email: request.email.toLowerCase(),
@@ -78,6 +82,7 @@ export async function requestFreeDownloadEmail(
 			download_title: request.productTitle,
 			download_token: request.downloadToken,
 			needs_account: request.needsAccount ? "yes" : "no",
+			language: request.locale ?? "sl",
 		},
 		overwrite_metadata: true,
 	});
@@ -113,6 +118,7 @@ export async function syncFreeDownloadLeadToHal(
 		company: { name: email, metadata: { user_id: lead.userId, source: "free_download" } },
 		metadata: {
 			marketing_consent: true,
+			language: lead.locale ?? "sl",
 			marketing_consent_at: at,
 			last_free_download: lead.productSlug,
 			last_free_download_at: at,
@@ -130,6 +136,7 @@ export async function syncFreeDownloadLeadToHal(
 		"free-download",
 		"marketing-consent",
 		`download:${lead.productSlug}`,
+		`lang:${lead.locale ?? "sl"}`,
 	]);
 	if (tags.length !== (contact.tags?.length ?? 0)) {
 		await http("PATCH", `/contacts/${encodeURIComponent(contactId)}`, { tags });

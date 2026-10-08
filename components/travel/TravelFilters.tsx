@@ -4,6 +4,7 @@ import { Search, X } from "lucide-react";
 import { badgeVariants } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useI18n } from "@/lib/i18n/react";
 import { cn } from "@/lib/utils";
 
 interface TravelFiltersProps {
@@ -29,6 +30,7 @@ export function TravelFilters({
 	onTagChange,
 	onClear,
 }: TravelFiltersProps) {
+	const { t } = useI18n();
 	const hasFilters = search || selectedCountry || selectedTag;
 
 	return (
@@ -39,8 +41,8 @@ export function TravelFilters({
 					aria-hidden="true"
 				/>
 				<Input
-					aria-label="Išči potovanja"
-					placeholder="Išči potovanja..."
+					aria-label={t("travel.filters.search")}
+					placeholder={t("travel.filters.searchPlaceholder")}
 					value={search}
 					onChange={(e) => onSearchChange(e.target.value)}
 					className="pl-9"
@@ -49,7 +51,7 @@ export function TravelFilters({
 
 			{countries.length > 0 && (
 				<div className="flex flex-wrap items-center gap-2">
-					<span className="text-sm font-medium text-muted-foreground">Država:</span>
+					<span className="text-sm font-medium text-muted-foreground">{t("travel.filters.country")}</span>
 					{countries.map((country) => (
 						<button
 							type="button"
@@ -71,7 +73,7 @@ export function TravelFilters({
 
 			{tags.length > 0 && (
 				<div className="flex flex-wrap items-center gap-2">
-					<span className="text-sm font-medium text-muted-foreground">Oznake:</span>
+					<span className="text-sm font-medium text-muted-foreground">{t("travel.filters.tags")}</span>
 					{tags.map((tag) => (
 						<button
 							type="button"
@@ -95,7 +97,7 @@ export function TravelFilters({
 				<div>
 					<Button variant="ghost" size="sm" onClick={onClear}>
 						<X className="mr-1 h-3 w-3" />
-						Počisti filtre
+						{t("travel.filters.clear")}
 					</Button>
 				</div>
 			)}

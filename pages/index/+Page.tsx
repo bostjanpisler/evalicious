@@ -6,7 +6,8 @@ import { OptimizedImage } from "@/components/shared/OptimizedImage";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { TravelCard } from "@/components/travel/TravelCard";
 import { Button } from "@/components/ui/button";
-import { HOMEPAGE_CATEGORIES, RECIPE_CATEGORY_LABELS } from "@/lib/constants";
+import { HOMEPAGE_CATEGORIES } from "@/lib/constants";
+import { useI18n } from "@/lib/i18n/react";
 import type { Data } from "./+data";
 
 const CATEGORY_ICONS: Record<string, string> = {
@@ -20,6 +21,7 @@ const CATEGORY_ICONS: Record<string, string> = {
 
 export default function HomePage() {
 	const data = useData<Data>();
+	const { t, l } = useI18n();
 
 	const [featuredHero, ...featuredRest] = data.featuredRecipes ?? [];
 
@@ -31,7 +33,7 @@ export default function HomePage() {
 					<div className="absolute inset-0">
 						<OptimizedImage
 							image={data.heroImage}
-							alt="Hero"
+							alt={t("home.hero.imageAlt")}
 							width={1600}
 							className="h-full w-full object-cover opacity-30 dark:opacity-20"
 							priority
@@ -43,11 +45,11 @@ export default function HomePage() {
 						{data.heroTitle ?? "Eva-licious"}
 					</h1>
 					<p className="mt-4 text-xl text-muted-foreground">
-						{data.heroSubtitle ?? "Božanski recepti in nasveti za potepanje po svetu"}
+						{data.heroSubtitle ?? t("home.hero.subtitle")}
 					</p>
 					<div className="mt-8">
 						<Button size="lg" asChild>
-							<a href="/recipes">Razišči recepte</a>
+							<a href={l("/recipes")}>{t("home.hero.cta")}</a>
 						</Button>
 					</div>
 				</div>
@@ -60,12 +62,12 @@ export default function HomePage() {
 						{HOMEPAGE_CATEGORIES.map((cat) => (
 							<a
 								key={cat}
-								href={`/recipes?category=${cat}`}
+								href={l(`/recipes?category=${cat}`)}
 								className="group flex flex-col items-center gap-2 rounded-xl px-3 py-4 transition-colors hover:bg-muted"
 							>
 								<span className="text-2xl sm:text-3xl">{CATEGORY_ICONS[cat]}</span>
 								<span className="text-center text-sm font-medium text-muted-foreground group-hover:text-foreground">
-									{RECIPE_CATEGORY_LABELS[cat]}
+									{t(`home.categories.${cat}`)}
 								</span>
 							</a>
 						))}
@@ -77,9 +79,9 @@ export default function HomePage() {
 			{data.recentRecipes && data.recentRecipes.length > 0 && (
 				<section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
 					<div className="mb-8 flex items-center justify-between">
-						<h2 className="font-serif text-3xl font-bold">Najnovejši recepti</h2>
+						<h2 className="font-serif text-3xl font-bold">{t("home.recent.title")}</h2>
 						<Button variant="ghost" asChild>
-							<a href="/recipes">Poglej vse</a>
+							<a href={l("/recipes")}>{t("home.seeAll")}</a>
 						</Button>
 					</div>
 					<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -89,7 +91,7 @@ export default function HomePage() {
 					</div>
 					<div className="mt-10 text-center">
 						<Button size="lg" variant="outline" asChild>
-							<a href="/recipes">Poglej vse recepte</a>
+							<a href={l("/recipes")}>{t("home.recent.seeAllRecipes")}</a>
 						</Button>
 					</div>
 				</section>
@@ -100,14 +102,14 @@ export default function HomePage() {
 				<section className="bg-muted/50 py-16">
 					<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 						<div className="mb-8 flex items-center justify-between">
-							<h2 className="font-serif text-3xl font-bold">Izpostavljeni recepti</h2>
+							<h2 className="font-serif text-3xl font-bold">{t("home.featured.title")}</h2>
 							<Button variant="ghost" asChild>
-								<a href="/recipes">Poglej vse</a>
+								<a href={l("/recipes")}>{t("home.seeAll")}</a>
 							</Button>
 						</div>
 						<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
 							{/* Hero card */}
-							<a href={`/recipes/${featuredHero.slug}`} className="group">
+							<a href={l(`/recipes/${featuredHero.slug}`)} className="group">
 								<div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-shadow hover:shadow-lg">
 									{featuredHero.coverImage && (
 										<div className="aspect-[3/2] overflow-hidden">
@@ -133,7 +135,7 @@ export default function HomePage() {
 									{featuredRest.slice(0, 2).map((recipe) => (
 										<a
 											key={recipe._id}
-											href={`/recipes/${recipe.slug}`}
+											href={l(`/recipes/${recipe.slug}`)}
 											className="group flex overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-shadow hover:shadow-lg"
 										>
 											{recipe.coverImage && (
@@ -165,9 +167,9 @@ export default function HomePage() {
 			{data.recentBlogPosts && data.recentBlogPosts.length > 0 && (
 				<section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
 					<div className="mb-8 flex items-center justify-between">
-						<h2 className="font-serif text-3xl font-bold">Zadnje z bloga</h2>
+						<h2 className="font-serif text-3xl font-bold">{t("home.blog.title")}</h2>
 						<Button variant="ghost" asChild>
-							<a href="/blog">Poglej vse</a>
+							<a href={l("/blog")}>{t("home.seeAll")}</a>
 						</Button>
 					</div>
 					<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -183,9 +185,9 @@ export default function HomePage() {
 				<section className="bg-muted/50 py-16">
 					<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 						<div className="mb-8 flex items-center justify-between">
-							<h2 className="font-serif text-3xl font-bold">Potovanja</h2>
+							<h2 className="font-serif text-3xl font-bold">{t("home.travel.title")}</h2>
 							<Button variant="ghost" asChild>
-								<a href="/travel">Poglej vse</a>
+								<a href={l("/travel")}>{t("home.seeAll")}</a>
 							</Button>
 						</div>
 						<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -201,9 +203,9 @@ export default function HomePage() {
 			{data.featuredProducts && data.featuredProducts.length > 0 && (
 				<section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
 					<div className="mb-8 flex items-center justify-between">
-						<h2 className="font-serif text-3xl font-bold">Trgovina</h2>
+						<h2 className="font-serif text-3xl font-bold">{t("home.shop.title")}</h2>
 						<Button variant="ghost" asChild>
-							<a href="/shop">Poglej vse</a>
+							<a href={l("/shop")}>{t("home.seeAll")}</a>
 						</Button>
 					</div>
 					<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -217,7 +219,7 @@ export default function HomePage() {
 			{/* Instagram */}
 			<section className="py-16">
 				<div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-					<h2 className="mb-6 text-center font-serif text-3xl font-bold">Instagram</h2>
+					<h2 className="mb-6 text-center font-serif text-3xl font-bold">{t("home.instagram.title")}</h2>
 					<InstagramFeed variant="wide" />
 				</div>
 			</section>
@@ -225,18 +227,13 @@ export default function HomePage() {
 			{/* About CTA */}
 			<section className="bg-muted/50 py-16">
 				<div className="mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8">
-					<h2 className="font-serif text-3xl font-bold">Spoznaj me</h2>
+					<h2 className="font-serif text-3xl font-bold">{t("home.about.title")}</h2>
 					<p className="mt-3 text-sm text-muted-foreground">
-						Hej, sem Eva ✌️ Ustvarjalka, ki verjame, da lahko vsakdanje življenje postane lepše in
-						okusnejše, če vanj dodamo kanček ustvarjalnosti, zdravih navad in pozitivne energije. Ta
-						blog sem ustvarila za vse, ki radi kuhajo, potujejo, raziskujejo nove ideje in iščejo
-						navdih za bolj uravnotežen življenjski slog. Vsak projekt, ki ga sprejemem, poskušam
-						obogatiti z osebno noto in avtentičnostjo, ki odraža moj pristop do kuhanja, življenja
-						in pripovedovanja zgodb. Hvala, da si del moje skupnosti ☀️
+						{t("home.about.text")}
 					</p>
 					<div className="mt-6">
 						<Button size="lg" variant="outline" asChild>
-							<a href="/about">O meni</a>
+							<a href={l("/about")}>{t("home.about.cta")}</a>
 						</Button>
 					</div>
 				</div>
@@ -245,44 +242,38 @@ export default function HomePage() {
 			{/* Services */}
 			<section className="py-16">
 				<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-					<h2 className="mb-3 text-center font-serif text-3xl font-bold">Storitve</h2>
+					<h2 className="mb-3 text-center font-serif text-3xl font-bold">{t("home.services.title")}</h2>
 					<p className="mx-auto mb-10 max-w-xl text-center text-muted-foreground">
-						Vesela sem vsake priložnosti, kjer lahko odkrivam nove okuse, spoznavam izdelke in
-						ustvarjam avtentično vsebino. Če imate idejo za sodelovanje, iščete sveže ideje,
-						fotografije ali UGC vsebine, ste na pravem mestu.
+						{t("home.services.intro")}
 					</p>
 					<div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
 						<div className="rounded-xl border border-border bg-card p-6 text-center shadow-sm">
 							<span className="text-3xl">📸</span>
-							<h3 className="mt-3 font-serif text-lg font-semibold">Sponzorirane objave</h3>
+							<h3 className="mt-3 font-serif text-lg font-semibold">{t("home.services.sponsored.title")}</h3>
 							<p className="mt-2 text-sm text-muted-foreground">
-								Promocija vaših izdelkov in storitev na mojem Instagram profilu, s skupnostjo preko
-								10k sledilci.
+								{t("home.services.sponsored.text")}
 							</p>
 						</div>
 						<div className="rounded-xl border border-border bg-card p-6 text-center shadow-sm">
 							<span className="text-3xl">🎬</span>
-							<h3 className="mt-3 font-serif text-lg font-semibold">UGC vsebine</h3>
+							<h3 className="mt-3 font-serif text-lg font-semibold">{t("home.services.ugc.title")}</h3>
 							<p className="mt-2 text-sm text-muted-foreground">
-								Avtentične vsebine za vaše organske profile, spletne strani ali oglase (možnosti
-								tudi sponsorship ads in dark post).
+								{t("home.services.ugc.text")}
 							</p>
 						</div>
 						<div className="rounded-xl border border-border bg-card p-6 text-center shadow-sm">
 							<span className="text-3xl">🍽️</span>
 							<h3 className="mt-3 font-serif text-lg font-semibold">
-								Razvoj receptov & fotografija
+								{t("home.services.recipeDev.title")}
 							</h3>
 							<p className="mt-2 text-sm text-muted-foreground">
-								Uživam v kreiranju novih receptov in še bolj v tem, da jih prikažem v najlepši
-								obliki - video ali foto. Za vas lahko ustvarim recepte za vaše spletne strani,
-								socialna omrežja ali tiskovine.
+								{t("home.services.recipeDev.text")}
 							</p>
 						</div>
 					</div>
 					<div className="mt-10 text-center">
 						<Button size="lg" asChild>
-							<a href="mailto:evasusin97@gmail.com">Pošlji povpraševanje</a>
+							<a href="mailto:evasusin97@gmail.com">{t("home.services.cta")}</a>
 						</Button>
 					</div>
 				</div>

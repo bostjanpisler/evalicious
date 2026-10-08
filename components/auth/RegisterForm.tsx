@@ -6,10 +6,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { capture } from "@/lib/analytics-client";
+import { useI18n } from "@/lib/i18n/react";
 import { DEFAULT_AUTH_REDIRECT, getSafeRedirect } from "@/lib/safe-redirect";
 
 export function RegisterForm() {
-	const [redirectTo, setRedirectTo] = useState(DEFAULT_AUTH_REDIRECT);
+	const { t, l } = useI18n();
+	const [redirectTo, setRedirectTo] = useState(l(DEFAULT_AUTH_REDIRECT));
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -17,8 +19,13 @@ export function RegisterForm() {
 	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
-		setRedirectTo(getSafeRedirect(new URLSearchParams(window.location.search).get("redirect")));
-	}, []);
+		setRedirectTo(
+			getSafeRedirect(
+				new URLSearchParams(window.location.search).get("redirect"),
+				l(DEFAULT_AUTH_REDIRECT),
+			),
+		);
+	}, [l]);
 
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
@@ -34,7 +41,7 @@ export function RegisterForm() {
 
 			if (!res.ok) {
 				const data = await res.json();
-				setError("Registracija ni uspela. Preveri podatke in poskusi znova.");
+				setError(t("auth.register.failed"));
 				capture("sign_up_error", { error: data.message });
 				return;
 			}
@@ -42,7 +49,7 @@ export function RegisterForm() {
 			capture("sign_up_success");
 			window.location.href = redirectTo;
 		} catch {
-			setError("Nekaj je šlo narobe. Poskusi znova.");
+			setError(t("auth.errors.generic"));
 		} finally {
 			setLoading(false);
 		}
@@ -51,8 +58,8 @@ export function RegisterForm() {
 	return (
 		<Card className="mx-auto w-full max-w-md">
 			<CardHeader className="text-center">
-				<CardTitle className="font-serif text-2xl">Ustvari račun</CardTitle>
-				<CardDescription>Pridruži se Eva-licious skupnosti</CardDescription>
+				<CardTitle className="font-serif text-2xl">{t("auth.register.heading")}</CardTitle>
+				<CardDescription>{t("auth.register.description")}</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<form onSubmit={handleSubmit} className="space-y-4">
@@ -60,33 +67,33 @@ export function RegisterForm() {
 						<div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
 					)}
 					<div className="space-y-2">
-						<Label htmlFor="name">Ime</Label>
+						<Label htmlFor="name">{t("auth.register.name")}</Label>
 						<Input
 							id="name"
 							type="text"
-							placeholder="Eva"
+							placeholder={t("auth.register.namePlaceholder")}
 							value={name}
 							onChange={(e) => setName(e.target.value)}
 							required
 						/>
 					</div>
 					<div className="space-y-2">
-						<Label htmlFor="email">E-pošta</Label>
+						<Label htmlFor="email">{t("auth.register.email")}</Label>
 						<Input
 							id="email"
 							type="email"
-							placeholder="tvoj@email.com"
+							placeholder={t("auth.register.emailPlaceholder")}
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
 							required
 						/>
 					</div>
 					<div className="space-y-2">
-						<Label htmlFor="password">Geslo</Label>
+						<Label htmlFor="password">{t("auth.register.password")}</Label>
 						<Input
 							id="password"
 							type="password"
-							placeholder="Najmanj 8 znakov"
+							placeholder={t("auth.register.passwordPlaceholder")}
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
 							required
@@ -94,16 +101,16 @@ export function RegisterForm() {
 						/>
 					</div>
 					<Button type="submit" className="w-full" disabled={loading}>
-						{loading ? "Ustvarjam račun..." : "Ustvari račun"}
+						{loading ? t("auth.register.submitting") : t("auth.register.submit")}
 					</Button>
 				</form>
 				<div className="mt-6 text-center text-sm text-muted-foreground">
-					Že imaš račun?{" "}
+					{t("auth.register.haveAccount")}{" "}
 					<a
-						href={`/login?redirect=${encodeURIComponent(redirectTo)}`}
+						href={`${l("/login")}?redirect=${encodeURIComponent(redirectTo)}`}
 						className="text-primary hover:underline"
 					>
-						Prijavi se
+						{t("auth.register.loginLink")}
 					</a>
 				</div>
 			</CardContent>

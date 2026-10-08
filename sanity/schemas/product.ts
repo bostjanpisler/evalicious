@@ -1,4 +1,5 @@
 import { defineArrayMember, defineField, defineType } from "sanity";
+import { englishOverride, englishTextFields } from "./i18n";
 
 export const product = defineType({
 	name: "product",
@@ -109,5 +110,6 @@ export const product = defineType({
 			type: "reference",
 			to: [{ type: "course" }],
 		}),
-	],
+	  englishOverride([englishTextFields.title(), englishTextFields.description(), englishTextFields.richText("longDescription", "Long description"), englishTextFields.tags()]),
+],
 });

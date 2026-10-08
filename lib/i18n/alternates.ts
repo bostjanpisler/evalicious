@@ -1,5 +1,5 @@
 import { ENGLISH_ENABLED, LOCALES, type Locale } from "./config";
-import { localizePath } from "./paths";
+import { extractLocale, localizePath } from "./paths";
 
 // Content types that exist as one Sanity document per language, and where their pages live.
 const TRANSLATED_DOCUMENT_BASE: Record<string, string> = {
@@ -18,7 +18,8 @@ type TranslatableData = {
  * Sanity documents link to the counterpart's own slug (or to the section page when
  * there is no translation yet); every other page uses the same path in each locale.
  */
-export function alternatePaths(path: string, data?: TranslatableData): Record<Locale, string> {
+export function alternatePaths(rawPath: string, data?: TranslatableData): Record<Locale, string> {
+	const { path } = extractLocale(rawPath);
 	const base = data?._type ? TRANSLATED_DOCUMENT_BASE[data._type] : undefined;
 	const result = {} as Record<Locale, string>;
 	for (const locale of LOCALES) {

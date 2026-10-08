@@ -57,4 +57,12 @@ export const commonEn: Shape<typeof commonSl> = {
 		seeAt: "See at {shop}",
 		see: "See",
 	},
+	email: {
+		purchaseSubject: "Your purchase: {product}",
+		purchaseTitle: "Thank you for your purchase!",
+		purchaseBody: "You've successfully purchased <strong>{product}</strong>.",
+		downloadLink: "Download your file",
+		linkExpires: "This link expires in 24 hours.",
+		dashboardNote: "You can access your content from your account.",
+	},
 };

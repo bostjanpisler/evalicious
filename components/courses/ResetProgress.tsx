@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { capture } from "@/lib/analytics-client";
+import { useI18n } from "@/lib/i18n/react";
 
 interface ResetProgressProps {
 	courseId: string;
@@ -9,6 +10,7 @@ interface ResetProgressProps {
 }
 
 export function ResetProgress({ courseId, dark = false }: ResetProgressProps) {
+	const { t } = useI18n();
 	const [confirming, setConfirming] = useState(false);
 	const [loading, setLoading] = useState(false);
 
@@ -33,21 +35,23 @@ export function ResetProgress({ courseId, dark = false }: ResetProgressProps) {
 	if (confirming) {
 		return (
 			<div className="flex items-center gap-2">
-				<span className={`text-sm ${dark ? "text-gray-300" : "text-gray-500"}`}>Ponastavi?</span>
+				<span className={`text-sm ${dark ? "text-gray-300" : "text-gray-500"}`}>
+					{t("courses.reset.confirm")}
+				</span>
 				<button
 					type="button"
 					onClick={handleReset}
 					disabled={loading}
 					className="text-sm font-medium text-red-400 hover:text-red-300 disabled:opacity-50"
 				>
-					{loading ? "..." : "Da"}
+					{loading ? "..." : t("courses.reset.yes")}
 				</button>
 				<button
 					type="button"
 					onClick={() => setConfirming(false)}
 					className={`text-sm ${dark ? "text-gray-400 hover:text-gray-300" : "text-gray-400 hover:text-gray-600"}`}
 				>
-					Ne
+					{t("courses.reset.no")}
 				</button>
 			</div>
 		);
@@ -59,7 +63,7 @@ export function ResetProgress({ courseId, dark = false }: ResetProgressProps) {
 			onClick={() => setConfirming(true)}
 			className={`text-sm transition-colors ${dark ? "text-gray-400 hover:text-gray-200" : "text-gray-400 hover:text-gray-600"}`}
 		>
-			Ponastavi
+			{t("courses.reset.button")}
 		</button>
 	);
 }

@@ -1,0 +1,2 @@
+ALTER TABLE "FreeDownloadLead" ADD COLUMN "locale" TEXT NOT NULL DEFAULT 'sl';
+ALTER TABLE "Order" ADD COLUMN "locale" TEXT NOT NULL DEFAULT 'sl';

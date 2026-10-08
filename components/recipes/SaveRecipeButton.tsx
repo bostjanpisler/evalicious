@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { usePageContext } from "vike-react/usePageContext";
 import { Button } from "@/components/ui/button";
 import { capture } from "@/lib/analytics-client";
+import { useI18n } from "@/lib/i18n/react";
 import { cn } from "@/lib/utils";
 
 interface SaveRecipeButtonProps {
@@ -13,6 +14,7 @@ interface SaveRecipeButtonProps {
 }
 
 export function SaveRecipeButton({ recipeId, initialFavorited = false }: SaveRecipeButtonProps) {
+	const { t, l } = useI18n();
 	const pageContext = usePageContext();
 	const user = pageContext.user;
 	const [favorited, setFavorited] = useState(initialFavorited);
@@ -34,7 +36,7 @@ export function SaveRecipeButton({ recipeId, initialFavorited = false }: SaveRec
 
 	async function toggle() {
 		if (!user) {
-			window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
+			window.location.href = l(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
 			return;
 		}
 		setLoading(true);
@@ -62,10 +64,10 @@ export function SaveRecipeButton({ recipeId, initialFavorited = false }: SaveRec
 			size="sm"
 			onClick={toggle}
 			disabled={loading}
-			aria-label={favorited ? "Odstrani iz priljubljenih" : "Shrani med priljubljene"}
+			aria-label={favorited ? t("recipes.save.removeAria") : t("recipes.save.saveAria")}
 		>
 			<Heart className={cn("mr-1.5 h-4 w-4", favorited && "fill-primary text-primary")} />
-			{favorited ? "Shranjeno" : "Shrani"}
+			{favorited ? t("recipes.save.saved") : t("recipes.save.save")}
 		</Button>
 	);
 }

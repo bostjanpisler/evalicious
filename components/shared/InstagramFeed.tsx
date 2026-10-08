@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useI18n } from "@/lib/i18n/react";
 
 const RECENT_POSTS = [
 	"DUik_7iCBn8",
@@ -19,6 +20,7 @@ interface InstagramFeedProps {
 }
 
 export function InstagramFeed({ variant = "default" }: InstagramFeedProps) {
+	const { t } = useI18n();
 	const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
 	const handleError = (shortcode: string) => {
@@ -51,7 +53,7 @@ export function InstagramFeed({ variant = "default" }: InstagramFeedProps) {
 				<div className="min-w-0">
 					<p className="text-sm font-semibold leading-tight">susiiiiin</p>
 					<p className="truncate text-xs text-muted-foreground">
-						Sledi mi na instagramu za še več receptov 🌱, potovanj ✈️ in vpogled v moje življenje✨
+						{t("home.instagram.bio")}
 					</p>
 				</div>
 			</a>
@@ -67,7 +69,7 @@ export function InstagramFeed({ variant = "default" }: InstagramFeedProps) {
 					>
 						<img
 							src={`/api/ig/${shortcode}`}
-							alt="Instagram post"
+							alt={t("home.instagram.postAlt")}
 							className="h-full w-full object-cover"
 							loading="lazy"
 							onError={() => handleError(shortcode)}
@@ -95,7 +97,7 @@ export function InstagramFeed({ variant = "default" }: InstagramFeedProps) {
 					<circle cx={12} cy={12} r={5} />
 					<circle cx={17.5} cy={6.5} r={1.5} fill="currentColor" stroke="none" />
 				</svg>
-				Sledi @susiiiiin
+				{t("home.instagram.follow")}
 			</a>
 		</div>
 	);

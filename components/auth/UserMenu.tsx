@@ -12,19 +12,21 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { capture } from "@/lib/analytics-client";
 import { authClient } from "@/lib/auth-client";
+import { useI18n } from "@/lib/i18n/react";
 
 export function UserMenu() {
 	const pageContext = usePageContext();
 	const user = pageContext.user;
+	const { t, l } = useI18n();
 
 	if (!user) {
 		return (
 			<div className="hidden items-center gap-2 md:flex">
 				<Button variant="ghost" size="sm" asChild>
-					<a href="/login">Prijava</a>
+					<a href={l("/login")}>{t("common.menu.login")}</a>
 				</Button>
 				<Button size="sm" asChild>
-					<a href="/register">Registracija</a>
+					<a href={l("/register")}>{t("common.menu.register")}</a>
 				</Button>
 			</div>
 		);
@@ -37,7 +39,7 @@ export function UserMenu() {
 					variant="ghost"
 					size="icon"
 					className="hidden md:flex"
-					aria-label="Odpri uporabniški meni"
+					aria-label={t("auth.userMenu.open")}
 				>
 					<User className="h-5 w-5" />
 				</Button>
@@ -49,27 +51,27 @@ export function UserMenu() {
 				</div>
 				<DropdownMenuSeparator />
 				<DropdownMenuItem asChild>
-					<a href="/dashboard/my-recipes">
+					<a href={l("/dashboard/my-recipes")}>
 						<Heart className="mr-2 h-4 w-4" />
-						Moji recepti
+						{t("common.menu.myRecipes")}
 					</a>
 				</DropdownMenuItem>
 				<DropdownMenuItem asChild>
-					<a href="/dashboard/my-courses">
+					<a href={l("/dashboard/my-courses")}>
 						<BookOpen className="mr-2 h-4 w-4" />
-						Moji tečaji
+						{t("common.menu.myCourses")}
 					</a>
 				</DropdownMenuItem>
 				<DropdownMenuItem asChild>
-					<a href="/dashboard/my-orders">
+					<a href={l("/dashboard/my-orders")}>
 						<ReceiptText className="mr-2 h-4 w-4" />
-						Moja naročila
+						{t("common.menu.myOrders")}
 					</a>
 				</DropdownMenuItem>
 				<DropdownMenuItem asChild>
-					<a href="/dashboard/settings">
+					<a href={l("/dashboard/settings")}>
 						<Settings className="mr-2 h-4 w-4" />
-						Nastavitve
+						{t("common.menu.settings")}
 					</a>
 				</DropdownMenuItem>
 				<DropdownMenuSeparator />
@@ -77,11 +79,11 @@ export function UserMenu() {
 					onClick={async () => {
 						capture("sign_out");
 						await authClient.signOut();
-						window.location.href = "/";
+						window.location.href = l("/");
 					}}
 				>
 					<LogOut className="mr-2 h-4 w-4" />
-					Odjava
+					{t("common.menu.logout")}
 				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>

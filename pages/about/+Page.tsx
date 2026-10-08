@@ -4,6 +4,7 @@ import { PortableTextRenderer } from "@/components/blog/PortableTextRenderer";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n/react";
 import type { Data } from "./+data";
 
 const platformIcons: Record<string, string> = {
@@ -17,14 +18,15 @@ const platformIcons: Record<string, string> = {
 
 export default function AboutPage() {
 	const page = useData<Data>();
+	const { t } = useI18n();
 
 	const hasSections = page.sections && page.sections.length > 0;
 
 	return (
 		<div>
 			<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-				<Breadcrumbs segments={[{ label: "O meni" }]} />
-				<h1 className="mt-4 font-serif text-4xl font-bold">{page.title ?? "O meni"}</h1>
+				<Breadcrumbs segments={[{ label: t("about.title") }]} />
+				<h1 className="mt-4 font-serif text-4xl font-bold">{page.title ?? t("about.title")}</h1>
 			</div>
 
 			{/* Sections with alternating backgrounds */}
@@ -83,7 +85,7 @@ export default function AboutPage() {
 							{page.profileImage && (
 								<OptimizedImage
 									image={page.profileImage}
-									alt="O Evi"
+									alt={t("about.profileAlt")}
 									width={400}
 									height={400}
 									className="w-full rounded-xl object-cover"
@@ -105,7 +107,7 @@ export default function AboutPage() {
 			{/* Contact & Social footer */}
 			<section className="border-t border-border bg-muted/30 py-16">
 				<div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-					<h2 className="font-serif text-2xl font-bold">Povežimo se</h2>
+					<h2 className="font-serif text-2xl font-bold">{t("about.connect")}</h2>
 					<div className="mt-6 flex flex-wrap items-center justify-center gap-4">
 						{page.socialLinks?.map((link) => (
 							<a

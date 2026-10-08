@@ -1,3 +1,4 @@
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 import { sanityClient } from "./sanity.js";
 
 export function canAccessLesson(input: {
@@ -25,6 +26,7 @@ export async function isFreePublishedCourse(courseId: string): Promise<boolean> 
 
 export async function getFreePublishedEbook(
 	productSlug: string,
+	locale: Locale = DEFAULT_LOCALE,
 ): Promise<{ _id: string; title: string } | null> {
 	const product = await sanityClient.fetch<{ _id: string; title: string } | null>(
 		`*[
@@ -33,8 +35,8 @@ export async function getFreePublishedEbook(
 			type == "ebook" &&
 			priceInCents <= 0 &&
 			slug.current == $productSlug
-		][0]{ _id, title }`,
-		{ productSlug },
+		][0]{ _id, "title": select($locale == "en" && defined(en.title) => en.title, title) }`,
+		{ productSlug, locale },
 	);
 
 	return product ?? null;

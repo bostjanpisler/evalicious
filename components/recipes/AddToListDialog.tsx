@@ -12,6 +12,7 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { useI18n } from "@/lib/i18n/react";
 
 interface UserList {
 	id: string;
@@ -25,6 +26,7 @@ interface AddToListDialogProps {
 }
 
 export function AddToListDialog({ contentType, contentId }: AddToListDialogProps) {
+	const { t, l } = useI18n();
 	const pageContext = usePageContext();
 	const user = pageContext.user;
 	const [lists, setLists] = useState<UserList[]>([]);
@@ -37,12 +39,12 @@ export function AddToListDialog({ contentType, contentId }: AddToListDialogProps
 		fetch("/api/lists")
 			.then((r) => (r.ok ? r.json() : []))
 			.then(setLists)
-			.catch(() => setError("Seznamov ni bilo mogoče naložiti."));
-	}, [user]);
+			.catch(() => setError(t("recipes.addToList.loadError")));
+	}, [user, t]);
 
 	async function createList() {
 		if (!user) {
-			window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
+			window.location.href = l(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
 			return;
 		}
 		if (!newListName.trim()) return;
@@ -57,9 +59,9 @@ export function AddToListDialog({ contentType, contentId }: AddToListDialogProps
 				const list = await res.json();
 				setLists((prev) => [...prev, { ...list, items: [] }]);
 				setNewListName("");
-			} else setError("Seznama ni bilo mogoče ustvariti.");
+			} else setError(t("recipes.addToList.createError"));
 		} catch {
-			setError("Seznama ni bilo mogoče ustvariti.");
+			setError(t("recipes.addToList.createError"));
 		} finally {
 			setLoading(false);
 		}
@@ -75,7 +77,7 @@ export function AddToListDialog({ contentType, contentId }: AddToListDialogProps
 			setLists((prev) =>
 				prev.map((l) => (l.id === listId ? { ...l, items: [...l.items, { contentId }] } : l)),
 			);
-		} else setError("Recepta ni bilo mogoče dodati na seznam.");
+		} else setError(t("recipes.addToList.addError"));
 	}
 
 	async function removeFromList(listId: string) {
@@ -88,18 +90,18 @@ export function AddToListDialog({ contentType, contentId }: AddToListDialogProps
 					l.id === listId ? { ...l, items: l.items.filter((i) => i.contentId !== contentId) } : l,
 				),
 			);
-		} else setError("Recepta ni bilo mogoče odstraniti s seznama.");
+		} else setError(t("recipes.addToList.removeError"));
 	}
 
 	if (!user) {
 		return (
 			<Button asChild variant="outline" size="sm">
 				<a
-					href={`/login?redirect=${encodeURIComponent(pageContext.urlPathname)}`}
-					aria-label="Prijavi se za dodajanje recepta na seznam"
+					href={l(`/login?redirect=${encodeURIComponent(pageContext.urlPathname)}`)}
+					aria-label={t("recipes.addToList.loginAria")}
 				>
 					<ListPlus className="mr-1.5 h-4 w-4" />
-					Dodaj na seznam
+					{t("recipes.addToList.button")}
 				</a>
 			</Button>
 		);
@@ -110,12 +112,12 @@ export function AddToListDialog({ contentType, contentId }: AddToListDialogProps
 			<DialogTrigger asChild>
 				<Button variant="outline" size="sm">
 					<ListPlus className="mr-1.5 h-4 w-4" />
-					Dodaj na seznam
+					{t("recipes.addToList.button")}
 				</Button>
 			</DialogTrigger>
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>Dodaj na seznam</DialogTitle>
+					<DialogTitle>{t("recipes.addToList.button")}</DialogTitle>
 				</DialogHeader>
 				<div className="space-y-3">
 					{error && <p className="text-sm text-destructive">{error}</p>}
@@ -129,13 +131,15 @@ export function AddToListDialog({ contentType, contentId }: AddToListDialogProps
 								className="flex w-full items-center justify-between rounded-md border p-3 text-left transition-colors hover:bg-accent"
 							>
 								<span className="text-sm font-medium">{list.name}</span>
-								{isInList && <span className="text-xs text-primary">Dodano</span>}
+								{isInList && (
+									<span className="text-xs text-primary">{t("recipes.addToList.added")}</span>
+								)}
 							</button>
 						);
 					})}
 					<div className="flex gap-2">
 						<Input
-							placeholder="Ime novega seznama"
+							placeholder={t("recipes.addToList.newListPlaceholder")}
 							value={newListName}
 							onChange={(e) => setNewListName(e.target.value)}
 							onKeyDown={(e) => e.key === "Enter" && createList()}

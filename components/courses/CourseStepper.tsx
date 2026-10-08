@@ -1,3 +1,4 @@
+import { useI18n } from "@/lib/i18n/react";
 import { cn } from "@/lib/utils";
 
 interface Step {
@@ -23,6 +24,7 @@ export function CourseStepper({
 	courseTitle,
 	hideTitle = false,
 }: CourseStepperProps) {
+	const { t, l } = useI18n();
 	const completedCount = Object.values(progress).filter(Boolean).length;
 
 	return (
@@ -31,20 +33,26 @@ export function CourseStepper({
 			{!hideTitle && (
 				<div className="flex items-center justify-between mb-3">
 					<a
-						href={`/dashboard/my-courses/${courseSlug}`}
+						href={l(`/dashboard/my-courses/${courseSlug}`)}
 						className="text-sm text-muted-foreground hover:text-foreground transition-colors truncate"
 					>
 						{courseTitle}
 					</a>
 					<span className="text-xs text-gray-400 flex-shrink-0 ml-4">
-						{completedCount}/{steps.length} opravljeno
+						{t("courses.stepper.completedCount", {
+							completed: completedCount,
+							total: steps.length,
+						})}
 					</span>
 				</div>
 			)}
 			{hideTitle && (
 				<div className="flex items-center justify-end mb-3">
 					<span className="text-xs text-gray-400">
-						{completedCount}/{steps.length} opravljeno
+						{t("courses.stepper.completedCount", {
+							completed: completedCount,
+							total: steps.length,
+						})}
 					</span>
 				</div>
 			)}
@@ -60,7 +68,7 @@ export function CourseStepper({
 						<div key={step._id} className={cn("flex items-center", !isLast && "flex-1 min-w-0")}>
 							{/* Circle — smaller on mobile */}
 							<a
-								href={`/dashboard/my-courses/${courseSlug}/${step.slug}`}
+								href={l(`/dashboard/my-courses/${courseSlug}/${step.slug}`)}
 								title={step.title}
 								className={cn(
 									"relative flex h-6 w-6 sm:h-8 sm:w-8 flex-shrink-0 items-center justify-center rounded-full text-[10px] sm:text-xs font-medium transition-all",

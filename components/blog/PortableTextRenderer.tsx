@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
 import { linkAttributes } from "@/lib/affiliate";
 import { embedOriginFor, SITE_URL } from "@/lib/constants";
+import { useI18n } from "@/lib/i18n/react";
 
 const EMBED_MIN_HEIGHT = 80;
 const EMBED_MAX_HEIGHT = 3000;
@@ -24,6 +25,7 @@ function HtmlEmbed({
 	documentId?: string;
 	embedKey?: string;
 }) {
+	const { t } = useI18n();
 	const frame = useRef<HTMLIFrameElement>(null);
 	const [height, setHeight] = useState(EMBED_INITIAL_HEIGHT);
 	const hosted = !!documentId && !!embedKey;
@@ -48,7 +50,7 @@ function HtmlEmbed({
 		return (
 			<iframe
 				ref={frame}
-				title={title ?? "Embedded content"}
+				title={title ?? t("blog.embed.title")}
 				src={`${embedOrigin}/embed/${encodeURIComponent(documentId)}/${encodeURIComponent(embedKey)}`}
 				sandbox={`allow-forms allow-popups allow-popups-to-escape-sandbox allow-scripts${
 					embedOrigin ? " allow-same-origin" : ""
@@ -63,7 +65,7 @@ function HtmlEmbed({
 
 	return (
 		<iframe
-			title={title ?? "Embedded content"}
+			title={title ?? t("blog.embed.title")}
 			srcDoc={code}
 			sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-scripts"
 			className="min-h-96 w-full rounded-lg border-0"
@@ -81,7 +83,11 @@ function extractYouTubeId(input: string): string {
 	return match?.[1] ?? input;
 }
 
-function createComponents(documentId?: string, affiliateLabel = "content"): PortableTextComponents {
+function createComponents(
+	documentId: string | undefined,
+	affiliateLabel: string,
+	youtubeTitle: string,
+): PortableTextComponents {
 	return {
 		block: {
 			h2: ({ children, value }) => (
@@ -163,7 +169,7 @@ function createComponents(documentId?: string, affiliateLabel = "content"): Port
 							<iframe
 								className="absolute inset-0 h-full w-full"
 								src={`https://www.youtube.com/embed/${videoId}`}
-								title={value.title ?? "YouTube video"}
+								title={value.title ?? youtubeTitle}
 								allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
 								allowFullScreen
 							/>
@@ -202,9 +208,11 @@ export function PortableTextRenderer({
 	/** Sub-ID for affiliate reports, usually the page slug. */
 	affiliateLabel?: string;
 }) {
+	const { t } = useI18n();
+	const youtubeTitle = t("blog.embed.youtube");
 	const components = useMemo(
-		() => createComponents(documentId, affiliateLabel),
-		[documentId, affiliateLabel],
+		() => createComponents(documentId, affiliateLabel ?? "content", youtubeTitle),
+		[documentId, affiliateLabel, youtubeTitle],
 	);
 	if (!value) return null;
 	return (

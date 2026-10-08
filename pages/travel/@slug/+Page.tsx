@@ -14,13 +14,14 @@ import {
 } from "@/components/blog/PortableTextRenderer";
 import { ProfileSidebar } from "@/components/shared/ProfileSidebar";
 import { Badge } from "@/components/ui/badge";
-import { formatDate } from "@/lib/utils";
+import { useI18n } from "@/lib/i18n/react";
 import { urlFor } from "@/lib/sanity.image";
 import type { Data } from "./+data";
 
 export default function TravelEntryPage() {
 	const entry = useData<Data>();
 	const config = useConfig();
+	const { t, formatDate } = useI18n();
 	config({
 		title: `${entry.title} | Eva-licious`,
 		description: entry.description,
@@ -40,7 +41,7 @@ export default function TravelEntryPage() {
 	return (
 		<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 			<Breadcrumbs
-				segments={[{ label: "Potovanja", href: "/travel" }, { label: entry.title }]}
+				segments={[{ label: t("travel.title"), href: "/travel" }, { label: entry.title }]}
 			/>
 
 			<div className="mt-6 grid grid-cols-1 gap-10 lg:grid-cols-3">
@@ -103,7 +104,7 @@ export default function TravelEntryPage() {
 						showDisclosure={false}
 					/>
 					<RecommendedProducts
-						title="Priporočam"
+						title={t("common.affiliate.recommended")}
 						products={entry.recommendedProducts}
 						label={entry.slug}
 						showDisclosure={false}
