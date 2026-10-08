@@ -1,5 +1,9 @@
 import { serve } from "@hono/node-server";
 import app from "./index.js";
+import { reportError } from "./lib/monitoring.js";
+
+process.on("unhandledRejection", (reason) => reportError(reason, { source: "unhandledRejection" }));
+process.on("uncaughtException", (error) => reportError(error, { source: "uncaughtException" }));
 
 const migration = Bun.spawn(["bunx", "prisma", "migrate", "deploy"], {
 	env: process.env,

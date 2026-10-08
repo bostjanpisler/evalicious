@@ -78,3 +78,19 @@ export async function sendWelcomeEmail(to: string, name: string) {
     `,
 	});
 }
+
+/** Plain-text operational alert to the site owner. */
+export async function sendAlertEmail(to: string, alert: { subject: string; body: string }) {
+	await getSes().send(
+		new SendEmailCommand({
+			FromEmailAddress: EMAIL_FROM,
+			Destination: { ToAddresses: [to] },
+			Content: {
+				Simple: {
+					Subject: { Data: alert.subject, Charset: "UTF-8" },
+					Body: { Text: { Data: alert.body, Charset: "UTF-8" } },
+				},
+			},
+		}),
+	);
+}

@@ -1,4 +1,11 @@
-import { GetObjectCommand, HeadObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import {
+	DeleteObjectCommand,
+	GetObjectCommand,
+	HeadObjectCommand,
+	ListObjectsV2Command,
+	PutObjectCommand,
+	S3Client,
+} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 // S3-compatible file storage (Railway bucket in production). Product file keys
@@ -47,7 +54,11 @@ export async function storedObjectSize(key: string): Promise<number | null> {
 	}
 }
 
-export async function storeObject(key: string, body: Uint8Array, contentType: string): Promise<void> {
+export async function storeObject(
+	key: string,
+	body: Uint8Array,
+	contentType: string,
+): Promise<void> {
 	await getStorage().send(
 		new PutObjectCommand({
 			Bucket: process.env.STORAGE_BUCKET,
@@ -55,5 +66,28 @@ export async function storeObject(key: string, body: Uint8Array, contentType: st
 			Body: body,
 			ContentType: contentType,
 		}),
+	);
+}
+
+export async function listStoredKeys(prefix: string): Promise<string[]> {
+	const keys: string[] = [];
+	let token: string | undefined;
+	do {
+		const page = await getStorage().send(
+			new ListObjectsV2Command({
+				Bucket: process.env.STORAGE_BUCKET,
+				Prefix: prefix,
+				ContinuationToken: token,
+			}),
+		);
+		for (const object of page.Contents ?? []) if (object.Key) keys.push(object.Key);
+		token = page.IsTruncated ? page.NextContinuationToken : undefined;
+	} while (token);
+	return keys;
+}
+
+export async function deleteStoredKey(key: string): Promise<void> {
+	await getStorage().send(
+		new DeleteObjectCommand({ Bucket: process.env.STORAGE_BUCKET, Key: key }),
 	);
 }
