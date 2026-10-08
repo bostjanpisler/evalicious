@@ -20,6 +20,8 @@ import {
 	syncFreeDownloadLeadToHal,
 } from "../lib/hal.js";
 import { requestLocale } from "../lib/recipe-i18n.js";
+import { clientIp, isRateLimited } from "../lib/rate-limit.js";
+import { verifyTurnstile } from "../lib/turnstile.js";
 import {
 	canAccessLesson,
 	getFreePublishedEbook,
@@ -33,10 +35,6 @@ export const downloadHandler = new Hono();
 
 const MAX_PDF_BYTES = 25 * 1024 * 1024;
 const PDF_FETCH_TIMEOUT_MS = 10_000;
-const RATE_LIMIT_WINDOW_MS = 60_000;
-const RATE_LIMIT_REQUESTS = 10;
-const downloadWindows = new Map<string, { count: number; resetsAt: number }>();
-
 const FREE_REQUEST_IP_LIMIT = 10;
 const FREE_REQUEST_IP_WINDOW_MS = 10 * 60_000;
 const FREE_REQUEST_EMAIL_LIMIT = 3;
@@ -44,35 +42,6 @@ const FREE_REQUEST_EMAIL_WINDOW_MS = 60 * 60_000;
 const FREE_REQUEST_GLOBAL_LIMIT = 200;
 const FREE_REQUEST_GLOBAL_WINDOW_MS = 10 * 60_000;
 const SLUG_PATTERN = /^[a-z0-9-]{1,100}$/i;
-
-function isRateLimited(
-	key: string,
-	limit = RATE_LIMIT_REQUESTS,
-	windowMs = RATE_LIMIT_WINDOW_MS,
-): boolean {
-	const now = Date.now();
-	if (downloadWindows.size > 10_000) {
-		for (const [entryKey, entry] of downloadWindows) {
-			if (entry.resetsAt <= now) downloadWindows.delete(entryKey);
-		}
-	}
-	const current = downloadWindows.get(key);
-	if (!current || current.resetsAt <= now) {
-		downloadWindows.set(key, { count: 1, resetsAt: now + windowMs });
-		return false;
-	}
-	current.count += 1;
-	return current.count > limit;
-}
-
-// Railway's edge sets X-Real-IP; the left-most X-Forwarded-For entry is client-controlled.
-function clientIp(headers: Headers): string | null {
-	return (
-		headers.get("x-real-ip")?.trim() ||
-		headers.get("x-forwarded-for")?.split(",").at(-1)?.trim() ||
-		null
-	);
-}
 
 async function findFreeEbook(productSlug: string, locale: Locale = DEFAULT_LOCALE) {
 	if (!SLUG_PATTERN.test(productSlug)) return null;
@@ -143,6 +112,9 @@ downloadHandler.post("/free/:productSlug", async (c) => {
 		isRateLimited("free-global", FREE_REQUEST_GLOBAL_LIMIT, FREE_REQUEST_GLOBAL_WINDOW_MS)
 	) {
 		return c.json({ error: "Too many download requests" }, 429);
+	}
+	if (!(await verifyTurnstile((body as { turnstileToken?: unknown } | null)?.turnstileToken, ip))) {
+		return c.json({ error: "Verification failed" }, 400);
 	}
 
 	const ebook = await findFreeEbook(productSlug, locale);

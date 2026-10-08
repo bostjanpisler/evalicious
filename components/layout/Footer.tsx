@@ -1,6 +1,7 @@
 "use client";
 
 import { CookieSettingsLink } from "@/components/shared/CookieConsent";
+import { NewsletterForm } from "@/components/shared/NewsletterForm";
 import { NAV_ITEMS, SITE_NAME } from "@/lib/constants";
 import { useI18n } from "@/lib/i18n/react";
 
@@ -13,6 +14,13 @@ export function Footer() {
 				<div className="mb-8 text-center md:mb-0 md:text-left">
 					<span className="font-serif text-xl font-bold text-primary">{SITE_NAME}</span>
 					<p className="mt-2 text-sm text-muted-foreground">{t("common.siteTagline")}</p>
+				</div>
+				<div className="mx-auto mt-8 max-w-xl text-center md:mx-0 md:text-left">
+					<h3 className="font-semibold text-foreground">{t("common.newsletter.title")}</h3>
+					<p className="mb-3 mt-1 text-sm text-muted-foreground">{t("common.newsletter.text")}</p>
+					<div className="text-left">
+						<NewsletterForm source="footer" />
+					</div>
 				</div>
 				<div className="mt-6 grid grid-cols-2 gap-8 md:mt-8 md:grid-cols-3">
 					<div className="col-span-2 hidden md:block" />

@@ -5,6 +5,7 @@ import { useEffect, useId, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { Turnstile } from "@/components/shared/Turnstile";
 import { Label } from "@/components/ui/label";
 import { capture } from "@/lib/analytics-client";
 import { useI18n } from "@/lib/i18n/react";
@@ -23,6 +24,7 @@ export function FreeDownloadForm({ productSlug }: FreeDownloadFormProps) {
 	const [loading, setLoading] = useState(false);
 	const [sentTo, setSentTo] = useState("");
 	const [error, setError] = useState("");
+	const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
 	useEffect(() => {
 		if (new URLSearchParams(window.location.search).get("download") === "expired") {
@@ -48,7 +50,7 @@ export function FreeDownloadForm({ productSlug }: FreeDownloadFormProps) {
 			const res = await fetch(`/api/download/free/${productSlug}`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ email, consent, locale }),
+				body: JSON.stringify({ email, consent, locale, turnstileToken }),
 			});
 			if (!res.ok) {
 				setError(
@@ -116,6 +118,7 @@ export function FreeDownloadForm({ productSlug }: FreeDownloadFormProps) {
 					{t("shop.freeDownload.consent")}
 				</Label>
 			</div>
+			<Turnstile onToken={setTurnstileToken} />
 			{error && <p className="text-sm text-destructive">{error}</p>}
 			<Button type="submit" className="w-full gap-2" disabled={loading}>
 				<Download className="h-4 w-4" />

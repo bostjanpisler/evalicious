@@ -12,6 +12,8 @@ declare global {
 		interface PageContext {
 			user: AuthenticatedUser | null;
 			locale: import("../lib/i18n/config").Locale;
+			/** Public Cloudflare Turnstile site key; null when bot checks are not configured. */
+			turnstileSiteKey: string | null;
 		}
 	}
 }
