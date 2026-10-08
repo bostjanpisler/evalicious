@@ -1,4 +1,4 @@
-import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { GetObjectCommand, HeadObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 // S3-compatible file storage (Railway bucket in production). Product file keys
@@ -33,4 +33,27 @@ export async function getSignedDownloadUrl(key: string, expiresIn = 3600): Promi
 		Key: key,
 	});
 	return getSignedUrl(getStorage(), command, { expiresIn });
+}
+
+export async function storedObjectSize(key: string): Promise<number | null> {
+	try {
+		const head = await getStorage().send(
+			new HeadObjectCommand({ Bucket: process.env.STORAGE_BUCKET, Key: key }),
+		);
+		return head.ContentLength ?? null;
+	} catch (error) {
+		if ((error as { name?: string }).name === "NotFound") return null;
+		throw error;
+	}
+}
+
+export async function storeObject(key: string, body: Uint8Array, contentType: string): Promise<void> {
+	await getStorage().send(
+		new PutObjectCommand({
+			Bucket: process.env.STORAGE_BUCKET,
+			Key: key,
+			Body: body,
+			ContentType: contentType,
+		}),
+	);
 }
