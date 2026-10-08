@@ -1,5 +1,4 @@
 export const SITE_NAME = "Eva-licious";
-export const SITE_DESCRIPTION = "Božanski recepti in nasveti za potepanje po svetu";
 export const SITE_URL =
 	typeof window === "undefined"
 		? (process.env.BETTER_AUTH_URL ?? "http://localhost:3100")
@@ -28,12 +27,12 @@ export const FREE_DOWNLOAD_CONSENT_TEXT =
 	"Strinjam se, da mi Eva-licious na e-poštni naslov pošlje brezplačno gradivo ter občasne novice, recepte in ponudbe. Odjava je mogoča kadarkoli.";
 
 export const NAV_ITEMS = [
-	{ label: "Recepti", href: "/recipes" },
-	{ label: "Tečaji", href: "/courses" },
-	{ label: "Blog", href: "/blog" },
-	{ label: "Trgovina", href: "/shop" },
-	{ label: "Potovanja", href: "/travel" },
-	{ label: "O meni", href: "/about" },
+	{ key: "recipes", href: "/recipes" },
+	{ key: "courses", href: "/courses" },
+	{ key: "blog", href: "/blog" },
+	{ key: "shop", href: "/shop" },
+	{ key: "travel", href: "/travel" },
+	{ key: "about", href: "/about" },
 ] as const;
 
 export const RECIPE_CATEGORIES = [

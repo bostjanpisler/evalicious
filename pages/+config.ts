@@ -3,10 +3,7 @@ import type { Config } from "vike/types";
 
 export default {
 	extends: vikeReact,
-	passToClient: ["user", "routeParams"],
-	lang: "sl",
+	passToClient: ["user", "routeParams", "locale"],
 	title: "Eva-licious",
-	description:
-		"Okusne jedi na rastlinski osnovi, knjižice z recepti, kuharski tečaji in delavnice ter raziskovanje sveta z Evo.",
 	favicon: "/favicon.svg",
 } satisfies Config;

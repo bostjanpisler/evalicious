@@ -9,6 +9,7 @@ import {
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Fragment } from "react";
+import { useI18n } from "@/lib/i18n/react";
 
 interface BreadcrumbSegment {
 	label: string;
@@ -20,7 +21,8 @@ interface BreadcrumbsProps {
 }
 
 export function Breadcrumbs({ segments }: BreadcrumbsProps) {
-	const allSegments = [{ label: "Domov", href: "/" }, ...segments];
+	const { t, l } = useI18n();
+	const allSegments = [{ label: t("common.home"), href: "/" }, ...segments];
 
 	return (
 		<>
@@ -33,7 +35,9 @@ export function Breadcrumbs({ segments }: BreadcrumbsProps) {
 								{index === allSegments.length - 1 ? (
 									<BreadcrumbPage>{segment.label}</BreadcrumbPage>
 								) : (
-									<BreadcrumbLink href={segment.href}>{segment.label}</BreadcrumbLink>
+									<BreadcrumbLink href={segment.href ? l(segment.href) : undefined}>
+										{segment.label}
+									</BreadcrumbLink>
 								)}
 							</BreadcrumbItem>
 						</Fragment>

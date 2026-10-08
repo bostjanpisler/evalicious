@@ -1,0 +1,57 @@
+export const commonSl = {
+	siteDescription:
+		"Okusne jedi na rastlinski osnovi, knjižice z recepti, kuharski tečaji in delavnice ter raziskovanje sveta z Evo.",
+	siteTagline:
+		"Okusne jedi na rastlinski osnovi, knjižice z recepti, kuharski tečaji in delavnice ter raziskovanje sveta.",
+	home: "Domov",
+	nav: {
+		recipes: "Recepti",
+		courses: "Tečaji",
+		blog: "Blog",
+		shop: "Trgovina",
+		travel: "Potovanja",
+		about: "O meni",
+	},
+	footer: {
+		explore: "Razišči",
+		account: "Račun",
+		login: "Prijava",
+		register: "Registracija",
+		myRecipes: "Moji recepti",
+		rights: "Vse pravice pridržane.",
+	},
+	menu: {
+		open: "Odpri meni",
+		myRecipes: "Moji recepti",
+		myCourses: "Moji tečaji",
+		myOrders: "Moja naročila",
+		settings: "Nastavitve",
+		logout: "Odjava",
+		login: "Prijava",
+		register: "Registracija",
+	},
+	cookie: {
+		text: 'Spletna stran uporablja piškotke za analitiko obiska. S klikom na "Sprejmi" se strinjaš z uporabo piškotkov.',
+		accept: "Sprejmi",
+		deny: "Zavrni",
+	},
+	theme: { toggle: "Preklopi temo" },
+	language: { switchTo: "Preklopi na angleščino", label: "Jezik" },
+	error: {
+		notFound: "Te strani ni mogoče najti.",
+		backHome: "Nazaj na domačo stran",
+		title: "Napaka",
+		unexpected: "Prišlo je do nepričakovane napake. Poskusi znova.",
+	},
+	affiliate: {
+		disclosure:
+			"Ta stran vsebuje affiliate povezave. Če kupiš ali rezerviraš preko njih, dobim majhno provizijo, zate pa se cena ne spremeni. Priporočam samo stvari, ki jih zares uporabljam ali bi jih.",
+		stayTitle: "Kje prespati: {place}",
+		stayText: "Primerjaj nastanitve in cene na Booking.com.",
+		stayButton: "Poglej nastanitve",
+		recommended: "Priporočam",
+		tools: "Pripomočki in sestavine, ki jih uporabljam",
+		seeAt: "Poglej pri {shop}",
+		see: "Poglej",
+	},
+};

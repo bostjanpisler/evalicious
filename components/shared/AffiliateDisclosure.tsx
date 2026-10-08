@@ -1,10 +1,12 @@
-export const AFFILIATE_DISCLOSURE_TEXT =
-	"Ta stran vsebuje affiliate povezave. Če kupiš ali rezerviraš preko njih, dobim majhno provizijo, zate pa se cena ne spremeni. Priporočam samo stvari, ki jih zares uporabljam ali bi jih.";
+"use client";
+
+import { useI18n } from "@/lib/i18n/react";
 
 export function AffiliateDisclosure({ className }: { className?: string }) {
+	const { t } = useI18n();
 	return (
 		<p className={`text-xs leading-relaxed text-muted-foreground ${className ?? ""}`}>
-			{AFFILIATE_DISCLOSURE_TEXT}
+			{t("common.affiliate.disclosure")}
 		</p>
 	);
 }

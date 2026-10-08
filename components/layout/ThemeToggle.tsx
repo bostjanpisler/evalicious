@@ -3,6 +3,7 @@
 import { Moon, Sun, Sunset } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n/react";
 
 type Theme = "light" | "dark" | "system";
 
@@ -37,6 +38,7 @@ const NEXT_THEME: Record<Theme, Theme> = {
 };
 
 export function ThemeToggle() {
+	const { t } = useI18n();
 	const [theme, setTheme] = useState<Theme>("system");
 	const [ready, setReady] = useState(false);
 
@@ -67,7 +69,7 @@ export function ThemeToggle() {
 			variant="ghost"
 			size="icon"
 			onClick={() => setTheme((t) => NEXT_THEME[t])}
-			aria-label="Preklopi temo"
+			aria-label={t("common.theme.toggle")}
 		>
 			{theme === "light" && <Sun className="h-5 w-5" />}
 			{theme === "dark" && <Moon className="h-5 w-5" />}
