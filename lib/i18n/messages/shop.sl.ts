@@ -35,6 +35,11 @@ export const shopSl = {
 		buyNow: "Kupi zdaj",
 		alreadyOwned: "Ta izdelek že imaš v svojih naročilih.",
 		cannotStart: "Plačila trenutno ni mogoče začeti. Poskusi znova pozneje.",
+		termsBefore: "Strinjam se s ",
+		termsLink: "pogoji poslovanja",
+		termsAfter:
+			" in zahtevam takojšnjo dostavo digitalne vsebine. Zavedam se, da s tem izgubim pravico do odstopa od pogodbe.",
+		termsRequired: "Za nakup potrdi pogoje poslovanja.",
 		startError: "Napaka pri začetku plačila. Poskusi znova.",
 	},
 	freeDownload: {

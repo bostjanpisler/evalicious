@@ -21,6 +21,8 @@ export const commonEn: Shape<typeof commonSl> = {
 		login: "Log in",
 		register: "Sign up",
 		myRecipes: "My recipes",
+		privacy: "Privacy",
+		terms: "Terms",
 		rights: "All rights reserved.",
 	},
 	menu: {
@@ -34,9 +36,17 @@ export const commonEn: Shape<typeof commonSl> = {
 		register: "Sign up",
 	},
 	cookie: {
-		text: 'This website uses cookies for visit analytics. By clicking "Accept" you agree to the use of cookies.',
+		title: "Cookies and third-party content",
+		text: "With your consent we use visit analytics and a chat widget, and load third-party content (Google Maps, Klook, TikTok, YouTube) that may set their own cookies. You can change your choice at any time in the footer.",
+		more: "More about privacy",
 		accept: "Accept",
 		deny: "Decline",
+		settings: "Cookie settings",
+	},
+	consentGate: {
+		text: "This content comes from a third-party provider that may set its own cookies and collect data about your visit. We only load it with your consent.",
+		declined: "You declined consent.",
+		load: "Accept and load content",
 	},
 	theme: { toggle: "Toggle theme" },
 	language: { switchTo: "Switch to Slovenian", label: "Language" },
