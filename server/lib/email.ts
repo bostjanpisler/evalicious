@@ -68,6 +68,20 @@ export async function sendPurchaseConfirmation(
 	});
 }
 
+export async function sendPasswordResetEmail(to: string, resetUrl: string, locale?: Locale) {
+	const t = translatorFor(locale);
+	await sendEmail({
+		to,
+		subject: t("common.email.resetSubject"),
+		html: `
+      <h1>${t("common.email.resetTitle")}</h1>
+      <p>${t("common.email.resetBody")}</p>
+      <p><a href="${escapeHtml(resetUrl)}">${t("common.email.resetLink")}</a></p>
+      <p>${t("common.email.resetExpires")}</p>
+    `,
+	});
+}
+
 export async function sendWelcomeEmail(to: string, name: string) {
 	await sendEmail({
 		to,

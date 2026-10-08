@@ -20,6 +20,17 @@ export const authEn: Shape<typeof authSl> = {
 		invalid: "Your email or password isn't right.",
 		noAccount: "Don't have an account yet?",
 		registerLink: "Sign up",
+		forgot: "Forgot your password?",
+	},
+	forgot: {
+		title: "Forgot password | Eva-licious",
+		heading: "Forgot your password?",
+		description: "Enter your email and we'll send you a link to choose a new one.",
+		email: "Email",
+		submit: "Send link",
+		submitting: "Sending...",
+		sent: "If an account with this address exists, we've sent you a link to reset your password. Check your spam folder too.",
+		back: "Back to sign in",
 	},
 	register: {
 		title: "Sign up | Eva-licious",

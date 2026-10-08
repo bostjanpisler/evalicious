@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { db } from "./db.js";
 import { allowedOrigins } from "./origins.js";
+import { sendResetPassword } from "./password-reset.js";
 
 export const auth = betterAuth({
 	database: prismaAdapter(db, {
@@ -13,6 +14,8 @@ export const auth = betterAuth({
 	trustedOrigins: allowedOrigins,
 	emailAndPassword: {
 		enabled: true,
+		resetPasswordTokenExpiresIn: 60 * 60,
+		sendResetPassword,
 	},
 	socialProviders: {
 		...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET

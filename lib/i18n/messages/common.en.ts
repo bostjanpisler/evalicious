@@ -107,5 +107,10 @@ export const commonEn: Shape<typeof commonSl> = {
 		downloadLink: "Download your file",
 		linkExpires: "This link expires in 24 hours.",
 		dashboardNote: "You can access your content from your account.",
+		resetSubject: "Reset your password",
+		resetTitle: "Reset your password",
+		resetBody: "We received a request to reset the password for your Eva-licious account.",
+		resetLink: "Choose a new password",
+		resetExpires: "The link is valid for 1 hour. If you didn't ask for this, you can ignore this message.",
 	},
 };

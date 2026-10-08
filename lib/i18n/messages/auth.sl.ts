@@ -17,6 +17,17 @@ export const authSl = {
 		invalid: "E-poštni naslov ali geslo ni pravilno.",
 		noAccount: "Še nimaš računa?",
 		registerLink: "Registriraj se",
+		forgot: "Pozabljeno geslo?",
+	},
+	forgot: {
+		title: "Pozabljeno geslo | Eva-licious",
+		heading: "Pozabljeno geslo",
+		description: "Vpiši e-pošto in poslali ti bomo povezavo za novo geslo.",
+		email: "E-pošta",
+		submit: "Pošlji povezavo",
+		submitting: "Pošiljam...",
+		sent: "Če račun s tem naslovom obstaja, smo ti poslali povezavo za ponastavitev gesla. Preveri tudi mapo z neželeno pošto.",
+		back: "Nazaj na prijavo",
 	},
 	register: {
 		title: "Registracija | Eva-licious",
