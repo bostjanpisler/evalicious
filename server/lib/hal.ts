@@ -24,7 +24,8 @@ function createHalHttp(apiKey: string): HalHttp {
 			body: body === undefined ? undefined : JSON.stringify(body),
 		});
 		const text = await response.text();
-		if (!response.ok) throw new Error(`Hal ${method} ${path} ${response.status}: ${text.slice(0, 200)}`);
+		if (!response.ok)
+			throw new Error(`Hal ${method} ${path} ${response.status}: ${text.slice(0, 200)}`);
 		return text ? (JSON.parse(text) as unknown) : {};
 	};
 }
@@ -42,6 +43,45 @@ export type FreeDownloadLeadSync = {
 	productTitle: string;
 	consentedAt: Date;
 };
+
+export type FreeDownloadEmailRequest = {
+	leadId: string;
+	email: string;
+	productSlug: string;
+	productTitle: string;
+	downloadToken: string;
+	needsAccount: boolean;
+	name: string;
+};
+
+/**
+ * Asks Hal to email the download link. The `free-download-requested` event
+ * triggers the "Brezplačen prenos" workflow, which renders the branded email
+ * from these contact properties. This is a service email, so it carries no
+ * marketing consent: that is only recorded once the link is opened
+ * (syncFreeDownloadLeadToHal).
+ */
+export async function requestFreeDownloadEmail(
+	request: FreeDownloadEmailRequest,
+	env: NodeJS.ProcessEnv = process.env,
+	http: HalHttp = createHalHttp(env.HAL_API_KEY?.trim() ?? ""),
+): Promise<void> {
+	if (!env.HAL_API_KEY?.trim()) throw new Error("Hal is not configured");
+	await http("POST", "/events/track", {
+		name: "free-download-requested",
+		event_key: `free-download-requested:${request.leadId}`,
+		entity: "visitor",
+		email: request.email.toLowerCase(),
+		contact_name: request.name,
+		value: request.productSlug,
+		metadata: {
+			download_title: request.productTitle,
+			download_token: request.downloadToken,
+			needs_account: request.needsAccount ? "yes" : "no",
+		},
+		overwrite_metadata: true,
+	});
+}
 
 /**
  * One tracked event creates (or finds) the Hal contact by user id/email, a CRM
@@ -61,8 +101,8 @@ export async function syncFreeDownloadLeadToHal(
 	const at = lead.consentedAt.toISOString();
 
 	const tracked = (await http("POST", "/events/track", {
-		name: "free_download",
-		event_key: `free_download:${lead.leadId}`,
+		name: "free-download-confirmed",
+		event_key: `free-download-confirmed:${lead.leadId}`,
 		entity: "visitor",
 		user_id: lead.userId,
 		email,

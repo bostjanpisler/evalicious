@@ -24,31 +24,34 @@ function sign(payload: string, secret: string): string {
 	return createHmac("sha256", secret).update(payload).digest("base64url");
 }
 
-/** Stateless link token: `<leadId>.<expiresAtUnix>.<hmac>` bound to the product slug. */
+/**
+ * Stateless link token `<leadId>.<expiresAtUnix>.<hmac>`. The product is looked
+ * up from the lead, so the token alone identifies the download and is safe to
+ * hand to an email template as a single variable.
+ */
 export function createFreeDownloadToken(
 	leadId: string,
-	productSlug: string,
 	now = Date.now(),
 	secret = getSecret(),
 ): string {
 	const expiresAt = Math.floor(now / 1000) + FREE_DOWNLOAD_LINK_TTL_SECONDS;
-	return `${leadId}.${expiresAt}.${sign(`${leadId}.${expiresAt}.${productSlug}`, secret)}`;
+	return `${leadId}.${expiresAt}.${sign(`${leadId}.${expiresAt}`, secret)}`;
 }
 
+/** Returns the lead for a correctly signed token; `expired` is set past its lifetime. */
 export function verifyFreeDownloadToken(
 	token: string,
-	productSlug: string,
 	now = Date.now(),
 	secret = getSecret(),
-): string | null {
+): { leadId: string; expired: boolean } | null {
 	const [leadId, expiresAtRaw, signature, ...rest] = token.split(".");
 	if (!leadId || !expiresAtRaw || !signature || rest.length > 0) return null;
 	const expiresAt = Number(expiresAtRaw);
-	if (!Number.isInteger(expiresAt) || expiresAt * 1000 < now) return null;
-	const expected = Buffer.from(sign(`${leadId}.${expiresAt}.${productSlug}`, secret));
+	if (!Number.isInteger(expiresAt)) return null;
+	const expected = Buffer.from(sign(`${leadId}.${expiresAt}`, secret));
 	const actual = Buffer.from(signature);
 	if (expected.length !== actual.length || !timingSafeEqual(expected, actual)) return null;
-	return leadId;
+	return { leadId, expired: expiresAt * 1000 < now };
 }
 
 export function nameFromEmail(email: string): string {
@@ -114,8 +117,7 @@ export async function emailHasLogin(email: string): Promise<boolean> {
 /**
  * Called when the mailbox owner first opens a link from the email: that click
  * is the proof of consent, so only now is the account created and the lead
- * confirmed. Returns `firstConfirmation` exactly once per lead so the CRM sync
- * runs once.
+ * confirmed.
  */
 export async function confirmLead(leadId: string) {
 	const lead = await db.freeDownloadLead.findUnique({
@@ -124,9 +126,9 @@ export async function confirmLead(leadId: string) {
 	});
 	if (!lead) return null;
 	const user = await ensureLeadUser(lead.email);
-	const claimed = await db.freeDownloadLead.updateMany({
+	await db.freeDownloadLead.updateMany({
 		where: { id: lead.id, confirmedAt: null },
 		data: { confirmedAt: new Date(), userId: user.id },
 	});
-	return { lead, user, firstConfirmation: claimed.count === 1 };
+	return { lead, user };
 }

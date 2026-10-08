@@ -3,16 +3,20 @@ import { FREE_DOWNLOAD_CONSENT_TEXT } from "@/lib/constants";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { auth } from "../lib/auth.js";
 import { db } from "../lib/db.js";
-import { sendFreeDownloadEmail } from "../lib/email.js";
 import {
 	confirmLead,
 	createFreeDownloadToken,
 	createPasswordSetupToken,
 	emailHasLogin,
+	nameFromEmail,
 	normalizeEmail,
 	verifyFreeDownloadToken,
 } from "../lib/free-download.js";
-import { isHalConfigured, syncFreeDownloadLeadToHal } from "../lib/hal.js";
+import {
+	isHalConfigured,
+	requestFreeDownloadEmail,
+	syncFreeDownloadLeadToHal,
+} from "../lib/hal.js";
 import {
 	canAccessLesson,
 	getFreePublishedEbook,
@@ -67,10 +71,6 @@ function clientIp(headers: Headers): string | null {
 	);
 }
 
-function siteUrl(): string {
-	return (process.env.BETTER_AUTH_URL ?? "http://localhost:3000").replace(/\/$/, "");
-}
-
 async function findFreeEbook(productSlug: string) {
 	if (!SLUG_PATTERN.test(productSlug)) return null;
 	const product = await db.product.findUnique({ where: { slug: productSlug } });
@@ -121,24 +121,29 @@ async function fetchPdf(url: string, allowedHost?: string): Promise<Uint8Array> 
 
 downloadHandler.post("/free/:productSlug", async (c) => {
 	const { productSlug } = c.req.param();
-	const body = (await c.req.json().catch(() => null)) as { email?: unknown; consent?: unknown } | null;
+	const body = (await c.req.json().catch(() => null)) as {
+		email?: unknown;
+		consent?: unknown;
+	} | null;
 	const email = normalizeEmail(body?.email);
 	if (!email) return c.json({ error: "Invalid email" }, 400);
 	if (body?.consent !== true) return c.json({ error: "Consent required" }, 400);
 
-	const ebook = await findFreeEbook(productSlug);
-	if (!ebook) return c.json({ error: "File not found" }, 404);
-	if (!ebook.product.r2FileKey || deliveryConfigurationError("ebook")) {
-		return c.json({ error: "File not available" }, 404);
-	}
-
 	const ip = clientIp(c.req.raw.headers);
+	// Per-client limits run first so one client cannot use up the shared budget,
+	// and before any database or CMS lookup.
 	if (
-		isRateLimited("free-global", FREE_REQUEST_GLOBAL_LIMIT, FREE_REQUEST_GLOBAL_WINDOW_MS) ||
 		(ip && isRateLimited(`free-ip:${ip}`, FREE_REQUEST_IP_LIMIT, FREE_REQUEST_IP_WINDOW_MS)) ||
-		isRateLimited(`free-email:${email}`, FREE_REQUEST_EMAIL_LIMIT, FREE_REQUEST_EMAIL_WINDOW_MS)
+		isRateLimited(`free-email:${email}`, FREE_REQUEST_EMAIL_LIMIT, FREE_REQUEST_EMAIL_WINDOW_MS) ||
+		isRateLimited("free-global", FREE_REQUEST_GLOBAL_LIMIT, FREE_REQUEST_GLOBAL_WINDOW_MS)
 	) {
 		return c.json({ error: "Too many download requests" }, 429);
+	}
+
+	const ebook = await findFreeEbook(productSlug);
+	if (!ebook) return c.json({ error: "File not found" }, 404);
+	if (!ebook.product.r2FileKey || deliveryConfigurationError("ebook") || !isHalConfigured()) {
+		return c.json({ error: "File not available" }, 404);
 	}
 
 	// Consent is only recorded here; the account and CRM entry are created when
@@ -153,41 +158,63 @@ downloadHandler.post("/free/:productSlug", async (c) => {
 		},
 	});
 
-	const token = encodeURIComponent(createFreeDownloadToken(lead.id, productSlug));
-	const base = `${siteUrl()}/api/download/free/${productSlug}`;
-
+	// Hal sends the branded email from its "Brezplačen prenos" workflow.
 	try {
-		await sendFreeDownloadEmail({
-			to: email,
+		await requestFreeDownloadEmail({
+			leadId: lead.id,
+			email,
+			name: nameFromEmail(email),
+			productSlug,
 			productTitle: ebook.title,
-			downloadUrl: `${base}?token=${token}`,
-			setPasswordUrl: (await emailHasLogin(email)) ? undefined : `${base}/account?token=${token}`,
+			downloadToken: createFreeDownloadToken(lead.id),
+			needsAccount: !(await emailHasLogin(email)),
 		});
-		await db.freeDownloadLead.update({ where: { id: lead.id }, data: { emailSentAt: new Date() } });
 	} catch (error) {
-		console.error("Free download email failed", error);
+		console.error("Free download email request failed", error);
+		// A timeout may still have sent the email, so keep that lead; otherwise
+		// drop the consent record of an email that was never sent.
+		if (!(error instanceof Error && error.name === "TimeoutError")) {
+			await db.freeDownloadLead.delete({ where: { id: lead.id } }).catch(() => undefined);
+		}
 		return c.json({ error: "Email could not be sent" }, 502);
 	}
+	await db.freeDownloadLead
+		.update({ where: { id: lead.id }, data: { emailSentAt: new Date() } })
+		.catch(() => undefined);
 
 	return c.json({ ok: true });
 });
 
-async function confirmFreeDownload(productSlug: string, token: string | undefined) {
-	const leadId = token ? verifyFreeDownloadToken(token, productSlug) : null;
-	if (!leadId) return null;
-	const confirmation = await confirmLead(leadId);
-	if (!confirmation || confirmation.lead.product.slug !== productSlug) return null;
-	const { lead, user, firstConfirmation } = confirmation;
+async function confirmFreeDownload(token: string | undefined) {
+	const verified = token ? verifyFreeDownloadToken(token) : null;
+	if (!verified) return { status: "invalid" as const };
 
-	if (firstConfirmation && isHalConfigured()) {
-		const ebook = await getFreePublishedEbook(productSlug).catch(() => null);
+	if (verified.expired) {
+		// Read-only: an expired link must not create an account or confirm consent.
+		const lead = await db.freeDownloadLead.findUnique({
+			where: { id: verified.leadId },
+			select: { product: { select: { slug: true } } },
+		});
+		return lead
+			? { status: "expired" as const, slug: lead.product.slug }
+			: { status: "invalid" as const };
+	}
+
+	const confirmation = await confirmLead(verified.leadId);
+	if (!confirmation) return { status: "invalid" as const };
+	const { lead, user } = confirmation;
+	const slug = lead.product.slug;
+
+	// Retried on every open until it succeeds; the event key makes it idempotent.
+	if (!lead.halSyncedAt && isHalConfigured()) {
+		const ebook = await getFreePublishedEbook(slug).catch(() => null);
 		void syncFreeDownloadLeadToHal({
 			leadId: lead.id,
 			email: lead.email,
 			name: user.name,
 			userId: user.id,
-			productSlug,
-			productTitle: ebook?.title ?? productSlug,
+			productSlug: slug,
+			productTitle: ebook?.title ?? slug,
 			consentedAt: lead.consentedAt,
 		})
 			.then(({ contactId }) =>
@@ -201,39 +228,43 @@ async function confirmFreeDownload(productSlug: string, token: string | undefine
 				return db.freeDownloadLead
 					.update({
 						where: { id: lead.id },
-						data: { halError: String(error instanceof Error ? error.message : error).slice(0, 500) },
+						data: {
+							halError: String(error instanceof Error ? error.message : error).slice(0, 500),
+						},
 					})
 					.catch(() => undefined);
 			});
 	}
 
-	return confirmation;
+	return { status: "ok" as const, slug, user };
 }
 
-downloadHandler.get("/free/:productSlug/account", async (c) => {
-	const { productSlug } = c.req.param();
-	const confirmation = await confirmFreeDownload(productSlug, c.req.query("token"));
+function expiredRedirect(result: { status: string; slug?: string }): string {
+	return result.slug ? `/shop/${encodeURIComponent(result.slug)}?download=expired` : "/shop";
+}
+
+// "Nastavi geslo" link in the email. Opening it also confirms the lead.
+downloadHandler.get("/a", async (c) => {
+	const result = await confirmFreeDownload(c.req.query("token"));
 	c.header("Cache-Control", "private, no-store");
-	c.header("Referrer-Policy", "no-referrer");
-	if (!confirmation) return c.redirect(`/shop/${encodeURIComponent(productSlug)}?download=expired`);
-	if (!confirmation.user.needsPassword) return c.redirect("/login");
+	if (result.status !== "ok") return c.redirect(expiredRedirect(result));
+	if (!result.user.needsPassword) return c.redirect("/login");
 	// Fragment keeps the token out of server logs and analytics page URLs.
-	return c.redirect(`/reset-password#token=${encodeURIComponent(await createPasswordSetupToken(confirmation.user.id))}`);
+	const setup = await createPasswordSetupToken(result.user.id);
+	return c.redirect(`/reset-password#token=${encodeURIComponent(setup)}`);
 });
 
-downloadHandler.get("/free/:productSlug", async (c) => {
-	const { productSlug } = c.req.param();
-	const confirmation = await confirmFreeDownload(productSlug, c.req.query("token"));
-	if (!confirmation) return c.redirect(`/shop/${encodeURIComponent(productSlug)}?download=expired`);
+// "Prenesi PDF" link in the email.
+downloadHandler.get("/f", async (c) => {
+	const result = await confirmFreeDownload(c.req.query("token"));
+	c.header("Cache-Control", "private, no-store");
+	if (result.status !== "ok") return c.redirect(expiredRedirect(result));
 
-	const ebook = await findFreeEbook(productSlug);
+	const ebook = await findFreeEbook(result.slug);
 	if (!ebook) return c.json({ error: "File not found" }, 404);
 	if (!ebook.product.r2FileKey) return c.json({ error: "File not available" }, 404);
 
-	const fileUrl = await getSignedDownloadUrl(ebook.product.r2FileKey, 300);
-	c.header("Cache-Control", "private, no-store");
-	c.header("Referrer-Policy", "no-referrer");
-	return c.redirect(fileUrl);
+	return c.redirect(await getSignedDownloadUrl(ebook.product.r2FileKey, 300));
 });
 
 downloadHandler.get("/course/:courseSlug/:lessonSlug", async (c) => {
