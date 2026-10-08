@@ -3,6 +3,7 @@ import { BlogCard } from "@/components/blog/BlogCard";
 import { RecipeCard } from "@/components/recipes/RecipeCard";
 import { InstagramFeed } from "@/components/shared/InstagramFeed";
 import { JsonLd } from "@/components/shared/JsonLd";
+import { NewsletterForm } from "@/components/shared/NewsletterForm";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { TravelCard } from "@/components/travel/TravelCard";
@@ -220,6 +221,17 @@ export default function HomePage() {
 					</div>
 				</section>
 			)}
+
+			{/* Newsletter */}
+			<section id="newsletter" className="scroll-mt-20 bg-muted/50 py-16">
+				<div className="mx-auto max-w-xl px-4 text-center sm:px-6 lg:px-8">
+					<h2 className="font-serif text-3xl font-bold">{t("common.newsletter.title")}</h2>
+					<p className="mb-6 mt-3 text-sm text-muted-foreground">{t("common.newsletter.text")}</p>
+					<div className="text-left">
+						<NewsletterForm source="home" />
+					</div>
+				</div>
+			</section>
 
 			{/* Instagram */}
 			<section className="py-16">

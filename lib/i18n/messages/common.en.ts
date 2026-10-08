@@ -43,6 +43,33 @@ export const commonEn: Shape<typeof commonSl> = {
 		deny: "Decline",
 		settings: "Cookie settings",
 	},
+	newsletter: {
+		title: "Subscribe to the newsletter",
+		text: "Recipes, travel tips and offers, now and then, never spam.",
+		placeholder: "you@email.com",
+		submit: "Subscribe",
+		sending: "Sending...",
+		consent:
+			"I agree that Eva-licious may email me news, recipes and offers from time to time. I can unsubscribe at any time.",
+		sentTitle: "Check your inbox",
+		sentText: "We've sent a confirmation link to {email}.",
+		errorInvalid: "Please check the email address.",
+		errorConsent: "We need your consent to subscribe you.",
+		errorRate: "Too many requests. Please try again in a few minutes.",
+		errorGeneric: "We couldn't send your subscription right now. Please try again later.",
+		errorVerify: "We couldn't complete the check. Refresh the page and try again.",
+		confirmed: {
+			title: "You're subscribed",
+			text: "Thank you! Your first email is on its way. You can unsubscribe at any time with the link in every email.",
+			expiredTitle: "This link has expired",
+			expiredText:
+				"The confirmation link is valid for 7 days. Subscribe again and we'll send you a new one.",
+			invalidTitle: "This link isn't valid",
+			invalidText: "Check that you copied the whole link, or subscribe again.",
+			home: "Back to the home page",
+			subscribeAgain: "Subscribe again",
+		},
+	},
 	consentGate: {
 		text: "This content comes from a third-party provider that may set its own cookies and collect data about your visit. We only load it with your consent.",
 		declined: "You declined consent.",

@@ -17,6 +17,10 @@ export const onBeforeRender: OnBeforeRenderAsync = async (pageContext) => {
 	return {
 		pageContext: {
 			user,
+			turnstileSiteKey:
+				process.env.TURNSTILE_SECRET?.trim() && process.env.TURNSTILE_SITE_KEY?.trim()
+					? process.env.TURNSTILE_SITE_KEY.trim()
+					: null,
 		},
 	};
 };

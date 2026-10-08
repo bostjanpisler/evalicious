@@ -214,3 +214,22 @@ model FreeDownloadLead {
   @@index([userId])
   @@index([productId])
 }
+
+model NewsletterSignup {
+  id           String    @id @default(cuid())
+  email        String
+  locale       String    @default("sl")
+  source       String    @default("site")
+  consentText  String
+  consentedAt  DateTime  @default(now())
+  confirmedAt  DateTime?
+  ipAddress    String?
+  userAgent    String?
+  emailSentAt  DateTime?
+  halContactId String?
+  halSyncedAt  DateTime?
+  halError     String?
+  createdAt    DateTime  @default(now())
+
+  @@index([email])
+}

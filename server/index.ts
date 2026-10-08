@@ -15,6 +15,7 @@ import { downloadHandler } from "./routes/api.download.js";
 import { embedHandler } from "./routes/embed.js";
 import { favoritesHandler } from "./routes/api.favorites.js";
 import { listsHandler } from "./routes/api.lists.js";
+import { newsletterHandler } from "./routes/api.newsletter.js";
 import { progressHandler } from "./routes/api.progress.js";
 import { stripeHandler } from "./routes/api.stripe.js";
 import { sitemapHandler } from "./routes/sitemap.js";
@@ -54,6 +55,7 @@ const securityHeaders = secureHeaders({
 			"https://www.youtube.com",
 			"https://www.youtube-nocookie.com",
 			"https://iframe.mediadelivery.net",
+			"https://challenges.cloudflare.com",
 			...EMBED_ORIGIN_LIST,
 			"https://*.chatwithhal.com",
 		],
@@ -67,7 +69,12 @@ const securityHeaders = secureHeaders({
 		],
 		mediaSrc: ["'self'", "blob:", "https://*.b-cdn.net"],
 		objectSrc: ["'none'"],
-		scriptSrc: ["'self'", "'unsafe-inline'", "https://*.chatwithhal.com"],
+		scriptSrc: [
+			"'self'",
+			"'unsafe-inline'",
+			"https://*.chatwithhal.com",
+			"https://challenges.cloudflare.com",
+		],
 		styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
 		workerSrc: ["'self'", "blob:"],
 	},
@@ -118,6 +125,7 @@ app.route("/api/favorites", favoritesHandler);
 app.route("/api/lists", listsHandler);
 app.route("/api/progress", progressHandler);
 app.route("/api/download", downloadHandler);
+app.route("/api/newsletter", newsletterHandler);
 app.route("/embed", embedHandler);
 app.route("/", sitemapHandler);
 

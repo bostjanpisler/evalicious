@@ -1,5 +1,12 @@
 import { describe, expect, test } from "bun:test";
-import { mergeTags, requestFreeDownloadEmail, syncFreeDownloadLeadToHal } from "./hal";
+import {
+	mergeTags,
+	requestFreeDownloadEmail,
+	requestNewsletterConfirmation,
+	startWelcomeSeries,
+	syncFreeDownloadLeadToHal,
+	syncNewsletterSubscriberToHal,
+} from "./hal";
 
 const env = { HAL_API_KEY: "key" } as NodeJS.ProcessEnv;
 const lead = {
@@ -119,5 +126,66 @@ describe("requestFreeDownloadEmail", () => {
 			overwrite_metadata: true,
 		});
 		expect(JSON.stringify(calls[0]?.body)).not.toContain("marketing_consent");
+	});
+});
+
+describe("newsletter", () => {
+	test("the confirmation request goes out per language and records no consent", async () => {
+		const { calls, http } = recorder({});
+		await requestNewsletterConfirmation(
+			{ signupId: "s1", email: "Eva@Example.com", name: "eva", token: "s1.123.sig", locale: "en" },
+			env,
+			http,
+		);
+		expect(calls[0]?.route).toBe("POST /events/track");
+		expect(calls[0]?.body).toMatchObject({
+			name: "newsletter-confirm-requested-en",
+			event_key: "newsletter-confirm-requested:s1",
+			email: "eva@example.com",
+			metadata: { confirm_token: "s1.123.sig", language: "en" },
+		});
+		expect(JSON.stringify(calls[0]?.body)).not.toContain("marketing_consent");
+	});
+
+	test("a confirmed subscriber is synced with consent, tags and the Lead stage, without a user id", async () => {
+		const { calls, http } = recorder({
+			"POST /events/track": { event: { contact_id: "c_1" } },
+			"GET /contacts/c_1": { contact: { id: "c_1", tags: [] } },
+			"GET /companies": { companies: [{ id: "co_1", name: "eva@example.com", stage_id: null }] },
+		});
+		const result = await syncNewsletterSubscriberToHal(
+			{
+				signupId: "s1",
+				email: "Eva@Example.com",
+				name: "eva",
+				consentedAt: new Date("2026-10-08T10:00:00Z"),
+				source: "footer",
+				locale: "sl",
+			},
+			env,
+			http,
+		);
+		expect(result).toEqual({ contactId: "c_1" });
+		expect(calls[0]?.body).toMatchObject({
+			name: "newsletter-confirmed",
+			event_key: "newsletter-confirmed:s1",
+			company_id: "subscriber:s1",
+			metadata: { marketing_consent: true, language: "sl", newsletter_source: "footer" },
+		});
+		expect("user_id" in (calls[0]?.body as object)).toBe(false);
+		const tags = (calls.find((c) => c.route === "PATCH /contacts/c_1")?.body as { tags: string[] })
+			.tags;
+		expect(tags).toEqual(expect.arrayContaining(["newsletter", "marketing-consent", "lang:sl"]));
+		expect(calls.map((c) => c.route)).toContain("PATCH /companies/co_1");
+	});
+
+	test("the welcome series starts once per address, in the subscriber's language", async () => {
+		const { calls, http } = recorder({});
+		await startWelcomeSeries({ email: "Eva@Example.com", locale: "en" }, env, http);
+		expect(calls[0]?.body).toMatchObject({
+			name: "welcome-series-start-en",
+			event_key: "welcome-series:eva@example.com",
+			email: "eva@example.com",
+		});
 	});
 });
