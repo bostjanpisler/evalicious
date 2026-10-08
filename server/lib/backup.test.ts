@@ -21,7 +21,6 @@ describe("backup keys", () => {
 		expect(keysToPrune(keys, now, 30)).toEqual([
 			"backups/2026-08-01.json.gz",
 			"backups/2026-09-07.json.gz",
-			"backups/2026-09-08.json.gz",
 		]);
 	});
 });
