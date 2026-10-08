@@ -6,14 +6,17 @@ import { TableOfContents } from "@/components/blog/TableOfContents";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
 import { Badge } from "@/components/ui/badge";
-import { urlFor } from "@/lib/sanity.image";
+import { JsonLd } from "@/components/shared/JsonLd";
+import { SITE_URL } from "@/lib/constants";
+import { structuredDataImages, urlFor } from "@/lib/sanity.image";
+import { articleJsonLd } from "@/lib/structured-data";
 import { useI18n } from "@/lib/i18n/react";
 import type { Data } from "./+data";
 
 export default function BlogPostPage() {
 	const post = useData<Data>();
 	const config = useConfig();
-	const { t, formatDate } = useI18n();
+	const { t, l, formatDate, locale } = useI18n();
 	config({
 		title: `${post.title} | Eva-licious`,
 		description: post.description,
@@ -23,8 +26,15 @@ export default function BlogPostPage() {
 	});
 	const headings = post.content ? extractHeadings(post.content) : [];
 
+	const structured = articleJsonLd(post, {
+		url: `${SITE_URL}${l(`/blog/${post.slug}`)}`,
+		locale,
+		images: structuredDataImages(post.coverImage),
+	});
+
 	return (
 		<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+			<JsonLd data={structured} />
 			<Breadcrumbs segments={[{ label: t("blog.title"), href: "/blog" }, { label: post.title }]} />
 
 			<div className="mt-6 grid grid-cols-1 gap-10 lg:grid-cols-3">
