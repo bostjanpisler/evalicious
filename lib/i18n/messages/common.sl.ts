@@ -103,5 +103,10 @@ export const commonSl = {
 		downloadLink: "Prenesi datoteko",
 		linkExpires: "Povezava poteče čez 24 ur.",
 		dashboardNote: "Do vsebine lahko dostopaš iz svojega računa.",
+		resetSubject: "Ponastavitev gesla",
+		resetTitle: "Ponastavi geslo",
+		resetBody: "Prejeli smo prošnjo za ponastavitev gesla za tvoj račun na Eva-licious.",
+		resetLink: "Izberi novo geslo",
+		resetExpires: "Povezava velja 1 uro. Če prošnje nisi poslal/a ti, to sporočilo spregledaj.",
 	},
 };

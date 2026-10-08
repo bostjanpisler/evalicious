@@ -371,3 +371,24 @@ export async function markCustomerInHal(
 		await http("PATCH", `/companies/${encodeURIComponent(company.id)}`, { stage_id: wonStageId });
 	}
 }
+
+/**
+ * Asks Hal to email a password-reset link: a service email with no marketing
+ * consent. The event_key is the reset token, so every request sends its own email.
+ */
+export async function requestPasswordResetEmail(
+	request: { email: string; name: string; token: string; locale?: Locale },
+	env: NodeJS.ProcessEnv = process.env,
+	http: HalHttp = createHalHttp(env.HAL_API_KEY?.trim() ?? ""),
+): Promise<void> {
+	if (!env.HAL_API_KEY?.trim()) throw new Error("Hal is not configured");
+	await http("POST", "/events/track", {
+		name: request.locale === "en" ? "password-reset-requested-en" : "password-reset-requested",
+		event_key: `password-reset-requested:${request.token}`,
+		entity: "visitor",
+		email: request.email.toLowerCase(),
+		contact_name: request.name,
+		metadata: { reset_token: request.token, language: request.locale ?? "sl" },
+		overwrite_metadata: true,
+	});
+}
