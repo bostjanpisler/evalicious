@@ -6,7 +6,7 @@ export const DEFAULT_LOCALE: Locale = "sl";
  * The English site lives under /en. While this is false /en/* is a 404 and the
  * language switcher is hidden, so English can be built and merged safely.
  */
-export const ENGLISH_ENABLED = false;
+export const ENGLISH_ENABLED = true;
 
 export const LOCALE_LABELS: Record<Locale, string> = { sl: "Slovenščina", en: "English" };
 export const LOCALE_SHORT: Record<Locale, string> = { sl: "SL", en: "EN" };
