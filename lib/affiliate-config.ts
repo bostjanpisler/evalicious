@@ -14,7 +14,11 @@ export type AffiliateRule = {
 };
 
 export const AFFILIATE_RULES: Record<string, AffiliateRule> = {
-	booking: {},
+	// Booking.com via CJ (site 101899632, link 17343481). CJ appends {label} to the
+	// click as the sub-ID, so the post slug shows up in the CJ reports.
+	booking: {
+		template: "https://www.anrdoezrs.net/click-101899632-17343481?url={url}&sid={label}",
+	},
 	amazon: {},
 	iherb: {},
 };
