@@ -4,6 +4,7 @@ import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
+import { useI18n } from "@/lib/i18n/react";
 import { cn } from "@/lib/utils";
 
 interface Heading {
@@ -17,6 +18,7 @@ interface TableOfContentsProps {
 }
 
 export function TableOfContents({ headings }: TableOfContentsProps) {
+	const { t } = useI18n();
 	const [isOpen, setIsOpen] = useState(true);
 	const activeId = useIntersectionObserver(headings.map((h) => h.key));
 
@@ -26,7 +28,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
 		<Collapsible open={isOpen} onOpenChange={setIsOpen}>
 			<div className="rounded-lg border border-border bg-card p-4">
 				<CollapsibleTrigger className="flex w-full items-center justify-between">
-					<h3 className="font-semibold text-foreground">Kazalo vsebine</h3>
+					<h3 className="font-semibold text-foreground">{t("blog.toc")}</h3>
 					<ChevronDown
 						className={cn(
 							"h-4 w-4 text-muted-foreground transition-transform",

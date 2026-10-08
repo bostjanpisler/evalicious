@@ -1,3 +1,4 @@
+import { useI18n } from "@/lib/i18n/react";
 import { cn } from "@/lib/utils";
 
 interface Step {
@@ -21,6 +22,8 @@ export function StepSidebar({
 	currentStepSlug,
 	layout = "vertical",
 }: StepSidebarProps) {
+	const { l } = useI18n();
+
 	if (layout === "horizontal") {
 		return (
 			<nav className="flex items-center gap-1 overflow-x-auto pb-1">
@@ -31,7 +34,7 @@ export function StepSidebar({
 					return (
 						<a
 							key={step._id}
-							href={`/dashboard/my-courses/${courseSlug}/${step.slug}`}
+							href={l(`/dashboard/my-courses/${courseSlug}/${step.slug}`)}
 							className={cn(
 								"flex items-center gap-2 whitespace-nowrap rounded-full px-3 py-1.5 text-sm transition-colors",
 								isActive
@@ -75,7 +78,7 @@ export function StepSidebar({
 				return (
 					<a
 						key={step._id}
-						href={`/dashboard/my-courses/${courseSlug}/${step.slug}`}
+						href={l(`/dashboard/my-courses/${courseSlug}/${step.slug}`)}
 						className={cn(
 							"flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
 							isActive

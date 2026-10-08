@@ -6,15 +6,17 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { authClient } from "@/lib/auth-client";
 import { NAV_ITEMS, SITE_NAME } from "@/lib/constants";
+import { useI18n } from "@/lib/i18n/react";
 
 export function MobileNav() {
 	const pageContext = usePageContext();
 	const user = pageContext.user;
+	const { t, l } = useI18n();
 
 	return (
 		<Sheet>
 			<SheetTrigger asChild>
-				<Button variant="ghost" size="icon" aria-label="Odpri meni">
+				<Button variant="ghost" size="icon" aria-label={t("common.menu.open")}>
 					<Menu className="h-5 w-5" />
 				</Button>
 			</SheetTrigger>
@@ -26,10 +28,10 @@ export function MobileNav() {
 					{NAV_ITEMS.map((item) => (
 						<a
 							key={item.href}
-							href={item.href}
+							href={l(item.href)}
 							className="text-lg font-medium text-foreground transition-colors hover:text-primary"
 						>
-							{item.label}
+							{t(`common.nav.${item.key}`)}
 						</a>
 					))}
 				</nav>
@@ -42,52 +44,52 @@ export function MobileNav() {
 								<p className="text-xs text-muted-foreground">{user.email}</p>
 							</div>
 							<a
-								href="/dashboard/my-recipes"
+								href={l("/dashboard/my-recipes")}
 								className="flex items-center gap-3 rounded-md px-1 py-2 text-sm font-medium text-foreground transition-colors hover:text-primary"
 							>
 								<Heart className="h-4 w-4" />
-								Moji recepti
+								{t("common.menu.myRecipes")}
 							</a>
 							<a
-								href="/dashboard/my-courses"
+								href={l("/dashboard/my-courses")}
 								className="flex items-center gap-3 rounded-md px-1 py-2 text-sm font-medium text-foreground transition-colors hover:text-primary"
 							>
 								<BookOpen className="h-4 w-4" />
-								Moji tečaji
+								{t("common.menu.myCourses")}
 							</a>
 							<a
-								href="/dashboard/my-orders"
+								href={l("/dashboard/my-orders")}
 								className="flex items-center gap-3 rounded-md px-1 py-2 text-sm font-medium text-foreground transition-colors hover:text-primary"
 							>
 								<ReceiptText className="h-4 w-4" />
-								Moja naročila
+								{t("common.menu.myOrders")}
 							</a>
 							<a
-								href="/dashboard/settings"
+								href={l("/dashboard/settings")}
 								className="flex items-center gap-3 rounded-md px-1 py-2 text-sm font-medium text-foreground transition-colors hover:text-primary"
 							>
 								<Settings className="h-4 w-4" />
-								Nastavitve
+								{t("common.menu.settings")}
 							</a>
 							<button
 								type="button"
 								className="mt-2 flex items-center gap-3 rounded-md px-1 py-2 text-sm font-medium text-destructive transition-colors hover:text-destructive/80"
 								onClick={async () => {
 									await authClient.signOut();
-									window.location.href = "/";
+									window.location.href = l("/");
 								}}
 							>
 								<LogOut className="h-4 w-4" />
-								Odjava
+								{t("common.menu.logout")}
 							</button>
 						</div>
 					) : (
 						<div className="flex flex-col gap-3">
 							<Button asChild>
-								<a href="/login">Prijava</a>
+								<a href={l("/login")}>{t("common.menu.login")}</a>
 							</Button>
 							<Button variant="outline" asChild>
-								<a href="/register">Registracija</a>
+								<a href={l("/register")}>{t("common.menu.register")}</a>
 							</Button>
 						</div>
 					)}

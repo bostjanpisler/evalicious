@@ -1,20 +1,20 @@
 import { usePageContext } from "vike-react/usePageContext";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n/react";
 
 export default function ErrorPage() {
 	const pageContext = usePageContext();
-	const { is404, abortReason } = pageContext;
+	const { t, l } = useI18n();
+	const { is404 } = pageContext;
 
 	if (is404) {
 		return (
 			<div className="flex flex-1 flex-col items-center justify-center px-4 py-24 text-center">
 				<h1 className="font-serif text-6xl font-bold">404</h1>
-				<p className="mt-4 text-lg text-muted-foreground">
-					{typeof abortReason === "string" ? abortReason : "Te strani ni mogoče najti."}
-				</p>
+				<p className="mt-4 text-lg text-muted-foreground">{t("common.error.notFound")}</p>
 				<div className="mt-8">
 					<Button asChild>
-						<a href="/">Nazaj na domačo stran</a>
+						<a href={l("/")}>{t("common.error.backHome")}</a>
 					</Button>
 				</div>
 			</div>
@@ -23,13 +23,11 @@ export default function ErrorPage() {
 
 	return (
 		<div className="flex flex-1 flex-col items-center justify-center px-4 py-24 text-center">
-			<h1 className="font-serif text-6xl font-bold">Napaka</h1>
-			<p className="mt-4 text-lg text-muted-foreground">
-				Prišlo je do nepričakovane napake. Poskusi znova.
-			</p>
+			<h1 className="font-serif text-6xl font-bold">{t("common.error.title")}</h1>
+			<p className="mt-4 text-lg text-muted-foreground">{t("common.error.unexpected")}</p>
 			<div className="mt-8">
 				<Button asChild>
-					<a href="/">Nazaj na domačo stran</a>
+					<a href={l("/")}>{t("common.error.backHome")}</a>
 				</Button>
 			</div>
 		</div>

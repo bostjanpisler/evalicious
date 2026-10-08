@@ -1,10 +1,12 @@
 import { defineType, defineField, defineArrayMember } from "sanity";
+import { languageFields } from "./i18n";
 
 export const aboutPage = defineType({
   name: "aboutPage",
   title: "About Page",
   type: "document",
   fields: [
+    ...languageFields("aboutPage"),
     defineField({
       name: "title",
       title: "Page Title",

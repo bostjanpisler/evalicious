@@ -1,4 +1,5 @@
 import { defineType, defineField, defineArrayMember } from "sanity";
+import { englishOverride, englishTextFields } from "./i18n";
 
 export const course = defineType({
 	name: "course",
@@ -59,7 +60,8 @@ export const course = defineType({
 			title: "Published At",
 			type: "datetime",
 		}),
-	],
+	  englishOverride([englishTextFields.title(), englishTextFields.description(), englishTextFields.tags()]),
+],
 	preview: {
 		select: { title: "title", media: "coverImage" },
 	},

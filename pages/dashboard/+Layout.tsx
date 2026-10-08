@@ -1,13 +1,15 @@
 "use client";
 
 import { usePageContext } from "vike-react/usePageContext";
+import { useI18n } from "@/lib/i18n/react";
+import type { TranslationKey } from "@/lib/i18n/messages";
 import { cn } from "@/lib/utils";
 
-const navItems = [
-	{ href: "/dashboard/my-recipes", label: "Moji recepti", icon: "heart" },
-	{ href: "/dashboard/my-courses", label: "Moji tečaji", icon: "book" },
-	{ href: "/dashboard/my-orders", label: "Moja naročila", icon: "receipt" },
-	{ href: "/dashboard/settings", label: "Nastavitve", icon: "settings" },
+const navItems: Array<{ href: string; labelKey: TranslationKey; icon: string }> = [
+	{ href: "/dashboard/my-recipes", labelKey: "common.menu.myRecipes", icon: "heart" },
+	{ href: "/dashboard/my-courses", labelKey: "common.menu.myCourses", icon: "book" },
+	{ href: "/dashboard/my-orders", labelKey: "common.menu.myOrders", icon: "receipt" },
+	{ href: "/dashboard/settings", labelKey: "common.menu.settings", icon: "settings" },
 ];
 
 function NavIcon({ icon, className }: { icon: string; className?: string }) {
@@ -92,23 +94,25 @@ function NavIcon({ icon, className }: { icon: string; className?: string }) {
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
 	const pageContext = usePageContext();
+	const { t, l } = useI18n();
 	const currentPath = pageContext.urlPathname;
 
 	return (
 		<div className="max-w-7xl mx-auto px-4 py-8">
 			<div className="flex items-center justify-between mb-6">
-				<h1 className="font-serif text-3xl font-bold">Nadzorna plošča</h1>
+				<h1 className="font-serif text-3xl font-bold">{t("dashboard.title")}</h1>
 			</div>
 
 			{/* Horizontal nav */}
 			<nav className="mb-8 border-b border-border">
 				<div className="flex gap-1 overflow-x-auto -mb-px">
 					{navItems.map((item) => {
+						const href = l(item.href);
 						const isActive = currentPath.startsWith(item.href);
 						return (
 							<a
 								key={item.href}
-								href={item.href}
+								href={href}
 								className={cn(
 									"flex items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors",
 									isActive
@@ -117,7 +121,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 								)}
 							>
 								<NavIcon icon={item.icon} />
-								{item.label}
+								{t(item.labelKey)}
 							</a>
 						);
 					})}

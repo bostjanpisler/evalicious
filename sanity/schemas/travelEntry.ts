@@ -1,10 +1,12 @@
 import { defineType, defineField, defineArrayMember } from "sanity";
+import { languageFields } from "./i18n";
 
 export const travelEntry = defineType({
   name: "travelEntry",
   title: "Travel Entry",
   type: "document",
   fields: [
+    ...languageFields("travelEntry"),
     defineField({
       name: "title",
       title: "Title",

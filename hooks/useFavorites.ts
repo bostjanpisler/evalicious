@@ -1,11 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 
+import { useI18n } from "@/lib/i18n/react";
 import type { RecipeListing } from "@/types/recipe";
 
 export interface Favorite {
 	contentId: string;
 	contentType: string;
 	recipe?: RecipeListing;
+	/** Ids of every language version of the recipe. */
+	recipeIds?: string[];
 }
 
 interface UseFavoritesReturn {
@@ -17,6 +20,7 @@ interface UseFavoritesReturn {
 }
 
 export function useFavorites(): UseFavoritesReturn {
+	const { t, locale } = useI18n();
 	const [favorites, setFavorites] = useState<Favorite[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -25,44 +29,47 @@ export function useFavorites(): UseFavoritesReturn {
 		setLoading(true);
 		setError(null);
 		try {
-			const res = await fetch("/api/favorites");
+			const res = await fetch(`/api/favorites?locale=${locale}`);
 			if (res.status === 401) {
 				setFavorites([]);
 				return;
 			}
-			if (!res.ok) throw new Error("Priljubljenih ni bilo mogoče naložiti.");
+			if (!res.ok) throw new Error(t("common.errors.favoritesLoad"));
 			const data = (await res.json()) as Favorite[];
 			setFavorites(data);
 		} catch (err) {
-			setError(err instanceof Error ? err.message : "Priljubljenih ni bilo mogoče naložiti.");
+			setError(err instanceof Error ? err.message : t("common.errors.favoritesLoad"));
 		} finally {
 			setLoading(false);
 		}
-	}, []);
+	}, [locale, t]);
 
 	useEffect(() => {
 		fetchFavorites();
 	}, [fetchFavorites]);
 
-	const toggle = useCallback(async (contentId: string, contentType: string) => {
-		try {
-			const res = await fetch("/api/favorites/toggle", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ contentId, contentType }),
-			});
-			if (!res.ok) throw new Error("Priljubljene ni bilo mogoče posodobiti.");
-			const data = await res.json();
+	const toggle = useCallback(
+		async (contentId: string, contentType: string) => {
+			try {
+				const res = await fetch("/api/favorites/toggle", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ contentId, contentType }),
+				});
+				if (!res.ok) throw new Error(t("common.errors.favoritesUpdate"));
+				const data = await res.json();
 
-			if (data.favorited) {
-				setFavorites((prev) => [...prev, { contentId, contentType }]);
-			} else {
-				setFavorites((prev) => prev.filter((f) => f.contentId !== contentId));
+				if (data.favorited) {
+					setFavorites((prev) => [...prev, { contentId, contentType }]);
+				} else {
+					setFavorites((prev) => prev.filter((f) => f.contentId !== contentId));
+				}
+			} catch (err) {
+				setError(err instanceof Error ? err.message : t("common.errors.favoritesUpdate"));
 			}
-		} catch (err) {
-			setError(err instanceof Error ? err.message : "Priljubljene ni bilo mogoče posodobiti.");
-		}
-	}, []);
+		},
+		[t],
+	);
 
 	const isFavorited = useCallback(
 		(contentId: string) => {

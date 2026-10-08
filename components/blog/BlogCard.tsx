@@ -2,7 +2,7 @@ import { Clock } from "lucide-react";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { formatDate } from "@/lib/utils";
+import { useI18n } from "@/lib/i18n/react";
 import type { BlogPost } from "@/types/sanity";
 
 interface BlogCardProps {
@@ -10,8 +10,9 @@ interface BlogCardProps {
 }
 
 export function BlogCard({ post }: BlogCardProps) {
+	const { t, l, formatDate } = useI18n();
 	return (
-		<a href={`/blog/${post.slug}`}>
+		<a href={l(`/blog/${post.slug}`)}>
 			<Card className="group overflow-hidden transition-shadow hover:shadow-lg">
 				{post.coverImage && (
 					<div className="aspect-[16/9] overflow-hidden">
@@ -43,7 +44,7 @@ export function BlogCard({ post }: BlogCardProps) {
 						{post.estimatedReadingTime && (
 							<span className="flex items-center gap-1">
 								<Clock className="h-3.5 w-3.5" />
-								{post.estimatedReadingTime} min branja
+								{t("blog.readingTime", { minutes: post.estimatedReadingTime })}
 							</span>
 						)}
 					</div>

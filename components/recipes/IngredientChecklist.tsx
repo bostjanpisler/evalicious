@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n/react";
 import { cn } from "@/lib/utils";
 
 interface Ingredient {
@@ -22,6 +23,7 @@ interface IngredientChecklistProps {
 }
 
 export function IngredientChecklist({ groups }: IngredientChecklistProps) {
+	const { t } = useI18n();
 	const [checked, setChecked] = useState<Set<string>>(new Set());
 
 	const toggle = (id: string) => {
@@ -43,7 +45,7 @@ export function IngredientChecklist({ groups }: IngredientChecklistProps) {
 			{checked.size > 0 && (
 				<div className="flex justify-end">
 					<Button variant="ghost" size="sm" onClick={clearAll}>
-						Počisti
+						{t("recipes.checklist.clear")}
 					</Button>
 				</div>
 			)}
@@ -81,7 +83,9 @@ export function IngredientChecklist({ groups }: IngredientChecklistProps) {
 										)}
 										{item.name}
 										{item.optional && (
-											<span className="ml-1 text-muted-foreground">(po želji)</span>
+											<span className="ml-1 text-muted-foreground">
+												{t("recipes.checklist.optional")}
+											</span>
 										)}
 									</label>
 								</li>

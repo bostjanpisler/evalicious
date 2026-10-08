@@ -7,12 +7,13 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
 import { Badge } from "@/components/ui/badge";
 import { urlFor } from "@/lib/sanity.image";
-import { formatDate } from "@/lib/utils";
+import { useI18n } from "@/lib/i18n/react";
 import type { Data } from "./+data";
 
 export default function BlogPostPage() {
 	const post = useData<Data>();
 	const config = useConfig();
+	const { t, formatDate } = useI18n();
 	config({
 		title: `${post.title} | Eva-licious`,
 		description: post.description,
@@ -24,7 +25,7 @@ export default function BlogPostPage() {
 
 	return (
 		<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-			<Breadcrumbs segments={[{ label: "Blog", href: "/blog" }, { label: post.title }]} />
+			<Breadcrumbs segments={[{ label: t("blog.title"), href: "/blog" }, { label: post.title }]} />
 
 			<div className="mt-6 grid grid-cols-1 gap-10 lg:grid-cols-3">
 				{/* Main content */}
@@ -63,7 +64,7 @@ export default function BlogPostPage() {
 							{post.estimatedReadingTime && (
 								<span className="flex items-center gap-1.5">
 									<Clock className="h-4 w-4" />
-									{post.estimatedReadingTime} min branja
+									{t("blog.readingTime", { minutes: post.estimatedReadingTime })}
 								</span>
 							)}
 						</div>

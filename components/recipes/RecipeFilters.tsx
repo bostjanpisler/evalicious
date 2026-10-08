@@ -13,10 +13,11 @@ import {
 } from "@/components/ui/select";
 import {
 	RECIPE_CATEGORIES,
-	RECIPE_CATEGORY_LABELS,
 	RECIPE_DIFFICULTIES,
-	RECIPE_DIFFICULTY_LABELS,
+	recipeCategoryLabel,
+	recipeDifficultyLabel,
 } from "@/lib/constants";
+import { useI18n } from "@/lib/i18n/react";
 import { cn } from "@/lib/utils";
 
 interface RecipeFiltersProps {
@@ -38,6 +39,7 @@ export function RecipeFilters({
 	onDifficultyChange,
 	onClear,
 }: RecipeFiltersProps) {
+	const { t } = useI18n();
 	const hasFilters = search || category || difficulty;
 
 	return (
@@ -48,8 +50,8 @@ export function RecipeFilters({
 					aria-hidden="true"
 				/>
 				<Input
-					aria-label="Išči recepte"
-					placeholder="Išči recepte..."
+					aria-label={t("recipes.filters.searchLabel")}
+					placeholder={t("recipes.filters.searchPlaceholder")}
 					value={search}
 					onChange={(e) => onSearchChange(e.target.value)}
 					className="pl-9"
@@ -57,7 +59,9 @@ export function RecipeFilters({
 			</div>
 
 			<div className="flex flex-wrap items-center gap-2">
-				<span className="text-sm font-medium text-muted-foreground">Kategorija:</span>
+				<span className="text-sm font-medium text-muted-foreground">
+					{t("recipes.filters.category")}
+				</span>
 				{RECIPE_CATEGORIES.map((cat) => (
 					<button
 						type="button"
@@ -69,7 +73,7 @@ export function RecipeFilters({
 						)}
 						onClick={() => onCategoryChange(category === cat ? "" : cat)}
 					>
-						{RECIPE_CATEGORY_LABELS[cat] ?? cat}
+						{recipeCategoryLabel(t, cat)}
 					</button>
 				))}
 			</div>
@@ -77,13 +81,13 @@ export function RecipeFilters({
 			<div className="flex items-center gap-3">
 				<Select value={difficulty} onValueChange={onDifficultyChange}>
 					<SelectTrigger className="w-40">
-						<SelectValue placeholder="Težavnost" />
+						<SelectValue placeholder={t("recipes.filters.difficulty")} />
 					</SelectTrigger>
 					<SelectContent>
-						<SelectItem value="all">Vse ravni</SelectItem>
+						<SelectItem value="all">{t("recipes.filters.allLevels")}</SelectItem>
 						{RECIPE_DIFFICULTIES.map((d) => (
 							<SelectItem key={d} value={d}>
-								{RECIPE_DIFFICULTY_LABELS[d] ?? d}
+								{recipeDifficultyLabel(t, d)}
 							</SelectItem>
 						))}
 					</SelectContent>
@@ -92,7 +96,7 @@ export function RecipeFilters({
 				{hasFilters && (
 					<Button variant="ghost" size="sm" onClick={onClear}>
 						<X className="mr-1 h-3 w-3" />
-						Počisti filtre
+						{t("recipes.filters.clear")}
 					</Button>
 				)}
 			</div>

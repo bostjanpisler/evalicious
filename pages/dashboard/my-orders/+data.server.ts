@@ -1,4 +1,5 @@
 import type { PageContextServer } from "vike/types";
+import { DEFAULT_LOCALE } from "@/lib/i18n/config";
 import { db } from "@/server/lib/db";
 import { sanityClient } from "@/server/lib/sanity";
 
@@ -25,6 +26,7 @@ export type Data = {
 };
 
 export async function data(pageContext: PageContextServer): Promise<Data> {
+	const locale = pageContext.locale ?? DEFAULT_LOCALE;
 	const user = pageContext.user;
 	if (!user) return { orders: [] };
 
@@ -50,10 +52,10 @@ export async function data(pageContext: PageContextServer): Promise<Data> {
 	>(
 		`*[_type == "product" && _id in $ids]{
 			_id,
-			title,
+			"title": select($locale == "en" && defined(en.title) => en.title, title),
 			"courseSlug": course->slug.current
 		}`,
-		{ ids: sanityIds },
+		{ ids: sanityIds, locale },
 	);
 
 	const nameMap = new Map(

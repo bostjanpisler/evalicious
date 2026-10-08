@@ -15,6 +15,7 @@ import { favoritesHandler } from "./routes/api.favorites.js";
 import { listsHandler } from "./routes/api.lists.js";
 import { progressHandler } from "./routes/api.progress.js";
 import { stripeHandler } from "./routes/api.stripe.js";
+import { sitemapHandler } from "./routes/sitemap.js";
 
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -108,6 +109,7 @@ app.route("/api/lists", listsHandler);
 app.route("/api/progress", progressHandler);
 app.route("/api/download", downloadHandler);
 app.route("/embed", embedHandler);
+app.route("/", sitemapHandler);
 
 // Instagram thumbnail proxy (avoids CORS)
 app.get("/api/ig/:shortcode", async (c) => {

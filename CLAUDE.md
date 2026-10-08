@@ -42,3 +42,12 @@ Recipe/lifestyle website built with Hono + Vike + React 19 on Bun.
 - Use `"use client"` directive for client-side interactive components
 - Sanity for content (recipes, blog, products), PostgreSQL for user data
 - shadcn/ui components use `cn()` from `@/lib/utils`
+
+## Languages (Slovenian default, English under `/en`)
+
+- URLs: Slovenian at the root, English under `/en/...`. `pages/+onBeforeRoute.ts` strips the prefix and sets `pageContext.locale`. `ENGLISH_ENABLED` in `lib/i18n/config.ts` switches the English site on (off = `/en/*` is a 404 and the switcher is hidden).
+- UI text lives in typed dictionaries: `lib/i18n/messages/<area>.sl.ts` (source) and `<area>.en.ts` (must have the same keys; `bun test` checks keys and `{placeholders}`). In components use `const { t, l, locale, formatDate } = useI18n()`; never hard-code visible text. Wrap every internal link in `l("/path")` (not `/api/...`). In non-React code use `translatorFor(locale)` and `localizePath(path, locale)`.
+- CMS content: recipes, blog posts, travel entries and the home/about pages are one Sanity document per language (`language`, `translationOf`; English slugs differ). Products, courses and lessons are one document with an `en` override block. Every query in `lib/sanity.queries.ts` takes `$locale`. In Studio, "Create English version" copies a Slovenian document into an unpublished English draft.
+- Emails: the free-download email is sent by HAL; English uses the `free-download-requested-en` workflow. Purchase emails use `common.email.*` messages and `order.locale`.
+- `scripts/i18n/pipeline.ts` is the one-off pipeline that translated the existing content (extract, check, build, apply).
+

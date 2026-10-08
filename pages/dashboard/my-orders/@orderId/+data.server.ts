@@ -1,4 +1,5 @@
 import { render } from "vike/abort";
+import { DEFAULT_LOCALE } from "@/lib/i18n/config";
 import type { PageContextServer } from "vike/types";
 import { db } from "@/server/lib/db";
 import { loadOwnedOrderDetail, type OrderDetail } from "@/server/lib/order-details";
@@ -9,6 +10,7 @@ export type Data = {
 };
 
 export async function data(pageContext: PageContextServer): Promise<Data> {
+	const locale = pageContext.locale ?? DEFAULT_LOCALE;
 	const user = (pageContext as unknown as Record<string, unknown>).user as { id: string } | null;
 	if (!user) throw render(403, "Unauthorized");
 
@@ -25,10 +27,10 @@ export async function data(pageContext: PageContextServer): Promise<Data> {
 				(await sanityClient.fetch<Array<{ _id: string; title: string; courseSlug?: string }>>(
 					`*[_type == "product" && _id in $ids]{
 						_id,
-						title,
+						"title": select($locale == "en" && defined(en.title) => en.title, title),
 						"courseSlug": course->slug.current
 					}`,
-					{ ids },
+					{ ids, locale },
 				)) ?? [],
 		},
 		orderId,

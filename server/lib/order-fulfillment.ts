@@ -1,5 +1,10 @@
 import { db } from "./db.js";
+import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n/config";
 import { sendPurchaseConfirmation } from "./email.js";
+
+function orderLocale(value: string): Locale {
+	return isLocale(value) ? value : DEFAULT_LOCALE;
+}
 import { productSellabilityError } from "./product-sellability.js";
 import { getSignedDownloadUrl } from "./r2.js";
 
@@ -60,7 +65,12 @@ export async function fulfillOrder(orderId: string, alreadyClaimed = false): Pro
 				create: { userId: order.userId, courseId: item.product.courseId },
 				update: {},
 			});
-			await sendPurchaseConfirmation(email, item.product.slug);
+			await sendPurchaseConfirmation(
+				email,
+				item.product.slug,
+				undefined,
+				orderLocale(order.locale),
+			);
 		} else if (item.product.type === "ebook") {
 			const sellabilityError = productSellabilityError(
 				item.product,
@@ -87,7 +97,12 @@ export async function fulfillOrder(orderId: string, alreadyClaimed = false): Pro
 				});
 			}
 
-			await sendPurchaseConfirmation(email, item.product.slug, deliveryUrl ?? undefined);
+			await sendPurchaseConfirmation(
+				email,
+				item.product.slug,
+				deliveryUrl ?? undefined,
+				orderLocale(order.locale),
+			);
 		} else {
 			throw new Error(`Unsupported product type ${item.product.type}`);
 		}

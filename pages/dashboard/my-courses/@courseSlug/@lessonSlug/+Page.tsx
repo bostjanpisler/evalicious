@@ -7,38 +7,43 @@ import { StepCompletion } from "@/components/courses/StepCompletion";
 import { VideoPlayer } from "@/components/courses/VideoPlayer";
 import { IngredientChecklist } from "@/components/recipes/IngredientChecklist";
 import { StepChecklist } from "@/components/recipes/StepChecklist";
+import { useI18n } from "@/lib/i18n/react";
 import { formatDuration } from "@/lib/utils";
 import type { Data } from "./+data.server";
 
 type StepRecipe = NonNullable<Data["step"]["recipe"]>;
 
 function RecipeContent({ recipe }: { recipe: StepRecipe }) {
+	const { t } = useI18n();
+
 	return (
 		<>
 			<div className="mt-3 flex flex-wrap gap-4 text-sm text-muted-foreground">
 				{recipe.prepTime != null && recipe.prepTime > 0 && (
-					<span>Priprava: {formatDuration(recipe.prepTime)}</span>
+					<span>{t("courses.lesson.prepTime", { time: formatDuration(recipe.prepTime) })}</span>
 				)}
 				{recipe.cookTime != null && recipe.cookTime > 0 && (
-					<span>Kuhanje: {formatDuration(recipe.cookTime)}</span>
+					<span>{t("courses.lesson.cookTime", { time: formatDuration(recipe.cookTime) })}</span>
 				)}
 				{recipe.servings != null && (
-					<span>
-						{recipe.servings} {recipe.servings === 1 ? "porcija" : "porcij"}
-					</span>
+					<span>{t("courses.lesson.servings", { n: recipe.servings })}</span>
 				)}
 			</div>
 
 			{recipe.ingredientGroups && recipe.ingredientGroups.length > 0 && (
 				<>
-					<h4 className="mt-6 mb-3 font-serif text-lg font-semibold">Sestavine</h4>
+					<h4 className="mt-6 mb-3 font-serif text-lg font-semibold">
+						{t("courses.lesson.ingredients")}
+					</h4>
 					<IngredientChecklist groups={recipe.ingredientGroups} />
 				</>
 			)}
 
 			{recipe.stepGroups && recipe.stepGroups.length > 0 && (
 				<>
-					<h4 className="mt-6 mb-3 font-serif text-lg font-semibold">Navodila</h4>
+					<h4 className="mt-6 mb-3 font-serif text-lg font-semibold">
+						{t("courses.lesson.instructions")}
+					</h4>
 					<StepChecklist groups={recipe.stepGroups} />
 				</>
 			)}
@@ -48,6 +53,7 @@ function RecipeContent({ recipe }: { recipe: StepRecipe }) {
 
 export default function LessonViewPage() {
 	const { courseTitle, courseSlug, step, steps, progress, prevStep, nextStep } = useData<Data>();
+	const { t, l } = useI18n();
 
 	return (
 		<div>
@@ -99,7 +105,9 @@ export default function LessonViewPage() {
 							<details className="rounded-xl border border-border bg-card lg:hidden">
 								<summary className="cursor-pointer p-6 font-serif text-xl font-bold">
 									{step.recipe.title}
-									<span className="ml-2 text-sm font-normal text-muted-foreground">(recept)</span>
+									<span className="ml-2 text-sm font-normal text-muted-foreground">
+										{t("courses.lesson.recipeSuffix")}
+									</span>
 								</summary>
 								<div className="px-6 pb-6">
 									<RecipeContent recipe={step.recipe} />
@@ -121,7 +129,7 @@ export default function LessonViewPage() {
 				<div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
 					{prevStep ? (
 						<a
-							href={`/dashboard/my-courses/${courseSlug}/${prevStep.slug}`}
+							href={l(`/dashboard/my-courses/${courseSlug}/${prevStep.slug}`)}
 							className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
 						>
 							<svg
@@ -136,7 +144,7 @@ export default function LessonViewPage() {
 								<path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
 							</svg>
 							<span className="hidden sm:inline">{prevStep.title}</span>
-							<span className="sm:hidden">Nazaj</span>
+							<span className="sm:hidden">{t("courses.lesson.back")}</span>
 						</a>
 					) : (
 						<span />
@@ -150,12 +158,12 @@ export default function LessonViewPage() {
 
 					{nextStep ? (
 						<NextStepLink
-							href={`/dashboard/my-courses/${courseSlug}/${nextStep.slug}`}
+							href={l(`/dashboard/my-courses/${courseSlug}/${nextStep.slug}`)}
 							lessonId={step._id}
 							className="inline-flex items-center gap-2 rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-700 transition-colors"
 						>
 							<span className="hidden sm:inline">{nextStep.title}</span>
-							<span className="sm:hidden">Naprej</span>
+							<span className="sm:hidden">{t("courses.lesson.forward")}</span>
 							<svg
 								aria-hidden="true"
 								xmlns="http://www.w3.org/2000/svg"
@@ -170,11 +178,11 @@ export default function LessonViewPage() {
 						</NextStepLink>
 					) : (
 						<NextStepLink
-							href={`/dashboard/my-courses/${courseSlug}/complete`}
+							href={l(`/dashboard/my-courses/${courseSlug}/complete`)}
 							lessonId={step._id}
 							className="inline-flex items-center gap-2 rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-700 transition-colors"
 						>
-							Zaključi
+							{t("courses.lesson.finish")}
 							<svg
 								aria-hidden="true"
 								xmlns="http://www.w3.org/2000/svg"

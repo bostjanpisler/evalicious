@@ -3,6 +3,7 @@
 import posthog from "posthog-js";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n/react";
 
 interface BuyButtonProps {
 	productSlug: string;
@@ -10,6 +11,7 @@ interface BuyButtonProps {
 }
 
 export function BuyButton({ productSlug, className }: BuyButtonProps) {
+	const { t, l, locale } = useI18n();
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
 	const [session, setSession] = useState<{
@@ -28,7 +30,7 @@ export function BuyButton({ productSlug, className }: BuyButtonProps) {
 	async function handleClick() {
 		if (!session?.user) {
 			posthog.capture("checkout_login_required", { product_slug: productSlug });
-			window.location.href = `/login?redirect=/shop/${productSlug}`;
+			window.location.href = `${l("/login")}?redirect=${l(`/shop/${productSlug}`)}`;
 			return;
 		}
 
@@ -42,26 +44,22 @@ export function BuyButton({ productSlug, className }: BuyButtonProps) {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				credentials: "include",
-				body: JSON.stringify({ productSlug }),
+				body: JSON.stringify({ productSlug, locale }),
 			});
 
 			if (!res.ok) {
 				if (res.status === 401) {
-					window.location.href = `/login?redirect=${encodeURIComponent(`/shop/${productSlug}`)}`;
+					window.location.href = `${l("/login")}?redirect=${encodeURIComponent(l(`/shop/${productSlug}`))}`;
 					return;
 				}
-				setError(
-					res.status === 409
-						? "Ta izdelek že imaš v svojih naročilih."
-						: "Plačila trenutno ni mogoče začeti. Poskusi znova pozneje.",
-				);
+				setError(res.status === 409 ? t("shop.buy.alreadyOwned") : t("shop.buy.cannotStart"));
 				return;
 			}
 
 			const { url } = await res.json();
 			window.location.href = url;
 		} catch {
-			setError("Napaka pri začetku plačila. Poskusi znova.");
+			setError(t("shop.buy.startError"));
 		} finally {
 			setLoading(false);
 		}
@@ -76,12 +74,12 @@ export function BuyButton({ productSlug, className }: BuyButtonProps) {
 				className="w-full"
 			>
 				{sessionLoading
-					? "Nalagam..."
+					? t("shop.buy.loading")
 					: loading
-						? "Preusmerjam..."
+						? t("shop.buy.redirecting")
 						: !session?.user
-							? "Prijavi se ali registriraj za nakup"
-							: "Kupi zdaj"}
+							? t("shop.buy.loginToBuy")
+							: t("shop.buy.buyNow")}
 			</Button>
 			{error && <p className="mt-2 text-sm text-destructive">{error}</p>}
 		</div>

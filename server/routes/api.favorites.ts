@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { db } from "../lib/db.js";
-import { sanityClient } from "../lib/sanity.js";
+import { recipeRootId, requestLocale, resolveRecipes } from "../lib/recipe-i18n.js";
 import { requireAuth } from "../middleware/guard.js";
 
 type FavoritesVariables = {
@@ -11,9 +11,10 @@ export const favoritesHandler = new Hono<{ Variables: FavoritesVariables }>();
 
 favoritesHandler.use("*", requireAuth);
 
-// Get user favorites
+// Get user favorites (recipes come back in the requested language)
 favoritesHandler.get("/", async (c) => {
 	const user = c.get("user");
+	const locale = requestLocale(c.req.query("locale"));
 	const favorites = await db.userFavorite.findMany({
 		where: { userId: user.id },
 		orderBy: { createdAt: "desc" },
@@ -21,44 +22,25 @@ favoritesHandler.get("/", async (c) => {
 	const recipeIds = favorites
 		.filter((favorite) => favorite.contentType === "recipe")
 		.map((favorite) => favorite.contentId);
-	const recipes = recipeIds.length
-		? ((await sanityClient.fetch<
-				Array<{
-					_id: string;
-					title: string;
-					slug: string;
-					coverImage?: unknown;
-					categories?: string[];
-					cuisine?: string;
-					difficulty?: string;
-					prepTime?: number;
-					cookTime?: number;
-				}>
-			>(
-				`*[_type == "recipe" && _id in $ids && published == true]{
-					_id, title, "slug": slug.current, coverImage, categories, cuisine,
-					difficulty, prepTime, cookTime
-				}`,
-				{ ids: recipeIds },
-			)) ?? [])
-		: [];
-	const recipeById = new Map(recipes.map((recipe) => [recipe._id, recipe]));
+	const resolved = await resolveRecipes(recipeIds, locale);
 
 	return c.json(
-		favorites.map((favorite) => ({
-			...favorite,
-			recipe: recipeById.get(favorite.contentId),
-		})),
+		favorites.map((favorite) => {
+			const group = resolved.get(favorite.contentId);
+			return { ...favorite, recipe: group?.recipe, recipeIds: group?.ids ?? [favorite.contentId] };
+		}),
 	);
 });
 
 // Toggle favorite
 favoritesHandler.post("/toggle", async (c) => {
 	const user = c.get("user");
-	const { contentType, contentId } = await c.req.json<{
+	const body = await c.req.json<{
 		contentType: string;
 		contentId: string;
 	}>();
+	const { contentType } = body;
+	const contentId = contentType === "recipe" ? await recipeRootId(body.contentId) : body.contentId;
 
 	const existing = await db.userFavorite.findUnique({
 		where: { userId_contentId: { userId: user.id, contentId } },

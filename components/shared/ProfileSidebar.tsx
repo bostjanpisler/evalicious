@@ -1,5 +1,6 @@
 import { Facebook, Instagram, Youtube } from "lucide-react";
 import { InstagramFeed } from "@/components/shared/InstagramFeed";
+import { useI18n } from "@/lib/i18n/react";
 
 const SOCIAL_LINKS = [
 	{
@@ -29,12 +30,14 @@ const SOCIAL_LINKS = [
 ];
 
 export function ProfileSidebar() {
+	const { t } = useI18n();
+
 	return (
 		<div className="space-y-6">
 			{/* About widget */}
 			<div className="rounded-lg border border-border bg-card p-5 text-center">
 				<h3 className="mb-4 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-					Dobrodošli
+					{t("about.sidebar.welcome")}
 				</h3>
 				<img
 					src="/images/eva-profile.svg"
@@ -46,9 +49,7 @@ export function ProfileSidebar() {
 				/>
 				<h4 className="mt-3 font-serif text-lg font-semibold">Eva Susin</h4>
 				<p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-					Od kuharskih delavnic do raziskovanja veganskih kotičkov po svetu — hrana je moja največja
-					strast in združuje vse moje interese. Če potrebuješ inspiracijo za naslednji obrok,
-					pobrskaj po receptih. Vsebina lahko naredi lušte 😉
+					{t("about.sidebar.bio")}{" "}
 				</p>
 
 				{/* Social links */}

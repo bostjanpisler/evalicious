@@ -1,6 +1,7 @@
 import { MapPin } from "lucide-react";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
 import { Card, CardContent } from "@/components/ui/card";
+import { useI18n } from "@/lib/i18n/react";
 import type { TravelEntry } from "@/types/sanity";
 
 interface TravelCardProps {
@@ -8,10 +9,11 @@ interface TravelCardProps {
 }
 
 export function TravelCard({ entry }: TravelCardProps) {
+	const { l } = useI18n();
 	const locationLabel = [entry.location, entry.country].filter(Boolean).join(", ");
 
 	return (
-		<a href={`/travel/${entry.slug}`}>
+		<a href={l(`/travel/${entry.slug}`)}>
 			<Card className="group overflow-hidden transition-shadow hover:shadow-lg">
 				{entry.coverImage && (
 					<div className="aspect-[16/9] overflow-hidden">
@@ -35,9 +37,7 @@ export function TravelCard({ entry }: TravelCardProps) {
 						{entry.title}
 					</h3>
 					{entry.description && (
-						<p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
-							{entry.description}
-						</p>
+						<p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{entry.description}</p>
 					)}
 				</CardContent>
 			</Card>

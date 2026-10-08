@@ -1,6 +1,9 @@
+"use client";
+
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
 import { AffiliateDisclosure } from "@/components/shared/AffiliateDisclosure";
 import { linkAttributes } from "@/lib/affiliate";
+import { useI18n } from "@/lib/i18n/react";
 import type { RecommendedProduct } from "@/types/sanity";
 
 interface RecommendedProductsProps {
@@ -19,6 +22,7 @@ export function RecommendedProducts({
 	id,
 	showDisclosure = true,
 }: RecommendedProductsProps) {
+	const { t } = useI18n();
 	if (!products || products.length === 0) return null;
 
 	return (
@@ -55,7 +59,9 @@ export function RecommendedProducts({
 									rel={link.rel}
 									className="mt-auto pt-3 text-sm font-medium text-primary underline underline-offset-4 hover:text-primary/80"
 								>
-									{product.merchant ? `Poglej pri ${product.merchant}` : "Poglej"}
+									{product.merchant
+										? t("common.affiliate.seeAt", { shop: product.merchant })
+										: t("common.affiliate.see")}
 								</a>
 							</div>
 						</li>

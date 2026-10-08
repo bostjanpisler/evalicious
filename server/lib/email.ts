@@ -1,4 +1,6 @@
 import { SESv2Client, SendEmailCommand } from "@aws-sdk/client-sesv2";
+import type { Locale } from "@/lib/i18n/config";
+import { translatorFor } from "@/lib/i18n/messages";
 
 let _ses: SESv2Client | null = null;
 
@@ -39,18 +41,29 @@ async function sendEmail(message: { to: string; subject: string; html: string })
 	await getSes().send(new SendEmailCommand(buildSendEmailInput(message)));
 }
 
+function escapeHtml(value: string): string {
+	return value
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;");
+}
+
 export async function sendPurchaseConfirmation(
 	to: string,
 	productName: string,
 	downloadUrl?: string,
+	locale?: Locale,
 ) {
+	const t = translatorFor(locale);
+	const product = escapeHtml(productName);
 	await sendEmail({
 		to,
-		subject: `Your purchase: ${productName}`,
+		subject: t("common.email.purchaseSubject", { product: productName }),
 		html: `
-      <h1>Thank you for your purchase!</h1>
-      <p>You've successfully purchased <strong>${productName}</strong>.</p>
-      ${downloadUrl ? `<p><a href="${downloadUrl}">Download your file</a></p><p>This link expires in 24 hours.</p>` : "<p>You can access your content from your dashboard.</p>"}
+      <h1>${t("common.email.purchaseTitle")}</h1>
+      <p>${t("common.email.purchaseBody", { product })}</p>
+      ${downloadUrl ? `<p><a href="${escapeHtml(downloadUrl)}">${t("common.email.downloadLink")}</a></p><p>${t("common.email.linkExpires")}</p>` : `<p>${t("common.email.dashboardNote")}</p>`}
     `,
 	});
 }

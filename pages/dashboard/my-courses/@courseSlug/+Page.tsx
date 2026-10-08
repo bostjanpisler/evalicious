@@ -1,11 +1,13 @@
 import { useData } from "vike-react/useData";
 import { ResetProgress } from "@/components/courses/ResetProgress";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
+import { useI18n } from "@/lib/i18n/react";
 import { cn, formatDuration } from "@/lib/utils";
 import type { Data } from "./+data.server";
 
 export default function CourseViewPage() {
 	const { course, progress } = useData<Data>();
+	const { t, l } = useI18n();
 
 	const completedCount = Object.values(progress).filter(Boolean).length;
 	const totalSteps = course.steps.length;
@@ -63,14 +65,7 @@ export default function CourseViewPage() {
 										d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
 									/>
 								</svg>
-								{totalSteps}{" "}
-								{totalSteps === 1
-									? "korak"
-									: totalSteps === 2
-										? "koraka"
-										: totalSteps <= 4
-											? "koraki"
-											: "korakov"}
+								{t("courses.stepCount", { n: totalSteps })}
 							</span>
 							{totalDuration > 0 && (
 								<span className="flex items-center gap-1.5">
@@ -98,7 +93,12 @@ export default function CourseViewPage() {
 						<div className="mt-4">
 							<div className="flex items-center justify-between text-sm text-gray-300 mb-2">
 								<span>
-									{allDone ? "Vse opravljeno!" : `${completedCount} od ${totalSteps} opravljeno`}
+									{allDone
+										? t("courses.view.allDone")
+										: t("courses.view.progressOf", {
+												completed: completedCount,
+												total: totalSteps,
+											})}
 								</span>
 								<span className="font-medium text-white">{percentage}%</span>
 							</div>
@@ -117,10 +117,10 @@ export default function CourseViewPage() {
 						<div className="mt-5">
 							{allDone ? (
 								<a
-									href={`/dashboard/my-courses/${course.slug}/complete`}
+									href={l(`/dashboard/my-courses/${course.slug}/complete`)}
 									className="inline-flex items-center gap-2 rounded-lg bg-green-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-green-600 transition-colors"
 								>
-									Ogled zaključka
+									{t("courses.view.viewCompletion")}
 									<svg
 										aria-hidden="true"
 										xmlns="http://www.w3.org/2000/svg"
@@ -137,10 +137,10 @@ export default function CourseViewPage() {
 								</a>
 							) : nextStep ? (
 								<a
-									href={`/dashboard/my-courses/${course.slug}/${nextStep.slug}`}
+									href={l(`/dashboard/my-courses/${course.slug}/${nextStep.slug}`)}
 									className="inline-flex items-center gap-2 rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 transition-colors"
 								>
-									{completedCount > 0 ? "Nadaljuj" : "Začni tečaj"}
+									{completedCount > 0 ? t("courses.view.continue") : t("courses.view.startCourse")}
 									<svg
 										aria-hidden="true"
 										xmlns="http://www.w3.org/2000/svg"
@@ -172,15 +172,9 @@ export default function CourseViewPage() {
 			{totalSteps > 0 ? (
 				<div>
 					<h2 className="font-serif text-2xl font-bold mb-6">
-						Vsebina ({totalSteps}{" "}
-						{totalSteps === 1
-							? "korak"
-							: totalSteps === 2
-								? "koraka"
-								: totalSteps <= 4
-									? "koraki"
-									: "korakov"}
-						)
+						{t("courses.view.contentHeading", {
+							steps: t("courses.stepCount", { n: totalSteps }),
+						})}
 					</h2>
 					<div className="space-y-2">
 						{course.steps.map((step, index) => {
@@ -190,7 +184,7 @@ export default function CourseViewPage() {
 							return (
 								<a
 									key={step._id}
-									href={`/dashboard/my-courses/${course.slug}/${step.slug}`}
+									href={l(`/dashboard/my-courses/${course.slug}/${step.slug}`)}
 									className={cn(
 										"flex items-start gap-4 rounded-xl border p-4 transition-all group",
 										isNext
@@ -251,12 +245,12 @@ export default function CourseViewPage() {
 											</h3>
 											{isNext && (
 												<span className="hidden sm:inline-block text-xs font-medium text-amber-600 bg-amber-100 rounded-full px-2.5 py-0.5">
-													Naslednji
+													{t("courses.view.next")}
 												</span>
 											)}
 											{isCompleted && (
 												<span className="hidden sm:inline-block text-xs font-medium text-green-600 bg-green-100 rounded-full px-2.5 py-0.5">
-													Opravljeno
+													{t("courses.view.done")}
 												</span>
 											)}
 										</div>
@@ -286,7 +280,7 @@ export default function CourseViewPage() {
 														d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
 													/>
 												</svg>
-												{step.durationMinutes} min
+												{t("courses.minutes", { n: step.durationMinutes })}
 											</span>
 										)}
 										<svg
@@ -307,7 +301,7 @@ export default function CourseViewPage() {
 					</div>
 				</div>
 			) : (
-				<p className="text-muted-foreground py-12 text-center">Ta tečaj nima korakov.</p>
+				<p className="text-muted-foreground py-12 text-center">{t("courses.view.noSteps")}</p>
 			)}
 		</div>
 	);

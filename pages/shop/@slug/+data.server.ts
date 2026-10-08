@@ -1,4 +1,5 @@
 import { render } from "vike/abort";
+import { DEFAULT_LOCALE } from "@/lib/i18n/config";
 import type { PageContextServer } from "vike/types";
 import { productBySlugQuery } from "@/lib/sanity.queries";
 import { auth } from "@/server/lib/auth";
@@ -13,8 +14,9 @@ export type Data = Product & {
 };
 
 export async function data(pageContext: PageContextServer): Promise<Data> {
+	const locale = pageContext.locale ?? DEFAULT_LOCALE;
 	const { slug } = pageContext.routeParams;
-	const product = await sanityClient.fetch<Product>(productBySlugQuery, { slug });
+	const product = await sanityClient.fetch<Product>(productBySlugQuery, { slug, locale });
 	if (!product) throw render(404, "Product not found");
 
 	const isFree = product.priceInCents <= 0;

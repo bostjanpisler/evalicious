@@ -1,6 +1,12 @@
 import { Hono } from "hono";
 import type Stripe from "stripe";
-import { checkoutProductSlug, paymentMatchesProduct } from "../lib/checkout-validation.js";
+import { DEFAULT_LOCALE, isLocale } from "@/lib/i18n/config";
+import { localizePath } from "@/lib/i18n/paths";
+import {
+	checkoutLocale,
+	checkoutProductSlug,
+	paymentMatchesProduct,
+} from "../lib/checkout-validation.js";
 import { db } from "../lib/db.js";
 import { enqueueOrderFulfillment, processFulfillmentJob } from "../lib/fulfillment-worker.js";
 import { enqueueOrderInvoice } from "../lib/invoice-worker.js";
@@ -25,6 +31,7 @@ stripeHandler.post("/checkout", requireAuth, async (c) => {
 		return c.json({ error: "Invalid checkout request" }, 400);
 	}
 	const productSlug = checkoutProductSlug(body);
+	const locale = checkoutLocale(body);
 	if (!productSlug) {
 		return c.json({ error: "Invalid checkout request" }, 400);
 	}
@@ -69,19 +76,22 @@ stripeHandler.post("/checkout", requireAuth, async (c) => {
 			mode: "payment",
 			payment_method_types: ["card"],
 			line_items: [{ price: stripePriceId, quantity: 1 }],
-			success_url: `${process.env.BETTER_AUTH_URL}/shop/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-			cancel_url: `${process.env.BETTER_AUTH_URL}/shop/${productSlug}`,
+			// Stripe auto-detects the browser language for Slovenian visitors, as before.
+			locale: locale === "en" ? "en" : "auto",
+			success_url: `${process.env.BETTER_AUTH_URL}${localizePath("/shop/checkout/success", locale)}?session_id={CHECKOUT_SESSION_ID}`,
+			cancel_url: `${process.env.BETTER_AUTH_URL}${localizePath(`/shop/${productSlug}`, locale)}`,
 			customer_email: user.email,
 			metadata: {
 				userId: user.id,
 				productId: product.id,
 				productSlug: product.slug,
 				productType: product.type,
+				locale,
 			},
 		},
 		{
 			// Stripe retains idempotency results for roughly a day, matching Checkout's default lifetime.
-			idempotencyKey: `checkout:${user.id}:${product.id}`,
+			idempotencyKey: `checkout:${user.id}:${product.id}:${locale}`,
 		},
 	);
 
@@ -143,6 +153,7 @@ stripeHandler.post("/webhook", async (c) => {
 				totalInCents: session.amount_total ?? product.priceInCents,
 				currency: session.currency?.toUpperCase() ?? product.currency,
 				email: session.customer_details?.email ?? session.customer_email ?? "",
+				locale: isLocale(session.metadata?.locale) ? session.metadata.locale : DEFAULT_LOCALE,
 				spaceInvoiceNextTryAt: new Date(),
 				items: {
 					create: {

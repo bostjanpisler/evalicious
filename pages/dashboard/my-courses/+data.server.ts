@@ -1,4 +1,5 @@
 import type { PageContextServer } from "vike/types";
+import { DEFAULT_LOCALE } from "@/lib/i18n/config";
 import { allCoursesQuery } from "@/lib/sanity.queries";
 import { db } from "@/server/lib/db";
 import { sanityClient } from "@/server/lib/sanity";
@@ -14,6 +15,7 @@ export type Data = {
 };
 
 export async function data(pageContext: PageContextServer): Promise<Data> {
+	const locale = pageContext.locale ?? DEFAULT_LOCALE;
 	const user = pageContext.user;
 	if (!user) return { courses: [], suggestions: [] };
 
@@ -21,7 +23,7 @@ export async function data(pageContext: PageContextServer): Promise<Data> {
 		where: { userId: user.id },
 	});
 
-	const allCourses = await sanityClient.fetch<CourseListing[]>(allCoursesQuery);
+	const allCourses = await sanityClient.fetch<CourseListing[]>(allCoursesQuery, { locale });
 	if (!allCourses) return { courses: [], suggestions: [] };
 
 	const freeCourseProducts = await sanityClient.fetch<Array<{ courseId: string }>>(

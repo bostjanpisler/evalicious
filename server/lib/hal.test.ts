@@ -64,7 +64,13 @@ describe("syncFreeDownloadLeadToHal", () => {
 	});
 
 	test("keeps an existing pipeline stage and skips unchanged tags", async () => {
-		const tags = ["eva-licious", "free-download", "marketing-consent", "download:free-ebook"];
+		const tags = [
+			"eva-licious",
+			"free-download",
+			"marketing-consent",
+			"download:free-ebook",
+			"lang:sl",
+		];
 		const { calls, http } = recorder({
 			"POST /events/track": { event: { contact_id: "c_9" } },
 			"GET /contacts/c_9": { contact: { id: "c_9", tags } },

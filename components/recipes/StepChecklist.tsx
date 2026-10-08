@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n/react";
 import { cn } from "@/lib/utils";
 
 interface Step {
@@ -20,6 +21,7 @@ interface StepChecklistProps {
 }
 
 export function StepChecklist({ groups }: StepChecklistProps) {
+	const { t } = useI18n();
 	const [checked, setChecked] = useState<Set<string>>(new Set());
 
 	const toggle = (id: string) => {
@@ -43,7 +45,7 @@ export function StepChecklist({ groups }: StepChecklistProps) {
 			{checked.size > 0 && (
 				<div className="flex justify-end">
 					<Button variant="ghost" size="sm" onClick={clearAll}>
-						Počisti
+						{t("recipes.checklist.clear")}
 					</Button>
 				</div>
 			)}
@@ -75,14 +77,12 @@ export function StepChecklist({ groups }: StepChecklistProps) {
 												isChecked && "text-muted-foreground line-through",
 											)}
 										>
-											<span className="mr-2 font-semibold text-primary">
-												{stepCounter}.
-											</span>
+											<span className="mr-2 font-semibold text-primary">{stepCounter}.</span>
 											{item.instruction}
 										</label>
 										{item.tip && (
 											<p className="mt-1 text-sm italic text-muted-foreground">
-												Nasvet: {item.tip}
+												{t("recipes.checklist.tip", { tip: item.tip })}
 											</p>
 										)}
 									</div>

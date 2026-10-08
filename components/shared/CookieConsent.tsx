@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n/react";
 
 const CONSENT_KEY = "cookie-consent";
 
@@ -18,6 +19,7 @@ export function useCookieConsent() {
 }
 
 export function CookieConsent() {
+	const { t } = useI18n();
 	const [visible, setVisible] = useState(false);
 
 	useEffect(() => {
@@ -41,16 +43,13 @@ export function CookieConsent() {
 	return (
 		<div className="fixed inset-x-0 bottom-0 z-50 p-4 sm:p-6">
 			<div className="mx-auto flex max-w-xl flex-col items-center gap-4 rounded-xl border border-border bg-card p-5 shadow-lg sm:flex-row sm:items-start sm:gap-5">
-				<p className="text-sm text-muted-foreground">
-					Spletna stran uporablja piškotke za analitiko obiska. S klikom na
-					&quot;Sprejmi&quot; se strinjaš z uporabo piškotkov.
-				</p>
+				<p className="text-sm text-muted-foreground">{t("common.cookie.text")}</p>
 				<div className="flex shrink-0 gap-2">
 					<Button size="sm" variant="outline" onClick={deny}>
-						Zavrni
+						{t("common.cookie.deny")}
 					</Button>
 					<Button size="sm" onClick={accept}>
-						Sprejmi
+						{t("common.cookie.accept")}
 					</Button>
 				</div>
 			</div>

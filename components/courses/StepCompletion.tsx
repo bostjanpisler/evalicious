@@ -3,6 +3,7 @@
 import confetti from "canvas-confetti";
 import { useCallback, useState } from "react";
 import { capture } from "@/lib/analytics-client";
+import { useI18n } from "@/lib/i18n/react";
 
 interface StepCompletionProps {
 	lessonId: string;
@@ -17,6 +18,7 @@ export function StepCompletion({
 	onComplete,
 	compact = false,
 }: StepCompletionProps) {
+	const { t } = useI18n();
 	const [completed, setCompleted] = useState(initialCompleted);
 	const [loading, setLoading] = useState(false);
 
@@ -119,7 +121,13 @@ export function StepCompletion({
 					</svg>
 				)}
 			</span>
-			<span>{completed ? "Opravljeno" : compact ? "Opravljeno?" : "Označi kot opravljeno"}</span>
+			<span>
+				{completed
+					? t("courses.completion.done")
+					: compact
+						? t("courses.completion.doneQuestion")
+						: t("courses.completion.markDone")}
+			</span>
 		</button>
 	);
 }

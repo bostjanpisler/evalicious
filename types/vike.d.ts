@@ -11,6 +11,7 @@ declare global {
 	namespace Vike {
 		interface PageContext {
 			user: AuthenticatedUser | null;
+			locale: import("../lib/i18n/config").Locale;
 		}
 	}
 }

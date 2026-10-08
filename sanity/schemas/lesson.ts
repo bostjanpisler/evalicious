@@ -1,4 +1,5 @@
 import { defineType, defineField, defineArrayMember } from "sanity";
+import { englishOverride, englishTextFields } from "./i18n";
 
 export const lesson = defineType({
 	name: "lesson",
@@ -64,7 +65,8 @@ export const lesson = defineType({
 			type: "array",
 			of: [defineArrayMember({ type: "block" })],
 		}),
-	],
+	  englishOverride([englishTextFields.title(), englishTextFields.description(), englishTextFields.richText("content", "Content")]),
+],
 	preview: {
 		select: { title: "title", subtitle: "sortOrder" },
 		prepare({ title, subtitle }) {
