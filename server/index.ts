@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { EMBED_ORIGIN_LIST } from "@/lib/constants";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
@@ -9,6 +10,7 @@ import { startInvoiceWorker } from "./lib/invoice-worker.js";
 import { allowedOrigins } from "./lib/origins.js";
 import { authHandler } from "./routes/api.auth.js";
 import { downloadHandler } from "./routes/api.download.js";
+import { embedHandler } from "./routes/embed.js";
 import { favoritesHandler } from "./routes/api.favorites.js";
 import { listsHandler } from "./routes/api.lists.js";
 import { progressHandler } from "./routes/api.progress.js";
@@ -41,6 +43,7 @@ const securityHeaders = secureHeaders({
 			"https://www.youtube.com",
 			"https://www.youtube-nocookie.com",
 			"https://iframe.mediadelivery.net",
+			...EMBED_ORIGIN_LIST,
 			"https://*.chatwithhal.com",
 		],
 		imgSrc: [
@@ -73,8 +76,11 @@ const securityHeaders = secureHeaders({
 });
 // Email clients that load images directly (webmail) are cross-origin, so the
 // brand assets used in emails must not carry Cross-Origin-Resource-Policy.
+// Third-party embeds set their own (sandboxed) policy in routes/embed.ts.
 app.use("*", (c, next) =>
-	c.req.path.startsWith("/images/email/") ? next() : securityHeaders(c, next),
+	c.req.path.startsWith("/images/email/") || c.req.path.startsWith("/embed/")
+		? next()
+		: securityHeaders(c, next),
 );
 app.use(
 	"/api/*",
@@ -101,6 +107,7 @@ app.route("/api/favorites", favoritesHandler);
 app.route("/api/lists", listsHandler);
 app.route("/api/progress", progressHandler);
 app.route("/api/download", downloadHandler);
+app.route("/embed", embedHandler);
 
 // Instagram thumbnail proxy (avoids CORS)
 app.get("/api/ig/:shortcode", async (c) => {

@@ -85,7 +85,7 @@ export default function RecipePage() {
 							<h2 id="o-receptu" className="mb-6 scroll-mt-24 font-serif text-2xl font-bold">
 								O receptu
 							</h2>
-							<PortableTextRenderer value={recipe.content} />
+							<PortableTextRenderer value={recipe.content} documentId={recipe._id} />
 						</>
 					)}
 
