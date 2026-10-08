@@ -131,3 +131,11 @@ describe("contentHasAffiliate", () => {
 		).toBe(true);
 	});
 });
+
+describe("configured Booking.com program", () => {
+	test("wraps a Booking.com page in the CJ tracking link with the post as sub-ID", () => {
+		expect(affiliateUrl("https://www.booking.com/city/si/ljubljana.html", "ljubljana-guide")).toBe(
+			"https://www.anrdoezrs.net/click-101899632-17343481?url=https%3A%2F%2Fwww.booking.com%2Fcity%2Fsi%2Fljubljana.html&sid=ljubljana-guide",
+		);
+	});
+});
