@@ -3,7 +3,7 @@ import { useData } from "vike-react/useData";
 import { usePageContext } from "vike-react/usePageContext";
 import { SITE_URL } from "@/lib/constants";
 import { alternatePaths, hreflangLocales } from "@/lib/i18n/alternates";
-import { DEFAULT_LOCALE, ENGLISH_ENABLED, HTML_LANG } from "@/lib/i18n/config";
+import { DEFAULT_LOCALE, ENGLISH_ENABLED, HTML_LANG, OG_LOCALE } from "@/lib/i18n/config";
 
 /** hreflang alternates and a canonical link, so search engines pair the two languages. */
 export function HreflangLinks() {
@@ -21,6 +21,14 @@ export function HreflangLinks() {
 	return (
 		<Head>
 			<link rel="canonical" href={`${SITE_URL}${paths[locale]}`} />
+			<meta property="og:url" content={`${SITE_URL}${paths[locale]}`} />
+			<meta property="og:site_name" content="Eva-licious" />
+			<meta property="og:locale" content={OG_LOCALE[locale]} />
+			{locales
+				.filter((entry) => entry !== locale)
+				.map((entry) => (
+					<meta key={entry} property="og:locale:alternate" content={OG_LOCALE[entry]} />
+				))}
 			{locales.map((entry) => (
 				<link
 					key={entry}

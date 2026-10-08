@@ -2,12 +2,14 @@ import { useData } from "vike-react/useData";
 import { BlogCard } from "@/components/blog/BlogCard";
 import { RecipeCard } from "@/components/recipes/RecipeCard";
 import { InstagramFeed } from "@/components/shared/InstagramFeed";
+import { JsonLd } from "@/components/shared/JsonLd";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { TravelCard } from "@/components/travel/TravelCard";
 import { Button } from "@/components/ui/button";
-import { HOMEPAGE_CATEGORIES } from "@/lib/constants";
+import { HOMEPAGE_CATEGORIES, SITE_URL } from "@/lib/constants";
 import { useI18n } from "@/lib/i18n/react";
+import { siteJsonLd } from "@/lib/structured-data";
 import type { Data } from "./+data";
 
 const CATEGORY_ICONS: Record<string, string> = {
@@ -21,12 +23,15 @@ const CATEGORY_ICONS: Record<string, string> = {
 
 export default function HomePage() {
 	const data = useData<Data>();
-	const { t, l } = useI18n();
+	const { t, l, locale } = useI18n();
 
 	const [featuredHero, ...featuredRest] = data.featuredRecipes ?? [];
 
 	return (
 		<>
+			<JsonLd
+				data={siteJsonLd({ origin: SITE_URL, locale, description: t("common.siteDescription") })}
+			/>
 			{/* Hero Section */}
 			<section className="relative flex min-h-[60vh] items-center justify-center overflow-hidden bg-muted">
 				{data.heroImage && (

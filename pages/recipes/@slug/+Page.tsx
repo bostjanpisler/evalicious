@@ -17,12 +17,15 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { recipeCategoryLabel, recipeDifficultyLabel } from "@/lib/constants";
 import { useI18n } from "@/lib/i18n/react";
-import { urlFor } from "@/lib/sanity.image";
+import { JsonLd } from "@/components/shared/JsonLd";
+import { SITE_URL } from "@/lib/constants";
+import { structuredDataImages, urlFor } from "@/lib/sanity.image";
+import { recipeJsonLd } from "@/lib/structured-data";
 import { formatDuration } from "@/lib/utils";
 import type { Data } from "./+data";
 
 export default function RecipePage() {
-	const { t, l } = useI18n();
+	const { t, l, locale } = useI18n();
 	const recipe = useData<Data>();
 	const config = useConfig();
 	config({
@@ -56,8 +59,16 @@ export default function RecipePage() {
 		...relatedHeadings,
 	];
 
+	const structured = recipeJsonLd(recipe, {
+		url: `${SITE_URL}${l(`/recipes/${recipe.slug}`)}`,
+		locale,
+		images: structuredDataImages(recipe.coverImage),
+		description: recipe.description ?? t("recipes.detail.metaDescription", { title: recipe.title }),
+	});
+
 	return (
 		<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+			<JsonLd data={structured} />
 			<Breadcrumbs
 				segments={[{ label: t("recipes.title"), href: "/recipes" }, { label: recipe.title }]}
 			/>

@@ -12,13 +12,16 @@ import { PortableTextRenderer, extractHeadings } from "@/components/blog/Portabl
 import { ProfileSidebar } from "@/components/shared/ProfileSidebar";
 import { Badge } from "@/components/ui/badge";
 import { useI18n } from "@/lib/i18n/react";
-import { urlFor } from "@/lib/sanity.image";
+import { JsonLd } from "@/components/shared/JsonLd";
+import { SITE_URL } from "@/lib/constants";
+import { structuredDataImages, urlFor } from "@/lib/sanity.image";
+import { articleJsonLd } from "@/lib/structured-data";
 import type { Data } from "./+data";
 
 export default function TravelEntryPage() {
 	const entry = useData<Data>();
 	const config = useConfig();
-	const { t, formatDate } = useI18n();
+	const { t, l, formatDate, locale } = useI18n();
 	config({
 		title: `${entry.title} | Eva-licious`,
 		description: entry.description,
@@ -35,8 +38,15 @@ export default function TravelEntryPage() {
 		(entry.recommendedProducts?.length ?? 0) > 0 ||
 		(!!stayDestination && !!affiliateUrl(bookingSearchUrl(stayDestination), entry.slug));
 
+	const structured = articleJsonLd(entry, {
+		url: `${SITE_URL}${l(`/travel/${entry.slug}`)}`,
+		locale,
+		images: structuredDataImages(entry.coverImage),
+	});
+
 	return (
 		<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+			<JsonLd data={structured} />
 			<Breadcrumbs
 				segments={[{ label: t("travel.title"), href: "/travel" }, { label: entry.title }]}
 			/>
