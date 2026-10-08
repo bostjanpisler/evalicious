@@ -58,5 +58,7 @@ export interface RecipeFull extends RecipeListing {
 	// biome-ignore lint/suspicious/noExplicitAny: Portable Text content
 	content?: any[];
 	recommendedProducts?: RecommendedProduct[];
+	/** Id of the Slovenian original (itself for originals). */
+	root?: string;
 	relatedRecipes?: RecipeListing[];
 }

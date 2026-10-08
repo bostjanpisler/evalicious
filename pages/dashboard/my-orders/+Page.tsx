@@ -21,7 +21,8 @@ const statusKeys: Record<string, TranslationKey> = {
 
 export default function MyOrdersPage() {
 	const { orders } = useData<Data>();
-	const { t, l, formatDate } = useI18n();
+	const { t, l, formatDate, locale } = useI18n();
+	const priceLocale = locale === "en" ? "en-GB" : "sl-SI";
 	const label = (keys: Record<string, TranslationKey>, value: string) => {
 		const key = keys[value];
 		return key ? t(key) : value;
@@ -66,7 +67,7 @@ export default function MyOrdersPage() {
 								</Badge>
 							</div>
 							<span className="text-sm font-semibold">
-								{formatPrice(order.totalInCents, order.currency)}
+								{formatPrice(order.totalInCents, order.currency, priceLocale)}
 							</span>
 						</div>
 

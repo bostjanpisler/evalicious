@@ -87,6 +87,7 @@ function createComponents(
 	documentId: string | undefined,
 	affiliateLabel: string,
 	youtubeTitle: string,
+	localizeHref: (href: string) => string,
 ): PortableTextComponents {
 	return {
 		block: {
@@ -131,7 +132,7 @@ function createComponents(
 				const link = isExternal ? linkAttributes(href, affiliateLabel) : undefined;
 				return (
 					<a
-						href={link?.href ?? href}
+						href={link?.href ?? (href?.startsWith("/") ? localizeHref(href) : href)}
 						className="text-primary underline underline-offset-4 hover:text-primary/80"
 						target={link?.target}
 						rel={link?.rel}
@@ -208,11 +209,11 @@ export function PortableTextRenderer({
 	/** Sub-ID for affiliate reports, usually the page slug. */
 	affiliateLabel?: string;
 }) {
-	const { t } = useI18n();
+	const { t, l } = useI18n();
 	const youtubeTitle = t("blog.embed.youtube");
 	const components = useMemo(
-		() => createComponents(documentId, affiliateLabel ?? "content", youtubeTitle),
-		[documentId, affiliateLabel, youtubeTitle],
+		() => createComponents(documentId, affiliateLabel ?? "content", youtubeTitle, l),
+		[documentId, affiliateLabel, youtubeTitle, l],
 	);
 	if (!value) return null;
 	return (

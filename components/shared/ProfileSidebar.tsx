@@ -49,7 +49,8 @@ export function ProfileSidebar() {
 				/>
 				<h4 className="mt-3 font-serif text-lg font-semibold">Eva Susin</h4>
 				<p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-					{t("about.sidebar.bio")}				</p>
+					{t("about.sidebar.bio")}{" "}
+				</p>
 
 				{/* Social links */}
 				<div className="mt-4 flex justify-center gap-3">

@@ -22,13 +22,12 @@ async function fetchHomePage(locale: Locale) {
 
 export async function data(pageContext: PageContextServer): Promise<Data> {
 	const locale = pageContext.locale ?? DEFAULT_LOCALE;
-	const [page, recentRecipes, recentBlogPosts, recentTravelEntries] =
-		await Promise.all([
-			fetchHomePage(locale),
-			sanityClient.fetch<RecipeListing[]>(recentRecipesQuery, { locale }),
-			sanityClient.fetch<BlogPost[]>(recentBlogPostsQuery, { locale }),
-			sanityClient.fetch<TravelEntry[]>(recentTravelEntriesQuery, { locale }),
-		]);
+	const [page, recentRecipes, recentBlogPosts, recentTravelEntries] = await Promise.all([
+		fetchHomePage(locale),
+		sanityClient.fetch<RecipeListing[]>(recentRecipesQuery, { locale }),
+		sanityClient.fetch<BlogPost[]>(recentBlogPostsQuery, { locale }),
+		sanityClient.fetch<TravelEntry[]>(recentTravelEntriesQuery, { locale }),
+	]);
 	return {
 		...(page ?? { heroTitle: "Eva-licious" }),
 		recentRecipes: recentRecipes ?? [],

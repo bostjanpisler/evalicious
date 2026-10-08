@@ -37,9 +37,7 @@ export function TravelCard({ entry }: TravelCardProps) {
 						{entry.title}
 					</h3>
 					{entry.description && (
-						<p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
-							{entry.description}
-						</p>
+						<p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{entry.description}</p>
 					)}
 				</CardContent>
 			</Card>

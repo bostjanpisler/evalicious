@@ -35,7 +35,10 @@ export async function data(pageContext: PageContextServer): Promise<Data> {
 
 	const { courseSlug, lessonSlug } = pageContext.routeParams;
 
-	const course = await sanityClient.fetch<CourseFull>(courseFullQuery, { slug: courseSlug, locale });
+	const course = await sanityClient.fetch<CourseFull>(courseFullQuery, {
+		slug: courseSlug,
+		locale,
+	});
 	if (!course) throw render(404, "Course not found");
 
 	// Find the current step

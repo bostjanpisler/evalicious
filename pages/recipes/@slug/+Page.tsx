@@ -72,8 +72,8 @@ export default function RecipePage() {
 					)}
 
 					<div className="mt-4 flex items-center gap-2">
-						<SaveRecipeButton recipeId={recipe._id} />
-						<AddToListDialog contentType="recipe" contentId={recipe._id} />
+						<SaveRecipeButton recipeId={recipe.root ?? recipe._id} />
+						<AddToListDialog contentType="recipe" contentId={recipe.root ?? recipe._id} />
 						<button
 							type="button"
 							className="inline-flex items-center gap-1.5 rounded-md border border-input bg-background px-3 py-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground"

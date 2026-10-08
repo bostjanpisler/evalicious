@@ -1,9 +1,9 @@
-import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n/config";
+import { DEFAULT_LOCALE, ENGLISH_ENABLED, isLocale, type Locale } from "@/lib/i18n/config";
 
 export function checkoutLocale(body: unknown): Locale {
 	const locale =
 		body && typeof body === "object" ? (body as { locale?: unknown }).locale : undefined;
-	return isLocale(locale) ? locale : DEFAULT_LOCALE;
+	return ENGLISH_ENABLED && isLocale(locale) ? locale : DEFAULT_LOCALE;
 }
 
 export function checkoutProductSlug(body: unknown): string | null {

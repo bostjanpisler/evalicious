@@ -108,7 +108,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 				<div className="flex gap-1 overflow-x-auto -mb-px">
 					{navItems.map((item) => {
 						const href = l(item.href);
-						const isActive = currentPath.startsWith(href);
+						const isActive = currentPath.startsWith(item.href);
 						return (
 							<a
 								key={item.href}

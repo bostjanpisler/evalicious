@@ -219,7 +219,9 @@ export default function HomePage() {
 			{/* Instagram */}
 			<section className="py-16">
 				<div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-					<h2 className="mb-6 text-center font-serif text-3xl font-bold">{t("home.instagram.title")}</h2>
+					<h2 className="mb-6 text-center font-serif text-3xl font-bold">
+						{t("home.instagram.title")}
+					</h2>
 					<InstagramFeed variant="wide" />
 				</div>
 			</section>
@@ -228,9 +230,7 @@ export default function HomePage() {
 			<section className="bg-muted/50 py-16">
 				<div className="mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8">
 					<h2 className="font-serif text-3xl font-bold">{t("home.about.title")}</h2>
-					<p className="mt-3 text-sm text-muted-foreground">
-						{t("home.about.text")}
-					</p>
+					<p className="mt-3 text-sm text-muted-foreground">{t("home.about.text")}</p>
 					<div className="mt-6">
 						<Button size="lg" variant="outline" asChild>
 							<a href={l("/about")}>{t("home.about.cta")}</a>
@@ -242,24 +242,28 @@ export default function HomePage() {
 			{/* Services */}
 			<section className="py-16">
 				<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-					<h2 className="mb-3 text-center font-serif text-3xl font-bold">{t("home.services.title")}</h2>
+					<h2 className="mb-3 text-center font-serif text-3xl font-bold">
+						{t("home.services.title")}
+					</h2>
 					<p className="mx-auto mb-10 max-w-xl text-center text-muted-foreground">
 						{t("home.services.intro")}
 					</p>
 					<div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
 						<div className="rounded-xl border border-border bg-card p-6 text-center shadow-sm">
 							<span className="text-3xl">📸</span>
-							<h3 className="mt-3 font-serif text-lg font-semibold">{t("home.services.sponsored.title")}</h3>
+							<h3 className="mt-3 font-serif text-lg font-semibold">
+								{t("home.services.sponsored.title")}
+							</h3>
 							<p className="mt-2 text-sm text-muted-foreground">
 								{t("home.services.sponsored.text")}
 							</p>
 						</div>
 						<div className="rounded-xl border border-border bg-card p-6 text-center shadow-sm">
 							<span className="text-3xl">🎬</span>
-							<h3 className="mt-3 font-serif text-lg font-semibold">{t("home.services.ugc.title")}</h3>
-							<p className="mt-2 text-sm text-muted-foreground">
-								{t("home.services.ugc.text")}
-							</p>
+							<h3 className="mt-3 font-serif text-lg font-semibold">
+								{t("home.services.ugc.title")}
+							</h3>
+							<p className="mt-2 text-sm text-muted-foreground">{t("home.services.ugc.text")}</p>
 						</div>
 						<div className="rounded-xl border border-border bg-card p-6 text-center shadow-sm">
 							<span className="text-3xl">🍽️</span>

@@ -50,7 +50,7 @@ export const coursesEn: Shape<typeof coursesSl> = {
 	view: {
 		allDone: "All done!",
 		progressOf: "{completed} of {total} done",
-		viewCompletion: "See your finish",
+		viewCompletion: "View completion",
 		continue: "Continue",
 		startCourse: "Start the course",
 		contentHeading: "What's inside ({steps})",

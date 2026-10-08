@@ -14,7 +14,7 @@ interface SaveRecipeButtonProps {
 }
 
 export function SaveRecipeButton({ recipeId, initialFavorited = false }: SaveRecipeButtonProps) {
-	const { t, l } = useI18n();
+	const { t, l, locale } = useI18n();
 	const pageContext = usePageContext();
 	const user = pageContext.user;
 	const [favorited, setFavorited] = useState(initialFavorited);
@@ -23,16 +23,21 @@ export function SaveRecipeButton({ recipeId, initialFavorited = false }: SaveRec
 	useEffect(() => {
 		if (!user || initialFavorited) return;
 		let cancelled = false;
-		fetch("/api/favorites")
+		fetch(`/api/favorites?locale=${locale}`)
 			.then((res) => (res.ok ? res.json() : []))
-			.then((favorites: Array<{ contentId: string }>) => {
-				if (!cancelled) setFavorited(favorites.some((item) => item.contentId === recipeId));
+			.then((favorites: Array<{ contentId: string; recipeIds?: string[] }>) => {
+				if (!cancelled)
+					setFavorited(
+						favorites.some(
+							(item) => item.contentId === recipeId || item.recipeIds?.includes(recipeId),
+						),
+					);
 			})
 			.catch(() => {});
 		return () => {
 			cancelled = true;
 		};
-	}, [initialFavorited, recipeId, user]);
+	}, [initialFavorited, recipeId, user, locale]);
 
 	async function toggle() {
 		if (!user) {

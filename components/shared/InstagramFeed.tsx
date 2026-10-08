@@ -52,9 +52,7 @@ export function InstagramFeed({ variant = "default" }: InstagramFeedProps) {
 				/>
 				<div className="min-w-0">
 					<p className="text-sm font-semibold leading-tight">susiiiiin</p>
-					<p className="truncate text-xs text-muted-foreground">
-						{t("home.instagram.bio")}
-					</p>
+					<p className="truncate text-xs text-muted-foreground">{t("home.instagram.bio")}</p>
 				</div>
 			</a>
 

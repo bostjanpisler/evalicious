@@ -7,9 +7,12 @@ const OVERRIDE = (field: string) =>
 // Which languages this document exists in (itself plus its translations), for hreflang
 // and the language switcher.
 const DOC_META = `
+    _type,
     "language": coalesce(language, "sl"),
+    "root": coalesce(translationOf._ref, _id),
     "translations": *[
       _type == ^._type &&
+      published == true &&
       (_id == coalesce(^.translationOf._ref, ^._id) || translationOf._ref == coalesce(^.translationOf._ref, ^._id))
     ] { "language": coalesce(language, "sl"), "slug": slug.current }`;
 
@@ -328,7 +331,7 @@ export const courseFullQuery = `
       isFree,
       "hasPdf": defined(pdfFile.asset),
       "content": ${OVERRIDE("content")},
-      "recipe": select($locale == "en" => coalesce(*[_type == "recipe" && language == "en" && translationOf._ref == ^.recipe._ref][0], recipe->), recipe->) {
+      "recipe": select($locale == "en" => coalesce(*[_type == "recipe" && published == true && language == "en" && translationOf._ref == ^.recipe._ref][0], recipe->), recipe->) {
         _id,
         "title": ${OVERRIDE("title")},
         "slug": slug.current,

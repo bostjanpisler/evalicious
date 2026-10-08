@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { usePageContext } from "vike-react/usePageContext";
-import { DEFAULT_LOCALE, type Locale } from "./config";
+import { DEFAULT_LOCALE, type Locale, localeOf } from "./config";
 import { type Translator, translatorFor } from "./messages";
 import { localizePath } from "./paths";
 
@@ -33,6 +33,7 @@ export function createI18n(locale: Locale | undefined): I18n {
 }
 
 export function useI18n(): I18n {
-	const locale = usePageContext().locale;
+	const pageContext = usePageContext();
+	const locale = localeOf(pageContext);
 	return useMemo(() => createI18n(locale), [locale]);
 }

@@ -3,5 +3,5 @@ import { localeOf } from "@/lib/i18n/config";
 import { translatorFor } from "@/lib/i18n/messages";
 
 export default function title(pageContext: PageContext): string {
-	return translatorFor(localeOf(pageContext))("shop.title");
+	return `${translatorFor(localeOf(pageContext))("recipes.myRecipes.title")} | Eva-licious`;
 }

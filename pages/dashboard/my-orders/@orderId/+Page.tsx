@@ -21,7 +21,8 @@ const statusKeys: Record<string, TranslationKey> = {
 
 export default function OrderDetailPage() {
 	const { order } = useData<Data>();
-	const { t, l, formatDate } = useI18n();
+	const { t, l, formatDate, locale } = useI18n();
+	const priceLocale = locale === "en" ? "en-GB" : "sl-SI";
 	const label = (keys: Record<string, TranslationKey>, value: string) => {
 		const key = keys[value];
 		return key ? t(key) : value;
@@ -81,7 +82,7 @@ export default function OrderDetailPage() {
 
 							<div className="flex items-center gap-3">
 								<span className="text-sm font-medium">
-									{formatPrice(item.priceInCents, order.currency)}
+									{formatPrice(item.priceInCents, order.currency, priceLocale)}
 								</span>
 								{item.productType === "ebook" && order.status === "completed" && (
 									<Button asChild variant="outline" size="sm" className="gap-1.5">
@@ -108,7 +109,7 @@ export default function OrderDetailPage() {
 					<div className="border-t pt-5 text-sm">
 						<div className="flex justify-between gap-4 font-semibold">
 							<span>{t("dashboard.orders.total")}</span>
-							<span>{formatPrice(order.totalInCents, order.currency)}</span>
+							<span>{formatPrice(order.totalInCents, order.currency, priceLocale)}</span>
 						</div>
 						<div className="mt-4 space-y-1 text-muted-foreground">
 							<p>{t("dashboard.orders.deliveryEmail", { email: order.email })}</p>

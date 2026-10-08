@@ -19,6 +19,7 @@ import {
 	requestFreeDownloadEmail,
 	syncFreeDownloadLeadToHal,
 } from "../lib/hal.js";
+import { requestLocale } from "../lib/recipe-i18n.js";
 import {
 	canAccessLesson,
 	getFreePublishedEbook,
@@ -131,7 +132,7 @@ downloadHandler.post("/free/:productSlug", async (c) => {
 	const email = normalizeEmail(body?.email);
 	if (!email) return c.json({ error: "Invalid email" }, 400);
 	if (body?.consent !== true) return c.json({ error: "Consent required" }, 400);
-	const locale: Locale = isLocale(body?.locale) ? body.locale : DEFAULT_LOCALE;
+	const locale: Locale = requestLocale(body?.locale);
 
 	const ip = clientIp(c.req.raw.headers);
 	// Per-client limits run first so one client cannot use up the shared budget,

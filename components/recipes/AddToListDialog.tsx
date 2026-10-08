@@ -97,7 +97,7 @@ export function AddToListDialog({ contentType, contentId }: AddToListDialogProps
 		return (
 			<Button asChild variant="outline" size="sm">
 				<a
-					href={l(`/login?redirect=${encodeURIComponent(pageContext.urlPathname)}`)}
+					href={l(`/login?redirect=${encodeURIComponent(l(pageContext.urlPathname))}`)}
 					aria-label={t("recipes.addToList.loginAria")}
 				>
 					<ListPlus className="mr-1.5 h-4 w-4" />

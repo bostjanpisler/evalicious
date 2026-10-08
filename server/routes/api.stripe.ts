@@ -76,7 +76,8 @@ stripeHandler.post("/checkout", requireAuth, async (c) => {
 			mode: "payment",
 			payment_method_types: ["card"],
 			line_items: [{ price: stripePriceId, quantity: 1 }],
-			locale,
+			// Stripe auto-detects the browser language for Slovenian visitors, as before.
+			locale: locale === "en" ? "en" : "auto",
 			success_url: `${process.env.BETTER_AUTH_URL}${localizePath("/shop/checkout/success", locale)}?session_id={CHECKOUT_SESSION_ID}`,
 			cancel_url: `${process.env.BETTER_AUTH_URL}${localizePath(`/shop/${productSlug}`, locale)}`,
 			customer_email: user.email,

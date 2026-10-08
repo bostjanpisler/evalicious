@@ -54,6 +54,12 @@ export const commonSl = {
 		seeAt: "Poglej pri {shop}",
 		see: "Poglej",
 	},
+	errors: {
+		favoritesLoad: "Priljubljenih ni bilo mogoče naložiti.",
+		favoritesUpdate: "Priljubljene ni bilo mogoče posodobiti.",
+		progressLoad: "Napredka ni bilo mogoče naložiti.",
+		progressUpdate: "Napredka ni bilo mogoče posodobiti.",
+	},
 	email: {
 		purchaseSubject: "Tvoj nakup: {product}",
 		purchaseTitle: "Hvala za nakup!",

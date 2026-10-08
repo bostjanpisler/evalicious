@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useI18n } from "@/lib/i18n/react";
 
 interface CourseProgress {
 	completedLessons: string[];
@@ -15,6 +16,7 @@ interface UseCourseProgressReturn {
 }
 
 export function useCourseProgress(courseId: string): UseCourseProgressReturn {
+	const { t } = useI18n();
 	const [progress, setProgress] = useState<CourseProgress>({
 		completedLessons: [],
 		totalLessons: 0,
@@ -29,7 +31,7 @@ export function useCourseProgress(courseId: string): UseCourseProgressReturn {
 		setError(null);
 		try {
 			const res = await fetch(`/api/progress/${courseId}`);
-			if (!res.ok) throw new Error("Napredka ni bilo mogoče naložiti.");
+			if (!res.ok) throw new Error(t("common.errors.progressLoad"));
 			const data = await res.json();
 			setProgress({
 				completedLessons: data.completedLessons ?? [],
@@ -37,11 +39,11 @@ export function useCourseProgress(courseId: string): UseCourseProgressReturn {
 				percentage: data.percentage ?? 0,
 			});
 		} catch (err) {
-			setError(err instanceof Error ? err.message : "Napredka pri tečaju ni bilo mogoče naložiti.");
+			setError(err instanceof Error ? err.message : t("common.errors.progressLoad"));
 		} finally {
 			setLoading(false);
 		}
-	}, [courseId]);
+	}, [courseId, t]);
 
 	useEffect(() => {
 		fetchProgress();
@@ -55,7 +57,7 @@ export function useCourseProgress(courseId: string): UseCourseProgressReturn {
 					headers: { "Content-Type": "application/json" },
 					body: JSON.stringify({ lessonSlug }),
 				});
-				if (!res.ok) throw new Error("Napredka ni bilo mogoče posodobiti.");
+				if (!res.ok) throw new Error(t("common.errors.progressUpdate"));
 				setProgress((prev) => {
 					const isCurrentlyCompleted = prev.completedLessons.includes(lessonSlug);
 					const completedLessons = isCurrentlyCompleted
@@ -74,10 +76,10 @@ export function useCourseProgress(courseId: string): UseCourseProgressReturn {
 					};
 				});
 			} catch (err) {
-				setError(err instanceof Error ? err.message : "Napredka ni bilo mogoče posodobiti.");
+				setError(err instanceof Error ? err.message : t("common.errors.progressUpdate"));
 			}
 		},
-		[courseId],
+		[courseId, t],
 	);
 
 	const isCompleted = useCallback(

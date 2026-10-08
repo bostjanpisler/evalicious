@@ -51,7 +51,9 @@ export function TravelFilters({
 
 			{countries.length > 0 && (
 				<div className="flex flex-wrap items-center gap-2">
-					<span className="text-sm font-medium text-muted-foreground">{t("travel.filters.country")}</span>
+					<span className="text-sm font-medium text-muted-foreground">
+						{t("travel.filters.country")}
+					</span>
 					{countries.map((country) => (
 						<button
 							type="button"
@@ -73,7 +75,9 @@ export function TravelFilters({
 
 			{tags.length > 0 && (
 				<div className="flex flex-wrap items-center gap-2">
-					<span className="text-sm font-medium text-muted-foreground">{t("travel.filters.tags")}</span>
+					<span className="text-sm font-medium text-muted-foreground">
+						{t("travel.filters.tags")}
+					</span>
 					{tags.map((tag) => (
 						<button
 							type="button"

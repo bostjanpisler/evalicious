@@ -13,15 +13,11 @@ export default function BlogPage() {
 			<Breadcrumbs segments={[{ label: t("blog.title") }]} />
 
 			<h1 className="mt-4 font-serif text-4xl font-bold">{t("blog.title")}</h1>
-			<p className="mt-2 text-muted-foreground">
-				{t("blog.subtitle")}
-			</p>
+			<p className="mt-2 text-muted-foreground">{t("blog.subtitle")}</p>
 
 			<div className="mt-8">
 				{posts.length === 0 ? (
-					<p className="py-12 text-center text-muted-foreground">
-						{t("blog.empty")}
-					</p>
+					<p className="py-12 text-center text-muted-foreground">{t("blog.empty")}</p>
 				) : (
 					<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
 						{posts.map((post) => (

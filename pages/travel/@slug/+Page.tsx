@@ -8,10 +8,7 @@ import { AffiliateDisclosure } from "@/components/shared/AffiliateDisclosure";
 import { StayBox } from "@/components/travel/StayBox";
 import { affiliateUrl, bookingSearchUrl, contentHasAffiliate } from "@/lib/affiliate";
 import { TableOfContents } from "@/components/blog/TableOfContents";
-import {
-	PortableTextRenderer,
-	extractHeadings,
-} from "@/components/blog/PortableTextRenderer";
+import { PortableTextRenderer, extractHeadings } from "@/components/blog/PortableTextRenderer";
 import { ProfileSidebar } from "@/components/shared/ProfileSidebar";
 import { Badge } from "@/components/ui/badge";
 import { useI18n } from "@/lib/i18n/react";

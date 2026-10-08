@@ -57,6 +57,12 @@ export const commonEn: Shape<typeof commonSl> = {
 		seeAt: "See at {shop}",
 		see: "See",
 	},
+	errors: {
+		favoritesLoad: "Your favourites couldn't be loaded.",
+		favoritesUpdate: "The favourite couldn't be updated.",
+		progressLoad: "Your progress couldn't be loaded.",
+		progressUpdate: "Your progress couldn't be updated.",
+	},
 	email: {
 		purchaseSubject: "Your purchase: {product}",
 		purchaseTitle: "Thank you for your purchase!",

@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { db } from "../lib/db.js";
+import { recipeRootId } from "../lib/recipe-i18n.js";
 import { requireAuth } from "../middleware/guard.js";
 
 type ListsVariables = {
@@ -73,10 +74,12 @@ listsHandler.delete("/:id", async (c) => {
 listsHandler.post("/:id/items", async (c) => {
 	const user = c.get("user");
 	const listId = c.req.param("id");
-	const { contentType, contentId } = await c.req.json<{
+	const body = await c.req.json<{
 		contentType: string;
 		contentId: string;
 	}>();
+	const { contentType } = body;
+	const contentId = contentType === "recipe" ? await recipeRootId(body.contentId) : body.contentId;
 
 	const list = await db.userList.findFirst({
 		where: { id: listId, userId: user.id },
@@ -93,7 +96,7 @@ listsHandler.post("/:id/items", async (c) => {
 listsHandler.delete("/:id/items/:contentId", async (c) => {
 	const user = c.get("user");
 	const listId = c.req.param("id");
-	const contentId = c.req.param("contentId");
+	const contentId = await recipeRootId(c.req.param("contentId"));
 
 	const list = await db.userList.findFirst({
 		where: { id: listId, userId: user.id },

@@ -41,16 +41,8 @@ export default function TravelPage() {
 				const matchesDesc = entry.description?.toLowerCase().includes(q);
 				const matchesLocation = entry.location?.toLowerCase().includes(q);
 				const matchesCountry = entry.country?.toLowerCase().includes(q);
-				const matchesTags = entry.tags?.some((t) =>
-					t.toLowerCase().includes(q),
-				);
-				if (
-					!matchesTitle &&
-					!matchesDesc &&
-					!matchesLocation &&
-					!matchesCountry &&
-					!matchesTags
-				)
+				const matchesTags = entry.tags?.some((t) => t.toLowerCase().includes(q));
+				if (!matchesTitle && !matchesDesc && !matchesLocation && !matchesCountry && !matchesTags)
 					return false;
 			}
 			if (selectedCountry && entry.country !== selectedCountry) return false;
@@ -64,9 +56,7 @@ export default function TravelPage() {
 			<Breadcrumbs segments={[{ label: t("travel.title") }]} />
 
 			<h1 className="mt-4 font-serif text-4xl font-bold">{t("travel.title")}</h1>
-			<p className="mt-2 text-muted-foreground">
-				{t("travel.subtitle")}
-			</p>
+			<p className="mt-2 text-muted-foreground">{t("travel.subtitle")}</p>
 
 			<div className="mt-8">
 				<TravelFilters
@@ -88,9 +78,7 @@ export default function TravelPage() {
 
 			<div className="mt-8">
 				{filtered.length === 0 ? (
-					<p className="py-12 text-center text-muted-foreground">
-						{t("travel.empty")}
-					</p>
+					<p className="py-12 text-center text-muted-foreground">{t("travel.empty")}</p>
 				) : (
 					<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
 						{filtered.map((entry) => (
