@@ -76,7 +76,7 @@ export default function TravelEntryPage() {
 
 					{entry.content && (
 						<div className="mt-8">
-							<PortableTextRenderer value={entry.content} />
+							<PortableTextRenderer value={entry.content} documentId={entry._id} />
 						</div>
 					)}
 				</div>

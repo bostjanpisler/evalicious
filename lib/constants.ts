@@ -5,6 +5,23 @@ export const SITE_URL =
 		? (process.env.BETTER_AUTH_URL ?? "http://localhost:3100")
 		: window.location.origin;
 
+// Third-party embeds (Google Maps, Klook, TikTok) are served from a different origin
+// than the site, so they can keep their own storage without access to the site's.
+const EMBED_ORIGINS: Record<string, string> = {
+	"https://eva-licious.com": "https://evalicious-production.up.railway.app",
+	"http://localhost:3100": "http://embed.localhost:3100",
+};
+
+export function embedOriginFor(siteUrl: string): string {
+	return EMBED_ORIGINS[siteUrl] ?? "";
+}
+
+export function isEmbedOrigin(origin: string): boolean {
+	return Object.values(EMBED_ORIGINS).includes(origin);
+}
+
+export const EMBED_ORIGIN_LIST = Object.values(EMBED_ORIGINS);
+
 export const FREE_DOWNLOAD_CONSENT_TEXT =
 	"Strinjam se, da mi Eva-licious na e-poštni naslov pošlje brezplačno gradivo ter občasne novice, recepte in ponudbe. Odjava je mogoča kadarkoli.";
 
