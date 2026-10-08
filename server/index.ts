@@ -5,8 +5,10 @@ import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
 import { renderPage } from "vike/server";
 import { db } from "./lib/db.js";
+import { startBackupWorker } from "./lib/backup-worker.js";
 import { startFulfillmentWorker } from "./lib/fulfillment-worker.js";
 import { startInvoiceWorker } from "./lib/invoice-worker.js";
+import { initMonitoring, reportError } from "./lib/monitoring.js";
 import { allowedOrigins } from "./lib/origins.js";
 import { authHandler } from "./routes/api.auth.js";
 import { downloadHandler } from "./routes/api.download.js";
@@ -21,8 +23,16 @@ const isProduction = process.env.NODE_ENV === "production";
 
 const app = new Hono();
 
+initMonitoring();
+
+app.onError((error, c) => {
+	reportError(error, { source: "api", path: new URL(c.req.url).pathname, status: 500 });
+	return c.json({ error: "Internal Server Error" }, 500);
+});
+
 startInvoiceWorker();
 startFulfillmentWorker();
+startBackupWorker();
 
 app.use("*", logger());
 const securityHeaders = secureHeaders({
@@ -147,6 +157,15 @@ app.all("*", async (c, next) => {
 		headersOriginal: c.req.raw.headers,
 	});
 	const { httpResponse } = pageContext;
+
+	// Vike turns a render crash into an error page, so it never reaches app.onError.
+	if (pageContext.errorWhileRendering) {
+		reportError(pageContext.errorWhileRendering, {
+			source: "render",
+			path: new URL(c.req.url).pathname,
+			status: httpResponse?.statusCode,
+		});
+	}
 
 	if (!httpResponse) {
 		return next();
