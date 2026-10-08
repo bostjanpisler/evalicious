@@ -1,6 +1,9 @@
 import { db } from "./db.js";
 import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n/config";
 import { sendPurchaseConfirmation } from "./email.js";
+import { isHalConfigured, markCustomerInHal, requestPurchaseEmail } from "./hal.js";
+import { getProductTitle } from "./product-access.js";
+import { createSignedToken } from "./signed-token.js";
 
 function orderLocale(value: string): Locale {
 	return isLocale(value) ? value : DEFAULT_LOCALE;
@@ -11,6 +14,55 @@ import { getSignedDownloadUrl } from "./r2.js";
 const DELIVERY_URL_LIFETIME_SECONDS = 24 * 60 * 60;
 const DELIVERY_URL_MIN_REMAINING_MS = 5 * 60_000;
 const FULFILLMENT_LEASE_MS = 5 * 60_000;
+export const ORDER_DOWNLOAD_PURPOSE = "order-download";
+export const ORDER_DOWNLOAD_TTL_SECONDS = 7 * 24 * 60 * 60;
+
+type PurchaseOrder = {
+	id: string;
+	email: string;
+	locale: string;
+	createdAt: Date;
+	user: { id: string; name: string; email: string };
+};
+
+/**
+ * Sends the confirmation through Hal (branded, in the buyer's language), or through
+ * SES when Hal isn't configured. A failure to send throws so fulfillment is retried;
+ * moving the buyer to "Won" is best effort and never blocks delivery.
+ */
+async function sendConfirmation(order: PurchaseOrder, productSlug: string, downloadUrl?: string) {
+	const locale = orderLocale(order.locale);
+	const email = order.email || order.user.email;
+	const productTitle = await getProductTitle(productSlug, locale);
+	if (!isHalConfigured()) {
+		await sendPurchaseConfirmation(email, productTitle, downloadUrl, locale);
+		return;
+	}
+	await requestPurchaseEmail({
+		orderId: order.id,
+		email,
+		name: order.user.name,
+		productSlug,
+		productTitle,
+		downloadToken: downloadUrl
+			? createSignedToken(ORDER_DOWNLOAD_PURPOSE, order.id, ORDER_DOWNLOAD_TTL_SECONDS)
+			: undefined,
+		locale,
+	});
+	try {
+		await markCustomerInHal({
+			orderId: order.id,
+			userId: order.user.id,
+			email,
+			name: order.user.name,
+			productSlug,
+			purchasedAt: order.createdAt,
+			locale,
+		});
+	} catch (error) {
+		console.error("Hal customer sync failed", error);
+	}
+}
 
 export async function fulfillOrder(orderId: string, alreadyClaimed = false): Promise<void> {
 	const now = new Date();
@@ -47,7 +99,6 @@ export async function fulfillOrder(orderId: string, alreadyClaimed = false): Pro
 
 	const item = order.items[0];
 	if (!item) throw new Error(`Order ${orderId} has no items`);
-	const email = order.email || order.user.email;
 
 	try {
 		if (item.product.type === "ecourse") {
@@ -65,12 +116,7 @@ export async function fulfillOrder(orderId: string, alreadyClaimed = false): Pro
 				create: { userId: order.userId, courseId: item.product.courseId },
 				update: {},
 			});
-			await sendPurchaseConfirmation(
-				email,
-				item.product.slug,
-				undefined,
-				orderLocale(order.locale),
-			);
+			await sendConfirmation(order, item.product.slug);
 		} else if (item.product.type === "ebook") {
 			const sellabilityError = productSellabilityError(
 				item.product,
@@ -97,12 +143,7 @@ export async function fulfillOrder(orderId: string, alreadyClaimed = false): Pro
 				});
 			}
 
-			await sendPurchaseConfirmation(
-				email,
-				item.product.slug,
-				deliveryUrl ?? undefined,
-				orderLocale(order.locale),
-			);
+			await sendConfirmation(order, item.product.slug, deliveryUrl ?? undefined);
 		} else {
 			throw new Error(`Unsupported product type ${item.product.type}`);
 		}

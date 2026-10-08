@@ -1,8 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import {
+	markCustomerInHal,
 	mergeTags,
 	requestFreeDownloadEmail,
 	requestNewsletterConfirmation,
+	requestPurchaseEmail,
 	startWelcomeSeries,
 	syncFreeDownloadLeadToHal,
 	syncNewsletterSubscriberToHal,
@@ -187,5 +189,77 @@ describe("newsletter", () => {
 			event_key: "welcome-series:eva@example.com",
 			email: "eva@example.com",
 		});
+	});
+});
+
+describe("requestPurchaseEmail", () => {
+	test("picks the workflow by product kind and language, keyed by order", async () => {
+		const { calls, http } = recorder({});
+		const base = {
+			orderId: "ord_1",
+			email: "Buyer@Example.com",
+			name: "buyer",
+			productSlug: "guide",
+			productTitle: "Guide",
+		};
+		await requestPurchaseEmail(
+			{ ...base, downloadToken: "order_1.123.sig", locale: "en" },
+			env,
+			http,
+		);
+		await requestPurchaseEmail(base, env, http);
+		const [ebook, course] = calls.map((call) => call.body as Record<string, unknown>);
+		expect(ebook?.name).toBe("purchase-ebook-en");
+		expect(ebook?.event_key).toBe("purchase-email:ord_1");
+		expect(ebook?.email).toBe("buyer@example.com");
+		expect(ebook?.overwrite_metadata).toBe(true);
+		expect((ebook?.metadata as Record<string, unknown>).purchase_download_token).toBe(
+			"order_1.123.sig",
+		);
+		expect(course?.name).toBe("purchase-course");
+	});
+});
+
+describe("markCustomerInHal", () => {
+	const customer = {
+		orderId: "ord_1",
+		userId: "user_1",
+		email: "Buyer@Example.com",
+		name: "buyer",
+		productSlug: "guide",
+		purchasedAt: new Date("2026-10-08T10:00:00Z"),
+	};
+
+	test("tags the buyer and moves the company to Won", async () => {
+		const { calls, http } = recorder({
+			"POST /events/track": { event: { contact_id: "c_1" } },
+			"GET /contacts/c_1": { contact: { id: "c_1", tags: ["newsletter"] } },
+			"GET /companies": {
+				companies: [{ id: "co_1", name: "buyer@example.com", stage_id: "lead" }],
+			},
+		});
+		await markCustomerInHal(customer, { ...env, HAL_WON_STAGE_ID: "won" }, http);
+		expect(calls.find((call) => call.route === "PATCH /contacts/c_1")?.body).toEqual({
+			tags: ["newsletter", "eva-licious", "customer", "purchased:guide"],
+		});
+		expect(calls.find((call) => call.route === "PATCH /companies/co_1")?.body).toEqual({
+			stage_id: "won",
+		});
+		const event = calls[0]?.body as Record<string, unknown>;
+		expect((event.metadata as Record<string, unknown>).marketing_consent).toBeUndefined();
+	});
+
+	test("leaves a company that is already Won alone", async () => {
+		const { calls, http } = recorder({
+			"POST /events/track": { event: { contact_id: "c_1" } },
+			"GET /contacts/c_1": {
+				contact: { id: "c_1", tags: ["eva-licious", "customer", "purchased:guide"] },
+			},
+			"GET /companies": {
+				companies: [{ id: "co_1", name: "buyer@example.com", stage_id: "won" }],
+			},
+		});
+		await markCustomerInHal(customer, { ...env, HAL_WON_STAGE_ID: "won" }, http);
+		expect(calls.some((call) => call.route.startsWith("PATCH"))).toBe(false);
 	});
 });

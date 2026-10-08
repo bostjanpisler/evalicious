@@ -251,7 +251,7 @@ export async function requestNewsletterConfirmation(
 		email: request.email.toLowerCase(),
 		contact_name: request.name,
 		metadata: { confirm_token: request.token, language: request.locale ?? "sl" },
-		overwrite_metadata: false,
+		overwrite_metadata: true,
 	});
 }
 
@@ -272,4 +272,102 @@ export async function startWelcomeSeries(
 		entity: "visitor",
 		email,
 	});
+}
+
+// "Won" stage of the Evalicious Hal project.
+const DEFAULT_WON_STAGE_ID = "cmuxrzsfp0eza2po70cf9fmk0";
+
+export type PurchaseEmailRequest = {
+	orderId: string;
+	email: string;
+	name: string;
+	productSlug: string;
+	productTitle: string;
+	/** Signed token for the e-book download link; courses are opened from the account instead. */
+	downloadToken?: string;
+	locale?: Locale;
+};
+
+/**
+ * Asks Hal to send the purchase confirmation. A transactional email: it carries no
+ * marketing consent. One workflow per product kind and language renders it. The
+ * event_key is the order, so a fulfillment retry can never send it twice.
+ */
+export async function requestPurchaseEmail(
+	request: PurchaseEmailRequest,
+	env: NodeJS.ProcessEnv = process.env,
+	http: HalHttp = createHalHttp(env.HAL_API_KEY?.trim() ?? ""),
+): Promise<void> {
+	if (!env.HAL_API_KEY?.trim()) throw new Error("Hal is not configured");
+	const kind = request.downloadToken ? "ebook" : "course";
+	await http("POST", "/events/track", {
+		name: `purchase-${kind}${request.locale === "en" ? "-en" : ""}`,
+		event_key: `purchase-email:${request.orderId}`,
+		entity: "visitor",
+		email: request.email.toLowerCase(),
+		contact_name: request.name,
+		value: request.productSlug,
+		metadata: {
+			purchase_title: request.productTitle,
+			purchase_download_token: request.downloadToken ?? "",
+			language: request.locale ?? "sl",
+		},
+		overwrite_metadata: true,
+	});
+}
+
+/** Tags a buyer in Hal and moves their CRM company to the "Won" stage. */
+export async function markCustomerInHal(
+	customer: {
+		orderId: string;
+		userId: string;
+		email: string;
+		name: string;
+		productSlug: string;
+		purchasedAt: Date;
+		locale?: Locale;
+	},
+	env: NodeJS.ProcessEnv = process.env,
+	http: HalHttp = createHalHttp(env.HAL_API_KEY?.trim() ?? ""),
+): Promise<void> {
+	if (!env.HAL_API_KEY?.trim()) throw new Error("Hal is not configured");
+	const email = customer.email.toLowerCase();
+	const tracked = (await http("POST", "/events/track", {
+		name: "purchase-completed",
+		event_key: `purchase-completed:${customer.orderId}`,
+		entity: "visitor",
+		user_id: customer.userId,
+		email,
+		contact_name: customer.name,
+		value: customer.productSlug,
+		occurred_at: customer.purchasedAt.toISOString(),
+		company_id: customer.userId,
+		company: { name: email, metadata: { user_id: customer.userId, source: "purchase" } },
+		metadata: { last_purchase: customer.productSlug, language: customer.locale ?? "sl" },
+		overwrite_metadata: true,
+	})) as { event?: { contact_id?: string | null } };
+	const contactId = tracked.event?.contact_id;
+	if (!contactId) throw new Error("Hal track event returned no contact");
+
+	const { contact } = (await http("GET", `/contacts/${encodeURIComponent(contactId)}`)) as {
+		contact: HalContact;
+	};
+	const tags = mergeTags(contact.tags, [
+		"eva-licious",
+		"customer",
+		`purchased:${customer.productSlug}`,
+	]);
+	if (tags.length !== (contact.tags?.length ?? 0)) {
+		await http("PATCH", `/contacts/${encodeURIComponent(contactId)}`, { tags });
+	}
+
+	const wonStageId = env.HAL_WON_STAGE_ID?.trim() || DEFAULT_WON_STAGE_ID;
+	const { companies } = (await http(
+		"GET",
+		`/companies?search=${encodeURIComponent(email)}&limit=10`,
+	)) as { companies: HalCompany[] };
+	const company = companies.find((entry) => entry.name.toLowerCase() === email);
+	if (company && company.stage_id !== wonStageId) {
+		await http("PATCH", `/companies/${encodeURIComponent(company.id)}`, { stage_id: wonStageId });
+	}
 }
