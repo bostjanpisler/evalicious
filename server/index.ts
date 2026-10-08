@@ -22,57 +22,59 @@ startInvoiceWorker();
 startFulfillmentWorker();
 
 app.use("*", logger());
-app.use(
-	"*",
-	secureHeaders({
-		contentSecurityPolicy: {
-			defaultSrc: ["'self'"],
-			baseUri: ["'self'"],
-			connectSrc: [
-				"'self'",
-				"https://eu.i.posthog.com",
-				"https://*.posthog.com",
-				"https://*.chatwithhal.com",
-				"wss://*.chatwithhal.com",
-			],
-			fontSrc: ["'self'", "data:", "https://fonts.gstatic.com"],
-			formAction: ["'self'", "https://checkout.stripe.com"],
-			frameAncestors: ["'self'"],
-			frameSrc: [
-				"'self'",
-				"https://www.youtube.com",
-				"https://www.youtube-nocookie.com",
-				"https://iframe.mediadelivery.net",
-				"https://*.chatwithhal.com",
-			],
-			imgSrc: [
-				"'self'",
-				"data:",
-				"blob:",
-				"https://cdn.sanity.io",
-				"https://*.posthog.com",
-				"https://*.chatwithhal.com",
-			],
-			mediaSrc: ["'self'", "blob:", "https://*.b-cdn.net"],
-			objectSrc: ["'none'"],
-			scriptSrc: ["'self'", "'unsafe-inline'", "https://*.chatwithhal.com"],
-			styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-			workerSrc: ["'self'", "blob:"],
-		},
-		crossOriginEmbedderPolicy: false,
-		crossOriginOpenerPolicy: "same-origin-allow-popups",
-		crossOriginResourcePolicy: "same-origin",
-		permissionsPolicy: {
-			camera: [],
-			geolocation: [],
-			microphone: [],
-			payment: ["self"],
-		},
-		referrerPolicy: "strict-origin-when-cross-origin",
-		strictTransportSecurity: "max-age=31536000; includeSubDomains",
-		xContentTypeOptions: "nosniff",
-		xFrameOptions: "SAMEORIGIN",
-	}),
+const securityHeaders = secureHeaders({
+	contentSecurityPolicy: {
+		defaultSrc: ["'self'"],
+		baseUri: ["'self'"],
+		connectSrc: [
+			"'self'",
+			"https://eu.i.posthog.com",
+			"https://*.posthog.com",
+			"https://*.chatwithhal.com",
+			"wss://*.chatwithhal.com",
+		],
+		fontSrc: ["'self'", "data:", "https://fonts.gstatic.com"],
+		formAction: ["'self'", "https://checkout.stripe.com"],
+		frameAncestors: ["'self'"],
+		frameSrc: [
+			"'self'",
+			"https://www.youtube.com",
+			"https://www.youtube-nocookie.com",
+			"https://iframe.mediadelivery.net",
+			"https://*.chatwithhal.com",
+		],
+		imgSrc: [
+			"'self'",
+			"data:",
+			"blob:",
+			"https://cdn.sanity.io",
+			"https://*.posthog.com",
+			"https://*.chatwithhal.com",
+		],
+		mediaSrc: ["'self'", "blob:", "https://*.b-cdn.net"],
+		objectSrc: ["'none'"],
+		scriptSrc: ["'self'", "'unsafe-inline'", "https://*.chatwithhal.com"],
+		styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+		workerSrc: ["'self'", "blob:"],
+	},
+	crossOriginEmbedderPolicy: false,
+	crossOriginOpenerPolicy: "same-origin-allow-popups",
+	crossOriginResourcePolicy: "same-origin",
+	permissionsPolicy: {
+		camera: [],
+		geolocation: [],
+		microphone: [],
+		payment: ["self"],
+	},
+	referrerPolicy: "strict-origin-when-cross-origin",
+	strictTransportSecurity: "max-age=31536000; includeSubDomains",
+	xContentTypeOptions: "nosniff",
+	xFrameOptions: "SAMEORIGIN",
+});
+// Email clients that load images directly (webmail) are cross-origin, so the
+// brand assets used in emails must not carry Cross-Origin-Resource-Policy.
+app.use("*", (c, next) =>
+	c.req.path.startsWith("/images/email/") ? next() : securityHeaders(c, next),
 );
 app.use(
 	"/api/*",

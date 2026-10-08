@@ -117,8 +117,7 @@ export async function emailHasLogin(email: string): Promise<boolean> {
 /**
  * Called when the mailbox owner first opens a link from the email: that click
  * is the proof of consent, so only now is the account created and the lead
- * confirmed. Returns `firstConfirmation` exactly once per lead so the CRM sync
- * runs once.
+ * confirmed.
  */
 export async function confirmLead(leadId: string) {
 	const lead = await db.freeDownloadLead.findUnique({
@@ -127,9 +126,9 @@ export async function confirmLead(leadId: string) {
 	});
 	if (!lead) return null;
 	const user = await ensureLeadUser(lead.email);
-	const claimed = await db.freeDownloadLead.updateMany({
+	await db.freeDownloadLead.updateMany({
 		where: { id: lead.id, confirmedAt: null },
 		data: { confirmedAt: new Date(), userId: user.id },
 	});
-	return { lead, user, firstConfirmation: claimed.count === 1 };
+	return { lead, user };
 }

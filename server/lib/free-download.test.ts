@@ -13,7 +13,10 @@ const now = Date.UTC(2026, 9, 7);
 describe("free download tokens", () => {
 	test("round-trips the lead id", () => {
 		const token = createFreeDownloadToken("lead_1", now, secret);
-		expect(verifyFreeDownloadToken(token, now, secret)).toEqual({ leadId: "lead_1", expired: false });
+		expect(verifyFreeDownloadToken(token, now, secret)).toEqual({
+			leadId: "lead_1",
+			expired: false,
+		});
 	});
 
 	test("rejects tampered tokens and a different secret", () => {
@@ -23,10 +26,20 @@ describe("free download tokens", () => {
 		expect(verifyFreeDownloadToken("garbage", now, secret)).toBeNull();
 	});
 
+	test("rejects a token whose expiry was extended without re-signing", () => {
+		const token = createFreeDownloadToken("lead_1", now, secret);
+		const [id, expiry, sig] = token.split(".");
+		const extended = `${id}.${Number(expiry) + 10 * 24 * 3600}.${sig}`;
+		expect(verifyFreeDownloadToken(extended, now, secret)).toBeNull();
+	});
+
 	test("flags a correctly signed token as expired after its lifetime", () => {
 		const token = createFreeDownloadToken("lead_1", now, secret);
 		const later = now + (FREE_DOWNLOAD_LINK_TTL_SECONDS + 1) * 1000;
-		expect(verifyFreeDownloadToken(token, later, secret)).toEqual({ leadId: "lead_1", expired: true });
+		expect(verifyFreeDownloadToken(token, later, secret)).toEqual({
+			leadId: "lead_1",
+			expired: true,
+		});
 	});
 
 	test("is URL-safe so it can be dropped into a link unencoded", () => {

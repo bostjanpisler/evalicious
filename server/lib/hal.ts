@@ -24,7 +24,8 @@ function createHalHttp(apiKey: string): HalHttp {
 			body: body === undefined ? undefined : JSON.stringify(body),
 		});
 		const text = await response.text();
-		if (!response.ok) throw new Error(`Hal ${method} ${path} ${response.status}: ${text.slice(0, 200)}`);
+		if (!response.ok)
+			throw new Error(`Hal ${method} ${path} ${response.status}: ${text.slice(0, 200)}`);
 		return text ? (JSON.parse(text) as unknown) : {};
 	};
 }
