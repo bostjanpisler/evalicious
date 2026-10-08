@@ -16,8 +16,10 @@ export function embedOriginFor(siteUrl: string): string {
 	return EMBED_ORIGINS[siteUrl] ?? "";
 }
 
-export function isEmbedOrigin(origin: string): boolean {
-	return Object.values(EMBED_ORIGINS).includes(origin);
+/** Matches by host only: behind Railway's proxy the request URL's scheme is http. */
+export function isEmbedHost(host: string | undefined | null): boolean {
+	if (!host) return false;
+	return Object.values(EMBED_ORIGINS).some((origin) => new URL(origin).host === host);
 }
 
 export const EMBED_ORIGIN_LIST = Object.values(EMBED_ORIGINS);

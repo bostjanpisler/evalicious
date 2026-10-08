@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { isEmbedHost } from "@/lib/constants";
 import { EMBED_DOC_ID, EMBED_KEY, embedCsp, renderEmbedDocument } from "./embed";
 
 describe("renderEmbedDocument", () => {
@@ -14,6 +15,13 @@ describe("renderEmbedDocument", () => {
 });
 
 describe("embed isolation", () => {
+	test("recognises the embed host regardless of scheme, and nothing else", () => {
+		expect(isEmbedHost("evalicious-production.up.railway.app")).toBe(true);
+		expect(isEmbedHost("eva-licious.com")).toBe(false);
+		expect(isEmbedHost("evil.example")).toBe(false);
+		expect(isEmbedHost(undefined)).toBe(false);
+	});
+
 	test("off the embed origin the document is always forced into an opaque sandbox", () => {
 		const csp = embedCsp(false, ["https://eva-licious.com"]);
 		expect(csp).toContain("sandbox allow-scripts");

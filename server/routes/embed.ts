@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { isEmbedOrigin } from "@/lib/constants";
+import { isEmbedHost } from "@/lib/constants";
 import { EMBED_DOC_ID, EMBED_KEY, embedCsp, renderEmbedDocument } from "../lib/embed.js";
 import { allowedOrigins } from "../lib/origins.js";
 import { sanityClient } from "../lib/sanity.js";
@@ -19,7 +19,10 @@ embedHandler.get("/:docId/:key", async (c) => {
 
 	return c.body(renderEmbedDocument(embed.code, key), 200, {
 		"Content-Type": "text/html; charset=utf-8",
-		"Content-Security-Policy": embedCsp(isEmbedOrigin(new URL(c.req.url).origin), allowedOrigins),
+		"Content-Security-Policy": embedCsp(
+			isEmbedHost(c.req.header("x-forwarded-host") ?? c.req.header("host")),
+			allowedOrigins,
+		),
 		"X-Content-Type-Options": "nosniff",
 		"Cache-Control": "public, max-age=300",
 	});
