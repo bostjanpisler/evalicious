@@ -45,3 +45,6 @@ logs
 
 # Prisma
 generated/
+
+# translation pipeline working files
+.i18n-work/

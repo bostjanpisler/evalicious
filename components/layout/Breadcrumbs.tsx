@@ -9,6 +9,7 @@ import {
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Fragment } from "react";
+import { SITE_URL } from "@/lib/constants";
 import { useI18n } from "@/lib/i18n/react";
 
 interface BreadcrumbSegment {
@@ -55,7 +56,7 @@ export function Breadcrumbs({ segments }: BreadcrumbsProps) {
 							"@type": "ListItem",
 							position: index + 1,
 							name: segment.label,
-							...(segment.href ? { item: segment.href } : {}),
+							...(segment.href ? { item: `${SITE_URL}${l(segment.href)}` } : {}),
 						})),
 					}),
 				}}

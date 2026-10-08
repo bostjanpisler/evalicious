@@ -25,7 +25,7 @@ export function StayBox({ location, country, label, showDisclosure = true }: Sta
 			<h2 className="font-serif text-2xl font-bold">
 				{t("common.affiliate.stayTitle", { place: location ?? country ?? "" })}
 			</h2>
-			<p className="mt-2 text-muted-foreground">Primerjaj nastanitve in cene na Booking.com.</p>
+			<p className="mt-2 text-muted-foreground">{t("common.affiliate.stayText")}</p>
 			<a
 				href={href}
 				target="_blank"
