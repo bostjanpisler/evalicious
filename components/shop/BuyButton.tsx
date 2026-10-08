@@ -3,6 +3,7 @@
 import posthog from "posthog-js";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useI18n } from "@/lib/i18n/react";
 
 interface BuyButtonProps {
@@ -14,6 +15,7 @@ export function BuyButton({ productSlug, className }: BuyButtonProps) {
 	const { t, l, locale } = useI18n();
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
+	const [acceptedTerms, setAcceptedTerms] = useState(false);
 	const [session, setSession] = useState<{
 		user: { id: string; email: string };
 	} | null>(null);
@@ -34,6 +36,11 @@ export function BuyButton({ productSlug, className }: BuyButtonProps) {
 			return;
 		}
 
+		if (!acceptedTerms) {
+			setError(t("shop.buy.termsRequired"));
+			return;
+		}
+
 		setError("");
 		setLoading(true);
 
@@ -44,7 +51,7 @@ export function BuyButton({ productSlug, className }: BuyButtonProps) {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				credentials: "include",
-				body: JSON.stringify({ productSlug, locale }),
+				body: JSON.stringify({ productSlug, locale, acceptedTerms }),
 			});
 
 			if (!res.ok) {
@@ -67,6 +74,34 @@ export function BuyButton({ productSlug, className }: BuyButtonProps) {
 
 	return (
 		<div className={className}>
+			{session?.user && (
+				<div className="mb-3 flex items-start gap-2">
+					<Checkbox
+						id={`terms-${productSlug}`}
+						checked={acceptedTerms}
+						onCheckedChange={(checked) => {
+							setAcceptedTerms(checked === true);
+							if (checked === true) setError("");
+						}}
+						className="mt-0.5"
+					/>
+					<label
+						htmlFor={`terms-${productSlug}`}
+						className="text-xs leading-snug text-muted-foreground"
+					>
+						{t("shop.buy.termsBefore")}
+						<a
+							href={l("/terms")}
+							target="_blank"
+							rel="noopener"
+							className="underline underline-offset-4"
+						>
+							{t("shop.buy.termsLink")}
+						</a>
+						{t("shop.buy.termsAfter")}
+					</label>
+				</div>
+			)}
 			<Button
 				onClick={handleClick}
 				disabled={loading || sessionLoading}

@@ -18,6 +18,8 @@ export const commonSl = {
 		login: "Prijava",
 		register: "Registracija",
 		myRecipes: "Moji recepti",
+		privacy: "Zasebnost",
+		terms: "Pogoji poslovanja",
 		rights: "Vse pravice pridržane.",
 	},
 	menu: {
@@ -31,9 +33,17 @@ export const commonSl = {
 		register: "Registracija",
 	},
 	cookie: {
-		text: 'Spletna stran uporablja piškotke za analitiko obiska. S klikom na "Sprejmi" se strinjaš z uporabo piškotkov.',
+		title: "Piškotki in zunanje vsebine",
+		text: "Z vašim soglasjem uporabljamo analitiko obiska, klepetalnik ter nalagamo zunanje vsebine (Google Zemljevidi, Klook, TikTok, YouTube), ki lahko nastavijo svoje piškotke. Izbiro lahko kadar koli spremenite v nogi strani.",
+		more: "Več o zasebnosti",
 		accept: "Sprejmi",
 		deny: "Zavrni",
+		settings: "Nastavitve piškotkov",
+	},
+	consentGate: {
+		text: "Ta vsebina prihaja od zunanjega ponudnika, ki lahko nastavi svoje piškotke in zbira podatke o obisku. Naložimo jo šele z vašim soglasjem.",
+		declined: "Soglasje ste zavrnili.",
+		load: "Sprejmi in naloži vsebino",
 	},
 	theme: { toggle: "Preklopi temo" },
 	language: { switchTo: "Preklopi na angleščino", label: "Jezik" },

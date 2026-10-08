@@ -2,6 +2,7 @@
 
 import { PortableText, type PortableTextComponents } from "@portabletext/react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { ConsentGate } from "@/components/shared/ConsentGate";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
 import { linkAttributes } from "@/lib/affiliate";
 import { embedOriginFor, SITE_URL } from "@/lib/constants";
@@ -48,30 +49,34 @@ function HtmlEmbed({
 
 	if (hosted) {
 		return (
-			<iframe
-				ref={frame}
-				title={title ?? t("blog.embed.title")}
-				src={`${embedOrigin}/embed/${encodeURIComponent(documentId)}/${encodeURIComponent(embedKey)}`}
-				sandbox={`allow-forms allow-popups allow-popups-to-escape-sandbox allow-scripts${
-					embedOrigin ? " allow-same-origin" : ""
-				}`}
-				className="w-full rounded-lg border-0"
-				style={{ height }}
-				loading="lazy"
-				referrerPolicy="no-referrer"
-			/>
+			<ConsentGate minHeight={EMBED_INITIAL_HEIGHT}>
+				<iframe
+					ref={frame}
+					title={title ?? t("blog.embed.title")}
+					src={`${embedOrigin}/embed/${encodeURIComponent(documentId)}/${encodeURIComponent(embedKey)}`}
+					sandbox={`allow-forms allow-popups allow-popups-to-escape-sandbox allow-scripts${
+						embedOrigin ? " allow-same-origin" : ""
+					}`}
+					className="w-full rounded-lg border-0"
+					style={{ height }}
+					loading="lazy"
+					referrerPolicy="no-referrer"
+				/>
+			</ConsentGate>
 		);
 	}
 
 	return (
-		<iframe
-			title={title ?? t("blog.embed.title")}
-			srcDoc={code}
-			sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-scripts"
-			className="min-h-96 w-full rounded-lg border-0"
-			loading="lazy"
-			referrerPolicy="no-referrer"
-		/>
+		<ConsentGate>
+			<iframe
+				title={title ?? t("blog.embed.title")}
+				srcDoc={code}
+				sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-scripts"
+				className="min-h-96 w-full rounded-lg border-0"
+				loading="lazy"
+				referrerPolicy="no-referrer"
+			/>
+		</ConsentGate>
 	);
 }
 
@@ -166,15 +171,17 @@ function createComponents(
 				if (!videoId) return null;
 				return (
 					<figure className="my-8">
-						<div className="relative overflow-hidden rounded-lg" style={{ paddingTop: "56.25%" }}>
-							<iframe
-								className="absolute inset-0 h-full w-full"
-								src={`https://www.youtube.com/embed/${videoId}`}
-								title={value.title ?? youtubeTitle}
-								allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-								allowFullScreen
-							/>
-						</div>
+						<ConsentGate minHeight={220}>
+							<div className="relative overflow-hidden rounded-lg" style={{ paddingTop: "56.25%" }}>
+								<iframe
+									className="absolute inset-0 h-full w-full"
+									src={`https://www.youtube-nocookie.com/embed/${videoId}`}
+									title={value.title ?? youtubeTitle}
+									allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+									allowFullScreen
+								/>
+							</div>
+						</ConsentGate>
 						{value.title && (
 							<figcaption className="mt-2 text-center text-sm text-muted-foreground">
 								{value.title}

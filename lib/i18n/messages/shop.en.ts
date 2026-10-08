@@ -37,6 +37,11 @@ export const shopEn: Shape<typeof shopSl> = {
 		buyNow: "Buy now",
 		alreadyOwned: "You already have this product in your orders.",
 		cannotStart: "We can't start the payment right now. Please try again later.",
+		termsBefore: "I agree to the ",
+		termsLink: "terms of sale",
+		termsAfter:
+			" and request immediate delivery of the digital content. I understand that I lose my right of withdrawal.",
+		termsRequired: "Please accept the terms of sale to continue.",
 		startError: "Something went wrong starting the payment. Please try again.",
 	},
 	freeDownload: {

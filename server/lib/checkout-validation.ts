@@ -6,6 +6,15 @@ export function checkoutLocale(body: unknown): Locale {
 	return ENGLISH_ENABLED && isLocale(locale) ? locale : DEFAULT_LOCALE;
 }
 
+/** The buyer must tick the terms / immediate-delivery checkbox: it waives the 14-day withdrawal right for digital content. */
+export function checkoutTermsAccepted(body: unknown): boolean {
+	return (
+		!!body &&
+		typeof body === "object" &&
+		(body as { acceptedTerms?: unknown }).acceptedTerms === true
+	);
+}
+
 export function checkoutProductSlug(body: unknown): string | null {
 	if (!body || typeof body !== "object" || !("productSlug" in body)) return null;
 	const productSlug = (body as { productSlug?: unknown }).productSlug;

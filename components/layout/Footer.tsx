@@ -1,5 +1,6 @@
 "use client";
 
+import { CookieSettingsLink } from "@/components/shared/CookieConsent";
 import { NAV_ITEMS, SITE_NAME } from "@/lib/constants";
 import { useI18n } from "@/lib/i18n/react";
 
@@ -53,7 +54,16 @@ export function Footer() {
 						</nav>
 					</div>
 				</div>
-				<div className="mt-8 border-t border-border pt-8 text-center text-sm text-muted-foreground">
+				<div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 border-t border-border pt-8 text-sm text-muted-foreground">
+					<a href={l("/privacy")} className="transition-colors hover:text-foreground">
+						{t("common.footer.privacy")}
+					</a>
+					<a href={l("/terms")} className="transition-colors hover:text-foreground">
+						{t("common.footer.terms")}
+					</a>
+					<CookieSettingsLink className="transition-colors hover:text-foreground" />
+				</div>
+				<div className="mt-4 text-center text-sm text-muted-foreground">
 					&copy; {new Date().getFullYear()} {SITE_NAME}. {t("common.footer.rights")}
 				</div>
 			</div>

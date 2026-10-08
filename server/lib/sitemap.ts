@@ -16,7 +16,17 @@ export type SitemapDoc = {
 	updatedAt?: string | null;
 };
 
-const STATIC_PATHS = ["/", "/recipes", "/courses", "/blog", "/shop", "/travel", "/about"];
+const STATIC_PATHS = [
+	"/",
+	"/recipes",
+	"/courses",
+	"/blog",
+	"/shop",
+	"/travel",
+	"/about",
+	"/privacy",
+	"/terms",
+];
 
 // Where each content type's pages live.
 const SECTION: Record<string, string> = {

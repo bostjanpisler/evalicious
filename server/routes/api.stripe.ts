@@ -1,10 +1,12 @@
 import { Hono } from "hono";
 import type Stripe from "stripe";
 import { DEFAULT_LOCALE, isLocale } from "@/lib/i18n/config";
+import { TERMS_VERSION } from "@/lib/legal";
 import { localizePath } from "@/lib/i18n/paths";
 import {
 	checkoutLocale,
 	checkoutProductSlug,
+	checkoutTermsAccepted,
 	paymentMatchesProduct,
 } from "../lib/checkout-validation.js";
 import { db } from "../lib/db.js";
@@ -32,6 +34,7 @@ stripeHandler.post("/checkout", requireAuth, async (c) => {
 	}
 	const productSlug = checkoutProductSlug(body);
 	const locale = checkoutLocale(body);
+	if (!checkoutTermsAccepted(body)) return c.json({ error: "Terms must be accepted" }, 400);
 	if (!productSlug) {
 		return c.json({ error: "Invalid checkout request" }, 400);
 	}
@@ -87,6 +90,8 @@ stripeHandler.post("/checkout", requireAuth, async (c) => {
 				productSlug: product.slug,
 				productType: product.type,
 				locale,
+				termsAcceptedAt: new Date().toISOString(),
+				termsVersion: TERMS_VERSION,
 			},
 		},
 		{

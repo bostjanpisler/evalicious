@@ -13,6 +13,8 @@ import { coursesSl } from "./courses.sl";
 import { dashboardEn } from "./dashboard.en";
 import { dashboardSl } from "./dashboard.sl";
 import { homeEn } from "./home.en";
+import { legalEn } from "./legal.en";
+import { legalSl } from "./legal.sl";
 import { homeSl } from "./home.sl";
 import { recipesEn } from "./recipes.en";
 import { recipesSl } from "./recipes.sl";
@@ -34,6 +36,7 @@ export const sl = {
 	dashboard: dashboardSl,
 	auth: authSl,
 	about: aboutSl,
+	legal: legalSl,
 };
 
 export type Messages = typeof sl;
@@ -50,6 +53,7 @@ export const en: Shape<Messages> = {
 	dashboard: dashboardEn,
 	auth: authEn,
 	about: aboutEn,
+	legal: legalEn,
 };
 
 export type Translator = (key: TranslationKey, params?: Record<string, string | number>) => string;
