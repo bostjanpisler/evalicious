@@ -71,7 +71,11 @@ export default function BlogPostPage() {
 
 					{post.content && (
 						<div className="mt-8">
-							<PortableTextRenderer value={post.content} documentId={post._id} />
+							<PortableTextRenderer
+								value={post.content}
+								documentId={post._id}
+								affiliateLabel={post.slug}
+							/>
 						</div>
 					)}
 				</div>

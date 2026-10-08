@@ -67,6 +67,13 @@ export const travelEntry = defineType({
       ],
     }),
     defineField({
+      name: "recommendedProducts",
+      title: "Recommended products",
+      description: "Shown as a recommendation block (may contain affiliate links).",
+      type: "array",
+      of: [defineArrayMember({ type: "recommendedProduct" })],
+    }),
+    defineField({
       name: "published",
       title: "Published",
       type: "boolean",

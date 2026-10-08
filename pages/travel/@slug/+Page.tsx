@@ -3,6 +3,10 @@ import { useConfig } from "vike-react/useConfig";
 import { MapPin, Calendar } from "lucide-react";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
+import { RecommendedProducts } from "@/components/shared/RecommendedProducts";
+import { AffiliateDisclosure } from "@/components/shared/AffiliateDisclosure";
+import { StayBox } from "@/components/travel/StayBox";
+import { affiliateUrl, bookingSearchUrl, contentHasAffiliate } from "@/lib/affiliate";
 import { TableOfContents } from "@/components/blog/TableOfContents";
 import {
 	PortableTextRenderer,
@@ -26,6 +30,12 @@ export default function TravelEntryPage() {
 	});
 	const headings = entry.content ? extractHeadings(entry.content) : [];
 	const locationLabel = [entry.location, entry.country].filter(Boolean).join(", ");
+
+	const stayDestination = [entry.location, entry.country].filter(Boolean).join(", ");
+	const showAffiliateNote =
+		contentHasAffiliate(entry.content) ||
+		(entry.recommendedProducts?.length ?? 0) > 0 ||
+		(!!stayDestination && !!affiliateUrl(bookingSearchUrl(stayDestination), entry.slug));
 
 	return (
 		<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -74,11 +84,30 @@ export default function TravelEntryPage() {
 						</div>
 					</div>
 
+					{showAffiliateNote && <AffiliateDisclosure className="mt-6" />}
+
 					{entry.content && (
 						<div className="mt-8">
-							<PortableTextRenderer value={entry.content} documentId={entry._id} />
+							<PortableTextRenderer
+								value={entry.content}
+								documentId={entry._id}
+								affiliateLabel={entry.slug}
+							/>
 						</div>
 					)}
+
+					<StayBox
+						location={entry.location}
+						country={entry.country}
+						label={entry.slug}
+						showDisclosure={false}
+					/>
+					<RecommendedProducts
+						title="Priporočam"
+						products={entry.recommendedProducts}
+						label={entry.slug}
+						showDisclosure={false}
+					/>
 				</div>
 
 				{/* Sidebar */}

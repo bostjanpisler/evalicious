@@ -3,6 +3,7 @@
 import { PortableText, type PortableTextComponents } from "@portabletext/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
+import { linkAttributes } from "@/lib/affiliate";
 import { embedOriginFor, SITE_URL } from "@/lib/constants";
 
 const EMBED_MIN_HEIGHT = 80;
@@ -80,7 +81,7 @@ function extractYouTubeId(input: string): string {
 	return match?.[1] ?? input;
 }
 
-function createComponents(documentId?: string): PortableTextComponents {
+function createComponents(documentId?: string, affiliateLabel = "content"): PortableTextComponents {
 	return {
 		block: {
 			h2: ({ children, value }) => (
@@ -118,16 +119,21 @@ function createComponents(documentId?: string): PortableTextComponents {
 		marks: {
 			strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
 			em: ({ children }) => <em>{children}</em>,
-			link: ({ children, value }) => (
-				<a
-					href={value?.href}
-					className="text-primary underline underline-offset-4 hover:text-primary/80"
-					target={value?.href?.startsWith("http") ? "_blank" : undefined}
-					rel={value?.href?.startsWith("http") ? "noopener noreferrer" : undefined}
-				>
-					{children}
-				</a>
-			),
+			link: ({ children, value }) => {
+				const href: string | undefined = value?.href;
+				const isExternal = !!href?.startsWith("http");
+				const link = isExternal ? linkAttributes(href, affiliateLabel) : undefined;
+				return (
+					<a
+						href={link?.href ?? href}
+						className="text-primary underline underline-offset-4 hover:text-primary/80"
+						target={link?.target}
+						rel={link?.rel}
+					>
+						{children}
+					</a>
+				);
+			},
 		},
 		types: {
 			image: ({ value }) =>
@@ -187,13 +193,19 @@ function createComponents(documentId?: string): PortableTextComponents {
 export function PortableTextRenderer({
 	value,
 	documentId,
+	affiliateLabel,
 }: {
 	// biome-ignore lint/suspicious/noExplicitAny: Portable Text value type is complex
 	value: any;
 	/** Published Sanity document id; lets HTML embeds load from their own sandboxed page. */
 	documentId?: string;
+	/** Sub-ID for affiliate reports, usually the page slug. */
+	affiliateLabel?: string;
 }) {
-	const components = useMemo(() => createComponents(documentId), [documentId]);
+	const components = useMemo(
+		() => createComponents(documentId, affiliateLabel),
+		[documentId, affiliateLabel],
+	);
 	if (!value) return null;
 	return (
 		<div className="prose-custom">

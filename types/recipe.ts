@@ -1,4 +1,5 @@
 import type { SanityImageSource } from "@sanity/image-url";
+import type { RecommendedProduct } from "./sanity";
 
 export interface Ingredient {
 	name: string;
@@ -56,5 +57,6 @@ export interface RecipeFull extends RecipeListing {
 	nutritionInfo?: NutritionInfo;
 	// biome-ignore lint/suspicious/noExplicitAny: Portable Text content
 	content?: any[];
+	recommendedProducts?: RecommendedProduct[];
 	relatedRecipes?: RecipeListing[];
 }
