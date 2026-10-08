@@ -11,6 +11,7 @@ import { SaveRecipeButton } from "@/components/recipes/SaveRecipeButton";
 import { StepChecklist } from "@/components/recipes/StepChecklist";
 import { SugarCubesIcon } from "@/components/recipes/SugarCubesIcon";
 import { OptimizedImage } from "@/components/shared/OptimizedImage";
+import { RecommendedProducts } from "@/components/shared/RecommendedProducts";
 import { ProfileSidebar } from "@/components/shared/ProfileSidebar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -85,7 +86,11 @@ export default function RecipePage() {
 							<h2 id="o-receptu" className="mb-6 scroll-mt-24 font-serif text-2xl font-bold">
 								O receptu
 							</h2>
-							<PortableTextRenderer value={recipe.content} documentId={recipe._id} />
+							<PortableTextRenderer
+								value={recipe.content}
+								documentId={recipe._id}
+								affiliateLabel={recipe.slug}
+							/>
 						</>
 					)}
 
@@ -292,6 +297,13 @@ export default function RecipePage() {
 							</>
 						)}
 					</div>
+
+					<RecommendedProducts
+						id="pripomocki"
+						title="Pripomočki in sestavine, ki jih uporabljam"
+						products={recipe.recommendedProducts}
+						label={recipe.slug}
+					/>
 
 					{/* Related recipes */}
 					{recipe.relatedRecipes && recipe.relatedRecipes.length > 0 && (

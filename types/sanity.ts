@@ -22,6 +22,15 @@ export interface BlogPost {
 	estimatedReadingTime?: number;
 }
 
+export interface RecommendedProduct {
+	_key: string;
+	name: string;
+	note?: string;
+	merchant?: string;
+	url: string;
+	image?: SanityImageSource;
+}
+
 export interface TravelEntry {
 	_id: string;
 	title: string;
@@ -33,6 +42,7 @@ export interface TravelEntry {
 	tags?: string[];
 	// biome-ignore lint/suspicious/noExplicitAny: Portable Text content
 	content?: any[];
+	recommendedProducts?: RecommendedProduct[];
 	published?: boolean;
 	publishedAt?: string;
 }

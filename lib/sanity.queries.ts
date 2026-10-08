@@ -90,6 +90,14 @@ export const recipeBySlugQuery = `
         "asset": asset->
       }
     },
+    recommendedProducts[] {
+      _key,
+      name,
+      note,
+      merchant,
+      url,
+      image
+    },
     published,
     publishedAt,
     "relatedRecipes": *[_type == "recipe" && published == true && slug.current != ^.slug.current && count((select(defined(categories) => categories, defined(category) => [category], []))[@ in ^.categories]) > 0] | order(publishedAt desc) [0...3] {
@@ -182,6 +190,14 @@ export const travelEntryBySlugQuery = `
         ...,
         "asset": asset->
       }
+    },
+    recommendedProducts[] {
+      _key,
+      name,
+      note,
+      merchant,
+      url,
+      image
     },
     published,
     publishedAt
