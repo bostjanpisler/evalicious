@@ -119,9 +119,15 @@ export default function TravelEntryPage() {
 				</div>
 
 				{/* Sidebar */}
-				<div className="space-y-6 lg:sticky lg:top-24 lg:self-start">
-					{headings.length > 0 && <TableOfContents headings={headings} />}
-					<ProfileSidebar />
+				{/* The profile and Instagram widgets scroll with the page; only the table of
+				    contents stays pinned, so a sidebar taller than the screen never hides them. */}
+				<div className="space-y-6">
+					<ProfileSidebar profileImage={entry.profileImage} />
+					{headings.length > 0 && (
+						<div className="lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
+							<TableOfContents headings={headings} />
+						</div>
+					)}
 				</div>
 			</div>
 		</div>

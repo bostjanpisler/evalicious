@@ -1,7 +1,9 @@
 "use client";
 
+import type { SanityImageSource } from "@sanity/image-url";
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n/react";
+import { portraitAvatarUrl } from "@/lib/sanity.image";
 
 const RECENT_POSTS = [
 	"DUik_7iCBn8",
@@ -17,9 +19,10 @@ const RECENT_POSTS = [
 
 interface InstagramFeedProps {
 	variant?: "default" | "wide";
+	profileImage?: SanityImageSource;
 }
 
-export function InstagramFeed({ variant = "default" }: InstagramFeedProps) {
+export function InstagramFeed({ variant = "default", profileImage }: InstagramFeedProps) {
 	const { t } = useI18n();
 	const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
@@ -43,7 +46,7 @@ export function InstagramFeed({ variant = "default" }: InstagramFeedProps) {
 				className="mb-3 flex items-center gap-2.5"
 			>
 				<img
-					src="/images/eva-profile.svg"
+					src={profileImage ? portraitAvatarUrl(profileImage, 72) : "/images/eva-profile.svg"}
 					alt="@susiiiiin"
 					width={36}
 					height={36}

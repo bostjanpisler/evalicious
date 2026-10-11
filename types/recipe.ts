@@ -50,6 +50,8 @@ export interface RecipeListing {
 }
 
 export interface RecipeFull extends RecipeListing {
+	/** Eva's portrait from the About page, for the profile sidebar. */
+	profileImage?: SanityImageSource;
 	description?: string;
 	servings?: number;
 	ingredientGroups: IngredientGroup[];

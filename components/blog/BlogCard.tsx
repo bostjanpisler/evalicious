@@ -12,8 +12,8 @@ interface BlogCardProps {
 export function BlogCard({ post }: BlogCardProps) {
 	const { t, l, formatDate } = useI18n();
 	return (
-		<a href={l(`/blog/${post.slug}`)}>
-			<Card className="group overflow-hidden transition-shadow hover:shadow-lg">
+		<a href={l(`/blog/${post.slug}`)} className="block h-full">
+			<Card className="group h-full overflow-hidden rounded-2xl shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl">
 				{post.coverImage && (
 					<div className="aspect-[16/9] overflow-hidden">
 						<OptimizedImage
@@ -23,7 +23,7 @@ export function BlogCard({ post }: BlogCardProps) {
 							height={338}
 							sizes="(max-width: 639px) calc(100vw - 2rem), (max-width: 1023px) calc(50vw - 2rem), (max-width: 1279px) calc(33vw - 2rem), 400px"
 							quality={88}
-							className="h-full w-full object-cover transition-transform group-hover:scale-105"
+							className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
 						/>
 					</div>
 				)}

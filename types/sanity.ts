@@ -33,6 +33,8 @@ export interface RecommendedProduct {
 
 export interface TravelEntry {
 	_id: string;
+	/** Eva's portrait from the About page, for the profile sidebar (detail query only). */
+	profileImage?: SanityImageSource;
 	title: string;
 	slug: string;
 	description?: string;
@@ -79,6 +81,8 @@ export interface HomePage {
 	heroTitle?: string;
 	heroSubtitle?: string;
 	heroImage?: SanityImageSource;
+	/** Eva's portrait from the About page, for the Instagram widget. */
+	profileImage?: SanityImageSource;
 	featuredRecipes?: Array<{
 		_id: string;
 		title: string;
