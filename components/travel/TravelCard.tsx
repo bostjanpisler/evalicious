@@ -13,8 +13,8 @@ export function TravelCard({ entry }: TravelCardProps) {
 	const locationLabel = [entry.location, entry.country].filter(Boolean).join(", ");
 
 	return (
-		<a href={l(`/travel/${entry.slug}`)}>
-			<Card className="group overflow-hidden transition-shadow hover:shadow-lg">
+		<a href={l(`/travel/${entry.slug}`)} className="block h-full">
+			<Card className="group h-full overflow-hidden rounded-2xl shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl">
 				{entry.coverImage && (
 					<div className="aspect-[16/9] overflow-hidden">
 						<OptimizedImage
@@ -22,7 +22,7 @@ export function TravelCard({ entry }: TravelCardProps) {
 							alt={entry.title}
 							width={600}
 							height={338}
-							className="h-full w-full object-cover transition-transform group-hover:scale-105"
+							className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
 						/>
 					</div>
 				)}

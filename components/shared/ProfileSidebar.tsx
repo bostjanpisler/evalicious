@@ -1,6 +1,8 @@
+import type { SanityImageSource } from "@sanity/image-url";
 import { Facebook, Instagram, Youtube } from "lucide-react";
 import { InstagramFeed } from "@/components/shared/InstagramFeed";
 import { useI18n } from "@/lib/i18n/react";
+import { portraitAvatarUrl } from "@/lib/sanity.image";
 
 const SOCIAL_LINKS = [
 	{
@@ -29,8 +31,14 @@ const SOCIAL_LINKS = [
 	},
 ];
 
-export function ProfileSidebar() {
+interface ProfileSidebarProps {
+	/** Eva's portrait from the About page; falls back to the placeholder avatar. */
+	profileImage?: SanityImageSource;
+}
+
+export function ProfileSidebar({ profileImage }: ProfileSidebarProps) {
 	const { t } = useI18n();
+	const avatarSrc = profileImage ? portraitAvatarUrl(profileImage, 240) : "/images/eva-profile.svg";
 
 	return (
 		<div className="space-y-6">
@@ -40,11 +48,11 @@ export function ProfileSidebar() {
 					{t("about.sidebar.welcome")}
 				</h3>
 				<img
-					src="/images/eva-profile.svg"
+					src={avatarSrc}
 					alt="Eva Susin"
 					width={120}
 					height={120}
-					className="mx-auto rounded-full object-cover"
+					className="mx-auto h-30 w-30 rounded-full object-cover ring-4 ring-primary/20"
 					loading="lazy"
 				/>
 				<h4 className="mt-3 font-serif text-lg font-semibold">Eva Susin</h4>
@@ -70,7 +78,7 @@ export function ProfileSidebar() {
 			</div>
 
 			{/* Instagram feed */}
-			<InstagramFeed />
+			<InstagramFeed profileImage={profileImage} />
 		</div>
 	);
 }

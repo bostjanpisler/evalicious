@@ -2,6 +2,12 @@
 // - Recipes, blog posts, travel entries and the home/about pages are one document per language.
 // - Products, courses and lessons are one document with an optional `en` override block.
 const DOC_LANG = `coalesce(language, "sl") == $locale`;
+// Eva's portrait from the About page. The photo is the same in every language, so fall
+// back to the Slovenian page when the English one is missing or has no image.
+const PROFILE_IMAGE = `coalesce(
+      *[_type == "aboutPage" && ${DOC_LANG}][0].profileImage,
+      *[_type == "aboutPage" && coalesce(language, "sl") == "sl"][0].profileImage
+    )`;
 const OVERRIDE = (field: string) =>
 	`select($locale == "en" && defined(en.${field}) => en.${field}, ${field})`;
 // Which languages this document exists in (itself plus its translations), for hreflang
@@ -135,7 +141,8 @@ export const recipeBySlugQuery = `
       oilFree,
       soyFree,
       nutFree
-    }
+    },
+    "profileImage": ${PROFILE_IMAGE}
   }
 `;
 
@@ -221,7 +228,8 @@ export const travelEntryBySlugQuery = `
       image
     },
     published,
-    publishedAt
+    publishedAt,
+    "profileImage": ${PROFILE_IMAGE}
   }
 `;
 
@@ -430,7 +438,8 @@ export const homePageQuery = `
       currency,
       "courseStepCount": count(course->steps),
       "courseTotalDuration": math::sum(course->steps[]->durationMinutes)
-    }
+    },
+    "profileImage": ${PROFILE_IMAGE}
   }
 `;
 

@@ -338,9 +338,13 @@ export default function RecipePage() {
 				</div>
 
 				{/* Sidebar */}
-				<div className="space-y-6 lg:sticky lg:top-24 lg:self-start">
-					<TableOfContents headings={allHeadings} />
-					<ProfileSidebar />
+				{/* The profile and Instagram widgets scroll with the page; only the table of
+				    contents stays pinned, so a sidebar taller than the screen never hides them. */}
+				<div className="space-y-6">
+					<ProfileSidebar profileImage={recipe.profileImage} />
+					<div className="lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
+						<TableOfContents headings={allHeadings} />
+					</div>
 				</div>
 			</div>
 		</div>

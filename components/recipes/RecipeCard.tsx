@@ -26,8 +26,8 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
 	const activeAllergens = ALLERGEN_ICONS.filter((a) => recipe[a.key as keyof RecipeListing]);
 
 	return (
-		<a href={l(`/recipes/${recipe.slug}`)}>
-			<Card className="group overflow-hidden transition-shadow hover:shadow-lg">
+		<a href={l(`/recipes/${recipe.slug}`)} className="block h-full">
+			<Card className="group h-full overflow-hidden rounded-2xl shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl">
 				{recipe.coverImage && (
 					<div className="aspect-[4/3] overflow-hidden">
 						<OptimizedImage
@@ -35,7 +35,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
 							alt={recipe.title}
 							width={600}
 							height={450}
-							className="h-full w-full object-cover transition-transform group-hover:scale-105"
+							className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
 						/>
 					</div>
 				)}

@@ -18,8 +18,8 @@ export function ProductCard({ product }: ProductCardProps) {
 			: product.type;
 
 	return (
-		<a href={l(`/shop/${product.slug}`)}>
-			<Card className="group overflow-hidden transition-all hover:shadow-lg hover:border-amber-300">
+		<a href={l(`/shop/${product.slug}`)} className="block h-full">
+			<Card className="group h-full overflow-hidden rounded-2xl shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl">
 				<div className="relative aspect-[4/3] overflow-hidden">
 					{product.coverImage ? (
 						<OptimizedImage
@@ -27,7 +27,7 @@ export function ProductCard({ product }: ProductCardProps) {
 							alt={product.title}
 							width={600}
 							height={450}
-							className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+							className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
 						/>
 					) : (
 						<div className="h-full w-full bg-gradient-to-br from-amber-100 to-amber-200" />
